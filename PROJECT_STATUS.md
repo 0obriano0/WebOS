@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態紀錄
 
-> 最後更新：2026-05-21  
+> 最後更新：2026-05-21（Snap 吸附功能 + Demo 更新）  
 > 用途：電腦重裝 / VS Code 重裝後快速恢復開發環境
 
 ---
@@ -33,9 +33,10 @@ WebOS/
 │   ├── index.ts                ← 公開 Entry Point（統一 export）
 │   ├── core/
 │   │   ├── types.ts            ← WindowState / WindowConfig / EventCallback
-│   │   ├── WindowManager.ts    ← 核心大腦：視窗生命週期管理
+│   │   ├── WindowManager.ts    ← 核心大腦：視窗生命週期管理（含 Snap 引導線）
 │   │   ├── EventBus.ts         ← 事件巴士
-│   │   └── DragResizeHandler.ts← 拖曳 / 縮放（含節流）
+│   │   ├── DragResizeHandler.ts← 拖曳 / 縮放（含節流 + snapFn callback）
+│   │   └── SnapHelper.ts       ← Snap 吸附計算（純函式，零 DOM 依賴）
 │   ├── renderers/
 │   │   └── DOMRenderer.ts      ← DOM 結構生成 + CSS 注入
 │   └── adapters/
@@ -139,6 +140,8 @@ const wm = new WindowManager({
   container?: HTMLElement,  // 預設 document.body
   isolated?: boolean,       // true = position:absolute 限制在容器內
   throttleMs?: number,      // 預設 16ms (60fps)
+  snap?: boolean,           // true = 啟用 Snap 吸附功能（預設 true）
+  snapThreshold?: number,   // 吸附觸發距離 px（預設 20）
 })
 
 wm.open(config: WindowConfig)   // 開窗（id 存在則 restore+focus）
@@ -469,13 +472,50 @@ npm run dev   # 預設 http://localhost:3008
 | `vue-keepalive` | Keep-Alive State | Vue 3 |
 | `react` | useWindowManager (React hook) | React |
 
+### 18. 2026-05-21 Snap 吸附功能 + Demo 更新
+
+#### Snap 吸附功能實作
+
+- 新增 `src/core/SnapHelper.ts`：純函式模組（零 DOM 依賴，易於單元測試）
+  - `snapPosition(drag, containerSize, others, threshold)` → `SnapResult`
+  - 檢查拖曳視窗四邊與容器邊界及其他視窗邊緣的距離
+  - 回傳吸附後的 `{ x, y }` 以及參考線描述 `guides[]`
+- `src/core/DragResizeHandler.ts`：新增 `snapFn?` callback
+  - `_handleMove` 中套用 snapFn，取得吸附後座標再更新位置
+- `src/core/WindowManager.ts`：新增 snap 配置與引導線管理
+  - `WindowManagerOptions` 新增 `snap?`（預設 `true`）、`snapThreshold?`（預設 20）
+  - 私有方法：`_ensureGuides()`（懶建立）、`_updateSnapGuides()`、`_hideSnapGuides()`
+  - `open()` 中串接 snapFn 與 onDragEnd（結束拖曳隱藏引導線）
+  - `destroy()` 移除引導線 DOM 節點
+- `src/renderers/DOMRenderer.ts`：CSS 新增 `.wos-snap-guide`、`.wos-snap-guide--v`、`.wos-snap-guide--h`
+  - `position:absolute`、`pointer-events:none`、`z-index:2147483647`、預設 `display:none`
+- `src/index.ts`：export `SnapRect`、`SnapGuide`、`SnapResult`（型別）與 `snapPosition`（函式）
+- 建置確認：`npm run build` (tsc --noEmit) ✅、`npm run build:lib` (4 bundles) ✅
+
+#### Demo 全面更新
+
+- **vanilla**：`WindowManager({ snap: true })`、Welcome 視窗加入「Snap 吸附」項目
+- **jquery**：`WindowManager({ snap: true })`、Accordion 新增「🧲 Snap 吸附功能」FAQ、React 狀態更正
+- **vue**：`useWindowManager({ snap: true })`、WelcomeApp 加入 Snap 項目
+- **react**：`useWindowManager({ snap: true })`、WelcomeApp 加入 Snap 項目
+
+#### Snap 技術細節
+
+| 項目 | 說明 |
+|------|------|
+| 吸附閾值 | 預設 20px，可透過 `snapThreshold` 調整 |
+| 吸附目標 | 容器四邊 + 其他所有非最小化/非最大化視窗的邊緣 |
+| 引導線懶建立 | 首次拖曳時才建立 DOM 節點，不提早污染 DOM |
+| 非 isolated 模式 | 容器大小使用 `window.innerWidth/Height` |
+| Snap 關閉 | `new WindowManager({ snap: false })` |
+
 ---
 
 ## 九、待開發功能（Roadmap）
 
 - [x] **React 包裝層** ✅ `src/adapters/react/` + `demo/react/` + Docs `ReactPage.vue`
 - [x] **jQuery 整合範例** ✅ `demo/jquery/index.html` + Docs `JqueryPage.vue`
-- [ ] **視窗 Snap 吸附功能**（貼邊自動對齊）
+- [x] **視窗 Snap 吸附功能** ✅ `src/core/SnapHelper.ts` + `WindowManager` + 全 demo 更新
 - [ ] **工作區（虛擬桌面）多頁切換**
 - [ ] **視窗狀態序列化 / 還原**（localStorage）
 - [ ] **Docs 補充**：Snap / 工作區功能頁面

@@ -13,6 +13,7 @@ The core handles all window lifecycle, drag/resize, focus, and z-order — your 
 
 - ✅ Open, close, minimize, maximize, restore windows
 - ✅ Drag & resize with throttling (60 fps by default)
+- ✅ **Snap alignment** — windows magnetically snap to edges and each other while dragging
 - ✅ Focus / z-order management
 - ✅ Event bus — subscribe to any window lifecycle event
 - ✅ Isolated mode — embed a desktop inside any page element
@@ -150,6 +151,8 @@ export default function App() {
 | `container` | `HTMLElement` | `document.body` | Desktop container element |
 | `isolated` | `boolean` | `false` | Constrain windows to container (`position: absolute`) |
 | `throttleMs` | `number` | `16` | Drag/resize throttle interval (ms) |
+| `snap` | `boolean` | `true` | Enable magnetic snap alignment while dragging |
+| `snapThreshold` | `number` | `20` | Snap trigger distance in pixels |
 
 ### Core Methods
 
