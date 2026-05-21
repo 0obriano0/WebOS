@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebOS-Core — Demo 選單</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 100%);
+      color: #fff;
+    }
+    .container { text-align: center; }
+    h1 { font-size: 2rem; margin-bottom: 0.4rem; letter-spacing: 1px; }
+    .subtitle { color: rgba(255,255,255,0.6); font-size: 0.95rem; margin-bottom: 3rem; }
+    .cards {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .card {
+      width: 220px;
+      padding: 32px 24px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      text-decoration: none;
+      color: #fff;
+      transition: background 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .card:hover {
+      background: rgba(255,255,255,0.18);
+      transform: translateY(-4px);
+    }
+    .card-icon { font-size: 3rem; margin-bottom: 16px; }
+    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .card-desc { font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge-js  { background: rgba(247,223,30,0.25); color: #f7df1e; }
+    .badge-vue { background: rgba(66,184,131,0.25); color: #42b883; }
+    .badge-react { background: rgba(97,218,251,0.2); color: #61dafb; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🖥 WebOS-Core</h1>
+    <p class="subtitle">Framework-Agnostic Web Desktop Engine — 選擇 Demo</p>
+    <div class="cards">
+      <a class="card" href="vanilla/index.html">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Vanilla JS</div>
+        <div class="card-desc">純 TypeScript 核心，零框架依賴<br>原生 DOM 操作示範</div>
+        <span class="badge badge-js">JavaScript</span>
+      </a>
+      <a class="card" href="jquery/index.html">
+        <div class="card-icon">💙</div>
+        <div class="card-title">jQuery</div>
+        <div class="card-desc">UMD bundle + jQuery 3.x<br>DOM 操作、表單、動畫整合</div>
+        <span class="badge badge-jq">jQuery</span>
+      </a>
+      <a class="card" href="vue/index.html">
+        <div class="card-icon">💚</div>
+        <div class="card-title">Vue 3</div>
+        <div class="card-desc">useWindowManager composable<br>.vue SFC 元件 + KeepAlive 整合</div>
+        <span class="badge badge-vue">Vue 3 + Vite</span>
+      </a>
+      <a class="card" href="react/index.html">
+        <div class="card-icon">⚛️</div>
+        <div class="card-title">React</div>
+        <div class="card-desc">useWindowManager hook<br>createPortal 渲染 + 自動狀態保留</div>
+        <span class="badge badge-react">React 18 + Vite</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

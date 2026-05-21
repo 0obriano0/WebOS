@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebOS-Core — Vanilla JS Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a2a4a 0%, #2d4a7a 100%);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════
+       左側應用程式 Dock
+    ════════════════════════════════════════ */
+    #app-dock {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 48px; /* 不蓋住任務列 */
+      width: 72px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 0;
+      z-index: 9997;
+      overflow-y: auto;
+    }
+    .dock-item {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: background 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .dock-item:hover {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
+    }
+    .dock-item .dock-label {
+      font-size: 9px;
+      color: rgba(255,255,255,0.8);
+      white-space: nowrap;
+    }
+    /* 已開啟的應用程式顯示小圓點 */
+    .dock-item.running::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4fc3f7;
+    }
+    .dock-separator {
+      width: 40px;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+      margin: 4px 0;
+    }
+
+    /* ═══════════════════════════════════════
+       下方任務列（已開啟視窗）
+    ════════════════════════════════════════ */
+    #taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 72px; /* 讓出 dock 寬度 */
+      right: 0;
+      height: 48px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 10px;
+      z-index: 9998;
+      overflow-x: auto;
+    }
+    /* 任務列項目（執行中的視窗） */
+    .task-item {
+      height: 34px;
+      max-width: 180px;
+      min-width: 80px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .task-item:hover { background: rgba(255,255,255,0.2); }
+    .task-item.active {
+      background: rgba(74,144,226,0.5);
+      border-color: rgba(74,144,226,0.8);
+    }
+    .task-item.minimized {
+      opacity: 0.55;
+      text-decoration: underline dotted;
+    }
+    .task-item-icon { font-size: 14px; flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════
+       右上事件 Log（放在 Dock 上方，不遮視窗按鈕）
+    ════════════════════════════════════════ */
+    #event-log {
+      position: fixed;
+      bottom: 52px;  /* 剛好在任務列上方 */
+      left: 4px;
+      width: 200px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #b0ffb0;
+      font-size: 10px;
+      font-family: monospace;
+      z-index: 9997;
+    }
+    #event-log p { margin: 2px 0; }
+  </style>
+</head>
+<body>
+
+<!-- 左側應用程式 Dock -->
+<div id="app-dock">
+  <button class="dock-item" data-app="welcome">
+    🖥<span class="dock-label">桌面</span>
+  </button>
+  <div class="dock-separator"></div>
+  <button class="dock-item" data-app="text-win">
+    📝<span class="dock-label">文字</span>
+  </button>
+  <button class="dock-item" data-app="form-win">
+    📋<span class="dock-label">表單</span>
+  </button>
+  <button class="dock-item" data-app="counter-win">
+    🔢<span class="dock-label">計數器</span>
+  </button>
+  <div class="dock-separator"></div>
+  <button class="dock-item" id="dock-destroy" title="關閉全部">
+    💣<span class="dock-label">關閉全部</span>
+  </button>
+</div>
+
+<!-- 下方任務列（動態產生） -->
+<div id="taskbar"></div>
+
+<!-- 右上事件 Log -->
+<div id="event-log"><p>📡 Event Log</p></div>
+
+<script type="module">
+  import { WindowManager } from '../../dist/index.js';
+
+  const wm = new WindowManager({ throttleMs: 16 });
+
+  // ── 事件 Log ──
+  const log = document.getElementById('event-log');
+  function logEvent(name, data) {
+    const p = document.createElement('p');
+    p.textContent = `▶ ${name} [${data?.id ?? ''}]`;
+    log.prepend(p);
+    if (log.children.length > 40) log.lastChild?.remove();
+  }
+
+  // ══════════════════════════════════════════
+  // 任務列管理
+  // ══════════════════════════════════════════
+  const taskbar = document.getElementById('taskbar');
+
+  const APP_ICONS = {
+    'welcome':     '🖥',
+    'text-win':    '📝',
+    'form-win':    '📋',
+    'counter-win': '🔢',
+  };
+
+  function getIcon(id) {
+    for (const [key, icon] of Object.entries(APP_ICONS)) {
+      if (id.startsWith(key)) return icon;
+    }
+    return '🪟';
+  }
+
+  function refreshTaskbar() {
+    taskbar.innerHTML = '';
+    wm.getWindowIds().forEach(id => {
+      const state = wm.getState(id);
+      if (!state) return;
+      const btn = document.createElement('button');
+      btn.className = 'task-item' +
+        (state.isActive ? ' active' : '') +
+        (state.isMinimized ? ' minimized' : '');
+      btn.dataset.winId = id;
+      btn.innerHTML = `<span class="task-item-icon">${getIcon(id)}</span>${state.title}`;
+      btn.addEventListener('click', () => {
+        if (state.isMinimized) {
+          wm.restore(id);
+          wm.focus(id);
+        } else if (state.isActive) {
+          wm.minimize(id);
+        } else {
+          wm.focus(id);
+        }
+      });
+      taskbar.appendChild(btn);
+    });
+  }
+
+  // Dock 小圓點更新
+  function refreshDock() {
+    const ids = new Set(wm.getWindowIds());
+    document.querySelectorAll('.dock-item[data-app]').forEach(el => {
+      const appId = el.dataset.app;
+      const running = [...ids].some(id => id.startsWith(appId));
+      el.classList.toggle('running', running);
+    });
+  }
+
+  // 訂閱全部視窗事件來同步任務列 & Dock
+  const syncEvents = [
+    'window:opened', 'window:closed', 'window:focused',
+    'window:minimized', 'window:maximized', 'window:restored'
+  ];
+  syncEvents.forEach(ev => {
+    wm.events.on(ev, d => {
+      logEvent(ev, d);
+      refreshTaskbar();
+      refreshDock();
+    });
+  });
+
+  // ══════════════════════════════════════════
+  // 視窗內容工廠
+  // ══════════════════════════════════════════
+  function makeWelcomeContent() {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:20px;line-height:1.8;';
+    div.innerHTML = `
+      <h2 style="margin-top:0;color:#1a73e8;">🖥 WebOS-Core</h2>
+      <p>框架無關的網頁視窗管理引擎 <code>v0.1.0</code></p>
+      <ul style="padding-left:20px;color:#555;">
+        <li>✅ 純 TypeScript，零框架依賴</li>
+        <li>✅ 拖曳 / 縮放 / 置頂 / 最小化 / 最大化</li>
+        <li>✅ Keep-Alive：最小化不銷毀 DOM</li>
+        <li>✅ 跨視窗 EventBus</li>
+        <li>✅ 節流效能最佳化（16ms）</li>
+      </ul>
+      <p>點擊左側 Dock 圖示開啟應用程式 👈</p>
+    `;
+    return div;
+  }
+
+  function makeTextContent() {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:16px;line-height:1.7;color:#333;';
+    div.innerHTML = `
+      <h3 style="margin-top:0">文字視窗</h3>
+      <p>拖曳標題列可移動視窗，拖曳邊框可縮放。</p>
+      <textarea style="width:100%;height:100px;resize:none;padding:6px;border:1px solid #d0d0d0;border-radius:4px;">
+可在此輸入文字，最小化後狀態完整保留。</textarea>
+    `;
+    return div;
+  }
+
+  function makeFormContent() {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:16px;';
+    div.innerHTML = `
+      <style>
+        .f{display:flex;flex-direction:column;gap:10px}
+        .f label{font-size:12px;color:#666;margin-bottom:2px;display:block}
+        .f input,.f select{width:100%;padding:6px 8px;border:1px solid #d0d0d0;border-radius:4px;font-size:13px}
+        .f .submit-btn{padding:8px;background:#1a73e8;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px}
+        .f .submit-btn:hover{background:#1558b0}
+      </style>
+      <div class="f">
+        <div><label>姓名</label><input type="text" placeholder="請輸入姓名"/></div>
+        <div><label>部門</label>
+          <select><option>財務部</option><option>研發部</option><option>業務部</option></select>
+        </div>
+        <div><label>備註</label><input type="text" placeholder="..."/></div>
+        <button class="submit-btn">送出</button>
+      </div>
+    `;
+    div.querySelector('.submit-btn').addEventListener('click', () => alert('表單資料已送出！'));
+    return div;
+  }
+
+  function makeCounterContent() {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:24px;text-align:center;';
+    let count = 0;
+    const display = document.createElement('div');
+    display.style.cssText = 'font-size:48px;font-weight:bold;color:#1a73e8;margin:16px 0;';
+    display.textContent = '0';
+    const btn = document.createElement('button');
+    btn.textContent = '＋ 點擊計數';
+    btn.style.cssText = 'padding:10px 24px;font-size:14px;background:#1a73e8;color:#fff;border:none;border-radius:6px;cursor:pointer;';
+    btn.addEventListener('click', () => { display.textContent = String(++count); });
+    const note = document.createElement('p');
+    note.style.cssText = 'font-size:12px;color:#999;margin-top:8px;';
+    note.textContent = '最小化後再還原，計數不會重置 ✓';
+    div.append(display, btn, note);
+    return div;
+  }
+
+  // ══════════════════════════════════════════
+  // Dock 點擊事件（單例開窗）
+  // ══════════════════════════════════════════
+  const APP_CONFIGS = {
+    'welcome':     () => ({ id: 'welcome',     title: '歡迎使用 WebOS-Core', content: makeWelcomeContent(), width: 420, height: 320, x: 100, y: 60 }),
+    'text-win':    () => ({ id: 'text-win',    title: '文字視窗',            content: makeTextContent(),   width: 400, height: 280, x: 140, y: 80 }),
+    'form-win':    () => ({ id: 'form-win',    title: '員工資料表單',         content: makeFormContent(),   width: 340, height: 300, x: 180, y: 100 }),
+    'counter-win': () => ({ id: 'counter-win', title: 'Keep-Alive 計數器',   content: makeCounterContent(),width: 300, height: 240, x: 220, y: 120 }),
+  };
+
+  document.querySelectorAll('.dock-item[data-app]').forEach(el => {
+    el.addEventListener('click', () => {
+      const appId = el.dataset.app;
+      const factory = APP_CONFIGS[appId];
+      if (!factory) return;
+      // WindowManager.open() 已內建：若 ID 存在則 restore + focus，不重複建立
+      wm.open(factory());
+    });
+  });
+
+  document.getElementById('dock-destroy').addEventListener('click', () => {
+    wm.destroy();
+    refreshTaskbar();
+    refreshDock();
+  });
+
+  // ── 初始開啟歡迎視窗 ──
+  wm.open(APP_CONFIGS['welcome']());
+</script>
+</body>
+</html>

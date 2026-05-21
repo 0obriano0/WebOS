@@ -1,0 +1,73 @@
+/* ── CSS Variables ── */
+:root {
+  --color-header-bg: #0d3b66;
+  --color-header-text: #fff;
+  --color-primary: #0078d4;
+  --color-primary-hover: #005ea2;
+  --color-sidebar-bg: #f5f7fa;
+  --color-sidebar-border: #e1e4e8;
+  --color-border: #d1d5db;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-code-bg: #1e1e2e;
+  --color-code-text: #cdd6f4;
+  --color-demo-bg: #f8fafc;
+  --color-demo-border: #cbd5e1;
+  --radius: 6px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 1.8rem; font-weight: 700; margin: 0 0 8px; }
+h2 { font-size: 1.25rem; font-weight: 600; margin: 24px 0 8px; }
+h3 { font-size: 1rem; font-weight: 600; margin: 16px 0 6px; }
+p { margin: 0 0 12px; }
+code {
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #c2185b;
+}
+
+/* ── API Table ── */
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0 20px;
+}
+.api-table th, .api-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+.api-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+.api-table tr:hover td { background: #f9fafb; }
+
+/* ── Tag badges ── */
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-blue  { background: #dbeafe; color: #1d4ed8; }
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-gray  { background: #f3f4f6; color: #4b5563; }

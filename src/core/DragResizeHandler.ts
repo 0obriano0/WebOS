@@ -1,0 +1,265 @@
+// ============================================================
+// WebOS-Core — Drag & Resize Handler
+// 支援滑鼠與觸控，內建 Throttle 確保巨量表格不卡頓
+// ============================================================
+
+export interface DragResizeOptions {
+  /** 拖曳 / 縮放時的節流間隔（毫秒），預設 16ms ≈ 60fps */
+  throttleMs?: number;
+  /** 縮放邊框感應寬度（px），預設 6 */
+  resizeBorderPx?: number;
+  /** 視窗最小寬度（px） */
+  minWidth?: number;
+  /** 視窗最小高度（px） */
+  minHeight?: number;
+  /**
+   * Isolated 模式容器元素。設定後，拖曳 / 縮放座標會轉換為相對於容器的座標，
+   * 搭配 WindowManager isolated 選項使用（視窗以 position:absolute 定位）。
+   */
+  containerEl?: HTMLElement;
+  onDragStart?: () => void;
+  onDrag?: (x: number, y: number) => void;
+  onDragEnd?: () => void;
+  onResizeStart?: () => void;
+  onResize?: (x: number, y: number, width: number, height: number) => void;
+  onResizeEnd?: () => void;
+}
+
+type ResizeEdge = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | null;
+
+/** 簡易節流 */
+function throttle<T extends (...args: any[]) => void>(fn: T, ms: number): T {
+  let last = 0;
+  return function (this: any, ...args: any[]) {
+    const now = performance.now();
+    if (now - last >= ms) {
+      last = now;
+      fn.apply(this, args);
+    }
+  } as T;
+}
+
+export class DragResizeHandler {
+  private _winEl: HTMLElement;
+  private _headerEl: HTMLElement;
+  private _opts: Required<Omit<DragResizeOptions, 'containerEl'>> & { containerEl?: HTMLElement };
+
+  // 拖曳狀態
+  private _dragging = false;
+  private _dragOffX = 0;
+  private _dragOffY = 0;
+
+  // 縮放狀態
+  private _resizing = false;
+  private _resizeEdge: ResizeEdge = null;
+  private _resizeStartX = 0;
+  private _resizeStartY = 0;
+  private _resizeStartRect = { x: 0, y: 0, w: 0, h: 0 };
+
+  private _onMouseMoveBound: (e: MouseEvent) => void;
+  private _onMouseUpBound: (e: MouseEvent) => void;
+  private _onTouchMoveBound: (e: TouchEvent) => void;
+  private _onTouchEndBound: (e: TouchEvent) => void;
+
+  constructor(
+    winEl: HTMLElement,
+    headerEl: HTMLElement,
+    opts: DragResizeOptions = {}
+  ) {
+    this._winEl = winEl;
+    this._headerEl = headerEl;
+    this._opts = {
+      throttleMs: opts.throttleMs ?? 16,
+      resizeBorderPx: opts.resizeBorderPx ?? 8,
+      minWidth: opts.minWidth ?? 200,
+      minHeight: opts.minHeight ?? 120,
+      containerEl: opts.containerEl,
+      onDragStart: opts.onDragStart ?? (() => {}),
+      onDrag: opts.onDrag ?? (() => {}),
+      onDragEnd: opts.onDragEnd ?? (() => {}),
+      onResizeStart: opts.onResizeStart ?? (() => {}),
+      onResize: opts.onResize ?? (() => {}),
+      onResizeEnd: opts.onResizeEnd ?? (() => {}),
+    };
+
+    const throttledMove = throttle(this._handleMove.bind(this), this._opts.throttleMs);
+    this._onMouseMoveBound = throttledMove as (e: MouseEvent) => void;
+    this._onMouseUpBound = this._handleUp.bind(this);
+    this._onTouchMoveBound = (e: TouchEvent) => {
+      const t = e.touches[0];
+      throttledMove({ clientX: t.clientX, clientY: t.clientY } as MouseEvent);
+    };
+    this._onTouchEndBound = this._handleUp.bind(this) as unknown as (e: TouchEvent) => void;
+
+    this._attachEvents();
+  }
+
+  private _attachEvents(): void {
+    // 標題列 → 拖曳
+    this._headerEl.addEventListener('mousedown', this._onHeaderMouseDown.bind(this));
+    this._headerEl.addEventListener('touchstart', this._onHeaderTouchStart.bind(this), { passive: true });
+
+    // 視窗邊框 → 縮放
+    this._winEl.addEventListener('mousedown', this._onWinMouseDown.bind(this));
+    this._winEl.addEventListener('mousemove', this._updateResizeCursor.bind(this));
+  }
+
+  private _onHeaderMouseDown(e: MouseEvent): void {
+    if ((e.target as HTMLElement).closest('.wos-btn')) return; // 忽略按鈕點擊
+    e.preventDefault();
+    this._startDrag(e.clientX, e.clientY);
+    document.addEventListener('mousemove', this._onMouseMoveBound);
+    document.addEventListener('mouseup', this._onMouseUpBound, { once: true });
+  }
+
+  private _onHeaderTouchStart(e: TouchEvent): void {
+    const t = e.touches[0];
+    this._startDrag(t.clientX, t.clientY);
+    document.addEventListener('touchmove', this._onTouchMoveBound, { passive: true });
+    document.addEventListener('touchend', this._onTouchEndBound, { once: true });
+  }
+
+  private _startDrag(clientX: number, clientY: number): void {
+    const rect = this._winEl.getBoundingClientRect();
+    this._dragging = true;
+    this._dragOffX = clientX - rect.left;
+    this._dragOffY = clientY - rect.top;
+    this._winEl.style.userSelect = 'none';
+    this._opts.onDragStart();
+  }
+
+  private _onWinMouseDown(e: MouseEvent): void {
+    const edge = this._getResizeEdge(e);
+    if (!edge) return;
+    e.preventDefault();
+    this._startResize(edge, e.clientX, e.clientY);
+    document.addEventListener('mousemove', this._onMouseMoveBound);
+    document.addEventListener('mouseup', this._onMouseUpBound, { once: true });
+  }
+
+  private _startResize(edge: ResizeEdge, clientX: number, clientY: number): void {
+    const rect = this._winEl.getBoundingClientRect();
+    this._resizing = true;
+    this._resizeEdge = edge;
+    this._resizeStartX = clientX;
+    this._resizeStartY = clientY;
+    this._resizeStartRect = {
+      x: rect.left,
+      y: rect.top,
+      w: rect.width,
+      h: rect.height,
+    };
+    this._winEl.style.userSelect = 'none';
+    this._opts.onResizeStart();
+  }
+
+  private _handleMove(e: { clientX: number; clientY: number }): void {
+    if (this._dragging) {
+      const { left, top } = this._getContainerRect();
+      const x = e.clientX - this._dragOffX - left;
+      const y = e.clientY - this._dragOffY - top;
+      this._winEl.style.left = `${x}px`;
+      this._winEl.style.top = `${y}px`;
+      this._opts.onDrag(x, y);
+    } else if (this._resizing && this._resizeEdge) {
+      this._applyResize(e.clientX, e.clientY);
+    }
+  }
+
+  private _applyResize(clientX: number, clientY: number): void {
+    const dx = clientX - this._resizeStartX;
+    const dy = clientY - this._resizeStartY;
+    const { x, y, w, h } = this._resizeStartRect;
+    const { minWidth, minHeight } = this._opts;
+    const edge = this._resizeEdge!;
+
+    let newX = x, newY = y, newW = w, newH = h;
+
+    if (edge.includes('e')) newW = Math.max(minWidth, w + dx);
+    if (edge.includes('s')) newH = Math.max(minHeight, h + dy);
+    if (edge.includes('w')) {
+      newW = Math.max(minWidth, w - dx);
+      newX = x + (w - newW);
+    }
+    if (edge.includes('n')) {
+      newH = Math.max(minHeight, h - dy);
+      newY = y + (h - newH);
+    }
+
+    // 轉換為容器相對座標（isolated 模式下 newX/newY 是 viewport 座標）
+    const { left: cLeft, top: cTop } = this._getContainerRect();
+    this._winEl.style.left = `${newX - cLeft}px`;
+    this._winEl.style.top = `${newY - cTop}px`;
+    this._winEl.style.width = `${newW}px`;
+    this._winEl.style.height = `${newH}px`;
+    this._opts.onResize(newX - cLeft, newY - cTop, newW, newH);
+  }
+
+  private _handleUp(): void {
+    if (this._dragging) {
+      this._dragging = false;
+      this._winEl.style.userSelect = '';
+      this._opts.onDragEnd();
+    }
+    if (this._resizing) {
+      this._resizing = false;
+      this._resizeEdge = null;
+      this._winEl.style.userSelect = '';
+      this._opts.onResizeEnd();
+    }
+    document.removeEventListener('mousemove', this._onMouseMoveBound);
+    document.removeEventListener('touchmove', this._onTouchMoveBound);
+  }
+
+  private _getContainerRect(): { left: number; top: number } {
+    if (this._opts.containerEl) {
+      const r = this._opts.containerEl.getBoundingClientRect();
+      return { left: r.left, top: r.top };
+    }
+    return { left: 0, top: 0 };
+  }
+
+  private _getResizeEdge(e: MouseEvent): ResizeEdge {
+    const rect = this._winEl.getBoundingClientRect();
+    const b = this._opts.resizeBorderPx;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const right = rect.width - x;
+    const bottom = rect.height - y;
+
+    // 標題列內不啟動縮放
+    if ((e.target as HTMLElement).closest('.wos-header')) return null;
+
+    const onN = y <= b;
+    const onS = bottom <= b;
+    const onW = x <= b;
+    const onE = right <= b;
+
+    if (onN && onW) return 'nw';
+    if (onN && onE) return 'ne';
+    if (onS && onW) return 'sw';
+    if (onS && onE) return 'se';
+    if (onN) return 'n';
+    if (onS) return 's';
+    if (onW) return 'w';
+    if (onE) return 'e';
+    return null;
+  }
+
+  private _updateResizeCursor(e: MouseEvent): void {
+    if (this._dragging || this._resizing) return;
+    const edge = this._getResizeEdge(e);
+    const cursors: Record<string, string> = {
+      n: 'n-resize', s: 's-resize', e: 'e-resize', w: 'w-resize',
+      ne: 'ne-resize', nw: 'nw-resize', se: 'se-resize', sw: 'sw-resize',
+    };
+    this._winEl.style.cursor = edge ? cursors[edge] : 'default';
+  }
+
+  destroy(): void {
+    document.removeEventListener('mousemove', this._onMouseMoveBound);
+    document.removeEventListener('mouseup', this._onMouseUpBound);
+    document.removeEventListener('touchmove', this._onTouchMoveBound);
+    document.removeEventListener('touchend', this._onTouchEndBound);
+  }
+}

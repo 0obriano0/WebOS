@@ -1,0 +1,42 @@
+{
+  "name": "webos-core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic web desktop window management engine",
+  "main": "dist/webos-core.umd.js",
+  "module": "dist/webos-core.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/webos-core.es.js",
+      "require": "./dist/webos-core.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "build:lib": "rollup -c rollup.lib.config.mjs",
+    "build:watch": "tsc --noEmit --watch",
+    "dev": "npx http-server demo -p 3000 -o",
+    "clean": "node scripts/clean.mjs",
+    "release": "npm run clean && npm run build:lib && node scripts/pack-release.mjs"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "http-server": "^14.1.1",
+    "rollup": "^4.60.4",
+    "rollup-plugin-dts": "^6.4.1",
+    "tslib": "^2.8.1",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "webos",
+    "window-manager",
+    "desktop",
+    "framework-agnostic"
+  ],
+  "license": "MIT"
+}
