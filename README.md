@@ -19,6 +19,7 @@ The core handles all window lifecycle, drag/resize, focus, and z-order — your 
 - ✅ Vue 3 adapter — `useWindowManager` composable + `Teleport` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
 - ✅ ES Module + UMD builds — works with bundlers or plain `<script>` tags
+- ✅ Minified builds — `webos-core.es.min.js` / `webos-core.umd.min.js`
 
 ---
 
@@ -221,11 +222,13 @@ Returns:
 
 ## Build Output
 
-| File | Format | Use when |
-|------|--------|----------|
-| `dist/webos-core.es.js` | ESM | Vite / Webpack / `type="module"` |
-| `dist/webos-core.umd.js` | UMD | Script tag, jQuery, legacy pages |
-| `dist/index.d.ts` | TypeScript declarations | IDE autocomplete & type checking |
+| File | Format | Size | Use when |
+|------|--------|------|----------|
+| `dist/webos-core.es.js` | ESM | ~23 KB | Vite / Webpack / `type="module"` (dev) |
+| `dist/webos-core.es.min.js` | ESM | ~12 KB | Production ESM bundle |
+| `dist/webos-core.umd.js` | UMD | ~26 KB | Script tag, jQuery, legacy pages (dev) |
+| `dist/webos-core.umd.min.js` | UMD | ~12 KB | Production CDN / script tag |
+| `dist/index.d.ts` | TypeScript declarations | — | IDE autocomplete & type checking |
 
 ---
 

@@ -47,8 +47,12 @@ WebOS/
 │           └── index.ts
 │
 ├── dist/                       ← 建置輸出（rollup build:lib 產生）
-│   ├── webos-core.es.js        ← ES Module bundle (~24KB)
+│   ├── webos-core.es.js        ← ES Module bundle (~23KB)
+│   ├── webos-core.es.js.map    ← Source map
+│   ├── webos-core.es.min.js    ← ES Module bundle（壓縮版 ~12KB）
 │   ├── webos-core.umd.js       ← UMD bundle，window.WebOS (~26KB)
+│   ├── webos-core.umd.js.map   ← Source map
+│   ├── webos-core.umd.min.js   ← UMD bundle（壓縮版 ~12KB）
 │   ├── index.d.ts              ← TypeScript 宣告
 │   └── index.d.ts.map
 │
@@ -121,7 +125,7 @@ WebOS/
 ├── LICENSE                     ← Apache 2.0 授權（Copyright 2026 Brian Cheng）
 ├── package.json                ← 根專案設定
 ├── tsconfig.json               ← TypeScript 設定
-└── rollup.lib.config.mjs       ← Library 建置設定（ES + UMD）
+└── rollup.lib.config.mjs       ← Library 建置設定（ES + ES.min + UMD + UMD.min）
 ```
 
 ---
@@ -200,7 +204,7 @@ npm run release
 | 檔案 | 用途 |
 |------|------|
 | `tsconfig.json` | 根專案 TypeScript 設定（type-check `src/core` + `src/renderers` + `src/index.ts`） |
-| `rollup.lib.config.mjs` | Library 建置（ES + UMD + .d.ts），peer deps `vue`/`react`/`react-dom` 為 external |
+| `rollup.lib.config.mjs` | Library 建置（ES + ES.min + UMD + UMD.min + .d.ts），peer deps `vue`/`react`/`react-dom` 為 external |
 | `scripts/clean.mjs` | 清除 dist/（Dropbox retry 機制） |
 | `scripts/pack-release.mjs` | 打包 release/ 交付資料夾 |
 
@@ -210,9 +214,11 @@ npm run release
 ```
 release/webos-core-v0.1.0/
   dist/
-    webos-core.es.js    ← ESM import 用（~24KB）
-    webos-core.umd.js   ← script tag 用，window.WebOS（~26KB）
-    index.d.ts          ← TypeScript 型別
+    webos-core.es.js      ← ESM import 用（~23KB）
+    webos-core.es.min.js  ← ESM 壓縮版（~12KB，生產環境推薦）
+    webos-core.umd.js     ← script tag 用，window.WebOS（~26KB）
+    webos-core.umd.min.js ← UMD 壓縮版（~12KB）
+    index.d.ts            ← TypeScript 型別
   package.json
   README.md
 ```
@@ -429,6 +435,22 @@ npm run dev   # 預設 http://localhost:3008
 - `npm run build` 說明修正（型別檢查，不產生輸出）
 - Browser support：ES2017 → ES2020
 - License 頁尾：MIT → Apache-2.0 © 2026 Brian Cheng
+
+### 17. 2026-05-21 壓縮版建置輸出 + Docs 修正
+
+#### 壓縮版建置輸出
+- 安裝 `@rollup/plugin-terser@0.4.4`
+- `rollup.lib.config.mjs` 加入第二個建置 pass（啟用 `terser()`，關閉 sourcemap）
+- 新增輸出：
+  - `dist/webos-core.es.min.js`（~12KB，原版 ~23KB）
+  - `dist/webos-core.umd.min.js`（~12KB，原版 ~26KB）
+- `npm run build:lib` 一次產出全部 4 個 bundle + `index.d.ts`
+
+#### Docs 修正（stale content）
+- `Overview.vue`：React adapter `⬜` → `✅`；`slotType` 補 `'react'`；build cmd 說明修正
+- `Installation.vue`：Vue 3 code panel 改為 `openVueWindow()` 新 API
+- `VueComposable.vue` + `ReactPage.vue`：proxy methods row 補入 `setTitle`
+- `en.ts` + `zh-TW.ts`：`ret.proxies`、`install.esm.intro`、`h3Step4` 均補入 React / setTitle 資訊
 
 
 

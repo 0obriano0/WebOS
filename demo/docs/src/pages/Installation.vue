@@ -22,7 +22,8 @@
       <p v-html="t('install.esm.intro')"></p>
 
       <h3>{{ t('install.esm.h3Step1') }}</h3>
-      <pre class="code-block">cp dist/webos-core.es.js  your-project/lib/</pre>
+      <pre class="code-block">cp dist/webos-core.es.js      your-project/lib/  # dev
+cp dist/webos-core.es.min.js  your-project/lib/  # production</pre>
 
       <h3>{{ t('install.esm.h3Step2') }}</h3>
       <pre class="code-block" v-pre>// main.ts  (TypeScript / bundler)
@@ -82,7 +83,7 @@ import { useWindowManager } from '@webos/adapters/vue/useWindowManager'
 &lt;body&gt;
   &lt;div id="desktop" style="width:100vw;height:100vh;position:relative;"&gt;&lt;/div&gt;
 
-  &lt;!-- 1. Load the bundle --&gt;
+  &lt;!-- 1. Load the bundle (use .min.js for production) --&gt;
   &lt;script src="dist/webos-core.umd.js"&gt;&lt;/script&gt;
 
   &lt;!-- 2. Use it — no import needed --&gt;
