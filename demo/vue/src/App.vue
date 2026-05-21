@@ -78,7 +78,7 @@ import TodoApp     from './windows/TodoApp.vue'
 
 // ── 初始化 WindowManager Composable ──
 const { wm, windows, openVueWindow, close, minimize, restore, focus, destroy } =
-  useWindowManager({ throttleMs: 16 })
+  useWindowManager({ throttleMs: 16, snap: true })
 
 // ── Event Log ──
 const logs = ref<string[]>(['📡 Event Log'])

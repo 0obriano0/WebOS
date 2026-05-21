@@ -183,7 +183,7 @@
 <script type="module">
   import { WindowManager } from '../../dist/webos-core.es.js';
 
-  const wm = new WindowManager({ throttleMs: 16 });
+  const wm = new WindowManager({ throttleMs: 16, snap: true });
 
   // ── 事件 Log ──
   const log = document.getElementById('event-log');
@@ -273,6 +273,7 @@
       <ul style="padding-left:20px;color:#555;">
         <li>✅ 純 TypeScript，零框架依賴</li>
         <li>✅ 拖曳 / 縮放 / 置頂 / 最小化 / 最大化</li>
+        <li>✅ <strong>Snap 吸附</strong>：拖曳靠近邊緣自動對齊</li>
         <li>✅ Keep-Alive：最小化不銷毀 DOM</li>
         <li>✅ 跨視窗 EventBus</li>
         <li>✅ 節流效能最佳化（16ms）</li>

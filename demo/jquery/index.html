@@ -223,7 +223,7 @@
 
 <script>
   const { WindowManager } = WebOS;
-  const wm = new WindowManager({ throttleMs: 16 });
+  const wm = new WindowManager({ throttleMs: 16, snap: true });
 
   // ── 事件 Log ──
   const $log = $('#event-log');
@@ -381,9 +381,10 @@
 
   function createAccordion() {
     var sections = [
-      { title: '📦 什麼是 WebOS-Core？', body: 'WebOS-Core 是一套框架無關的虛擬桌面視窗管理引擎，支援拖曳、縮放、置頂、最小化、最大化等完整功能。' },
+      { title: '📦 什麼是 WebOS-Core？', body: 'WebOS-Core 是一套框架無關的虛擬桌面視窗管理引擎，支援拖曳、縮放、置頂、最小化、最大化及 Snap 吸附對齊等完整功能。' },
+      { title: '🧲 Snap 吸附功能', body: '拖曳視窗靠近桌面邊緣或其他視窗邊緣時，會自動吸附對齊，並顯示藍色參考線。預設啟用，可透過 snap: false 關閉。' },
       { title: '🔗 如何與 jQuery 整合？', body: '載入 UMD bundle 後，使用 jQuery 建立視窗內容，並以 wm.getBodyElement(id) 取得視窗 body 元素附加外掛。' },
-      { title: '📄 支援哪些框架？', body: '支援純 JavaScript、jQuery、Vue 3、React（規劃中）。核心完全框架無關。' },
+      { title: '📄 支援哪些框架？', body: '支援純 JavaScript、jQuery、Vue 3、React。核心完全框架無關。' },
       { title: '⚡ 如何安裝？', body: '複製 dist/ 資料夾，或以 <script> 標籤載入 webos-core.umd.js，無需任何建置步驟。' },
     ];
 

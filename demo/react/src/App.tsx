@@ -33,7 +33,7 @@ const APP_MAP = Object.fromEntries(APP_LIST.map(a => [a.id, a]))
 
 export default function App() {
   const { wm, windows, openReactWindow, minimize, restore, focus, destroy } =
-    useWindowManager({ throttleMs: 16 })
+    useWindowManager({ throttleMs: 16, snap: true })
 
   const [logs, setLogs] = useState<string[]>(['📡 Event Log'])
 

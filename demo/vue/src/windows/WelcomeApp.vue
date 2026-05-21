@@ -5,6 +5,7 @@
     <ul>
       <li>✅ 純 TypeScript，零框架依賴</li>
       <li>✅ 拖曳 / 縮放 / 置頂 / 最小化 / 最大化</li>
+      <li>✅ <strong>Snap 吸附</strong>：拖曳靠近邊緣自動對齊</li>
       <li>✅ Keep-Alive：最小化不銷毀 Vue 元件狀態</li>
       <li>✅ 跨視窗 EventBus</li>
       <li>✅ Vue 3 Composable 整合</li>
