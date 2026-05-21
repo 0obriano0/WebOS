@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態紀錄
 
-> 最後更新：2026-05-20  
+> 最後更新：2026-05-21  
 > 用途：電腦重裝 / VS Code 重裝後快速恢復開發環境
 
 ---
@@ -118,10 +118,10 @@ WebOS/
 │       └── README.md
 │
 ├── README.md                   ← npm 套件說明文件（安裝 + API 快查）
+├── LICENSE                     ← Apache 2.0 授權（Copyright 2026 Brian Cheng）
 ├── package.json                ← 根專案設定
 ├── tsconfig.json               ← TypeScript 設定
-├── rollup.lib.config.mjs       ← Library 建置設定（ES + UMD）
-└── vite.lib.config.ts          ← 舊 Vite lib config（已被 rollup 取代）
+└── rollup.lib.config.mjs       ← Library 建置設定（ES + UMD）
 ```
 
 ---
@@ -143,8 +143,10 @@ wm.minimize(id: string)
 wm.maximize(id: string)
 wm.restore(id: string)          // 解除最小/最大化
 wm.focus(id: string)
+wm.setTitle(id: string, title: string)  // 更新視窗標題列
 wm.getState(id: string): WindowState | undefined
 wm.getBodyElement(id: string): HTMLElement | undefined
+wm.getWindowIds(): string[]     // 取得所有開啟中的視窗 ID
 wm.destroy()                    // 銷毀所有視窗，移除 DOM
 wm.events.on(event, callback)   // 訂閱事件
 ```
@@ -174,6 +176,9 @@ cd D:\Dropbox\新ERP框架開發\WebOS
 # 安裝依賴
 npm install
 
+# 型別檢查（不輸出 JS，需配合 build:lib 使用）
+npm run build
+
 # 清除 dist/（含自動 retry 處理 Dropbox 鎖定）
 npm run clean
 
@@ -182,14 +187,13 @@ npm run build:lib
 
 # 清除 + 重建 + 打包給同事 → release/webos-core-vX.X.X/
 npm run release
-
-# TypeScript 編譯（輸出到 dist/core、dist/renderers...）
-npm run build
 ```
 
 > ⚠️ Node.js 需求：根目錄用 **rollup**（Node 18 兼容）。  
 > `rollup-plugin-dts` v6 在 Node 18 會顯示 EBADENGINE 警告，但**功能正常**。  
 > docs/ 內的 Vite 需要 **Node 18+**（目前環境是 Node 18.15.0）。
+> **注意**：`npm run build` 只做 `tsc --noEmit`（型別檢查），**不產生 JS 輸出**。
+> 實際建置 dist/ 請用 `npm run build:lib`。
 
 ### 建置設定檔清單
 
@@ -355,7 +359,6 @@ npm run dev   # 預設 http://localhost:3008
 - **StrictMode 注意**：dev 模式雙重 effect 會 destroy+recreate WM，demo 可接受
 
 ### 15. 2026-05 重構紀錄
-
 #### 清除死碼
 - 刪除 `vite.lib.config.ts`（早期 Vite 建置設定，已改用 Rollup）
 - 移除 `package.json` 死腳本 `"demo:build"`（引用不存在的 `scripts/bundle-demo.js`）
@@ -384,6 +387,8 @@ npm run dev   # 預設 http://localhost:3008
 
 
 
+#### 本次重構影響的重要檔案
+
 | 檔案 | 說明 |
 |------|------|
 | `README.md` | npm 套件說明（安裝 + API + ESM/UMD 範例） |
@@ -401,9 +406,31 @@ npm run dev   # 預設 http://localhost:3008
 | `demo/docs/src/pages/JqueryPage.vue` | Docs jQuery 整合說明頁 |
 | `PROJECT_STATUS.md` | 本文件 |
 
----
+### 16. 2026-05-21 授權 + 文件更新
 
-## 八、Docs 頁面清單（12 頁，全部完成）
+#### 授權從 MIT 改為 Apache 2.0
+- 新增 `LICENSE`：完整 Apache 2.0 條文，`Copyright 2026 Brian Cheng`
+- `package.json` `"license"` 欄位：`"MIT"` → `"Apache-2.0"`
+- `README.md` badge 連結改為 `Apache-2.0` badge
+
+**Apache 2.0 vs MIT 差異重點**：
+- ✅ 同樣允許商業使用、修改後不開源
+- 🛡️ 多了**明確專利授權條款**：貢獻者對你的程式碼授予專利使用權
+- 🛡️ **專利報復條款**：對方使用此程式碼後對你提起專利訴訟，其授權自動終止
+- 📌 使用者義務：保留版權聲明、保留 LICENSE 檔、標示修改之處
+
+#### README.md 全面更新
+- React 18 adapter 狀態：`⬜ planned` → `✅ 完成`
+- 新增 React `useWindowManager` hook 完整使用範例（`createPortal`）
+- 更新 Vue 3 範例為 `openVueWindow()` 新 API
+- 新增 Vue 3 / React adapter 回傳值說明表格
+- API 表格補入 `setTitle()` + `getWindowIds()`
+- `WindowConfig` 補入 `slotType?: 'dom' | 'vue' | 'react'`
+- `npm run build` 說明修正（型別檢查，不產生輸出）
+- Browser support：ES2017 → ES2020
+- License 頁尾：MIT → Apache-2.0 © 2026 Brian Cheng
+
+
 
 | ID | 頁面 | 分類 |
 |----|------|------|
