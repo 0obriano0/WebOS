@@ -83,6 +83,7 @@
                 minWidth: opts.minWidth ?? 200,
                 minHeight: opts.minHeight ?? 120,
                 containerEl: opts.containerEl,
+                snapFn: opts.snapFn,
                 onDragStart: opts.onDragStart ?? (() => { }),
                 onDrag: opts.onDrag ?? (() => { }),
                 onDragEnd: opts.onDragEnd ?? (() => { }),
@@ -157,8 +158,13 @@
         _handleMove(e) {
             if (this._dragging) {
                 const { left, top } = this._getContainerRect();
-                const x = e.clientX - this._dragOffX - left;
-                const y = e.clientY - this._dragOffY - top;
+                let x = e.clientX - this._dragOffX - left;
+                let y = e.clientY - this._dragOffY - top;
+                if (this._opts.snapFn) {
+                    const snapped = this._opts.snapFn(x, y, this._winEl.offsetWidth, this._winEl.offsetHeight);
+                    x = snapped.x;
+                    y = snapped.y;
+                }
                 this._winEl.style.left = `${x}px`;
                 this._winEl.style.top = `${y}px`;
                 this._opts.onDrag(x, y);
@@ -277,18 +283,18 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  border: 4px solid #d0d0d0;
+  border: 4px solid var(--wos-border, #d0d0d0);
   border-radius: 6px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  background: #d0d0d0;
+  box-shadow: var(--wos-shadow, 0 4px 24px rgba(0,0,0,0.18));
+  background: var(--wos-window-bg, #d0d0d0);
   overflow: hidden;
   min-width: 200px;
   min-height: 120px;
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
 .wos-window.wos-active {
-  border-color: #b0b8c8;
-  box-shadow: 0 8px 36px rgba(0,0,0,0.28);
+  border-color: var(--wos-border-active, #b0b8c8);
+  box-shadow: var(--wos-shadow-active, 0 8px 36px rgba(0,0,0,0.28));
 }
 .wos-window.wos-minimized {
   display: none !important;
@@ -322,8 +328,8 @@
   align-items: center;
   padding: 0 8px;
   height: 36px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--wos-header-bg, #f5f5f5);
+  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
   cursor: move;
   user-select: none;
   flex-shrink: 0;
@@ -332,7 +338,7 @@
   flex: 1;
   font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: var(--wos-title-color, #333333);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -348,17 +354,35 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #555;
+  color: var(--wos-btn-color, #555555);
   margin-left: 2px;
   transition: background 0.1s;
 }
-.wos-btn:hover { background: #e0e0e0; }
-.wos-btn.wos-btn-close:hover { background: #ff5f57; color: #fff; }
+.wos-btn:hover { background: var(--wos-btn-hover-bg, #e0e0e0); }
+.wos-btn.wos-btn-close:hover { background: var(--wos-btn-close-hover-bg, #ff5f57); color: var(--wos-btn-close-hover-color, #ffffff); }
 .wos-body {
   flex: 1;
   overflow: auto;
   position: relative;
-  background: #fff;
+  background: var(--wos-body-bg, #ffffff);
+}
+/* ── Snap guide lines ─────────────────────────────── */
+.wos-snap-guide {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2147483647;
+  display: none;
+  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));
+}
+.wos-snap-guide--v {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+.wos-snap-guide--h {
+  height: 1px;
+  left: 0;
+  right: 0;
 }
 `;
     function injectStyles() {
@@ -416,6 +440,64 @@
     }
 
     // ============================================================
+    // WebOS-Core — Snap Helper
+    // 純計算模組：計算視窗拖曳時的吸附位置與 guide 線位置
+    // ============================================================
+    /**
+     * 計算單軸的吸附結果。
+     * 同時檢查「近邊」(pos) 和「遠邊」(pos+size) 是否接近任一 target。
+     * 回傳最近一次命中的吸附後座標與 guide 位置。
+     */
+    function snapAxis(pos, size, targets, threshold) {
+        let bestDist = threshold;
+        let snapped = pos;
+        let guidePos = null;
+        for (const t of targets) {
+            // 近邊 (left / top)
+            const dNear = Math.abs(pos - t);
+            if (dNear < bestDist) {
+                bestDist = dNear;
+                snapped = t;
+                guidePos = t;
+            }
+            // 遠邊 (right / bottom)
+            const dFar = Math.abs(pos + size - t);
+            if (dFar < bestDist) {
+                bestDist = dFar;
+                snapped = t - size;
+                guidePos = t;
+            }
+        }
+        return { snapped, guidePos };
+    }
+    /**
+     * 計算拖曳視窗的吸附位置。
+     *
+     * @param drag          拖曳中視窗的建議位置與大小
+     * @param containerSize 容器的寬高（isolated 用容器；否則用 viewport）
+     * @param others        其他非最小化 / 非最大化視窗的位置與大小
+     * @param threshold     吸附感應距離（px）
+     */
+    function snapPosition(drag, containerSize, others, threshold) {
+        // X 軸吸附目標：容器左邊、右邊，以及所有其他視窗的左右邊
+        const xTargets = [0, containerSize.width];
+        // Y 軸吸附目標：容器頂邊、底邊，以及所有其他視窗的上下邊
+        const yTargets = [0, containerSize.height];
+        for (const o of others) {
+            xTargets.push(o.x, o.x + o.width);
+            yTargets.push(o.y, o.y + o.height);
+        }
+        const { snapped: snapX, guidePos: guideX } = snapAxis(drag.x, drag.width, xTargets, threshold);
+        const { snapped: snapY, guidePos: guideY } = snapAxis(drag.y, drag.height, yTargets, threshold);
+        const guides = [];
+        if (guideX !== null)
+            guides.push({ axis: 'v', pos: guideX });
+        if (guideY !== null)
+            guides.push({ axis: 'h', pos: guideY });
+        return { x: snapX, y: snapY, guides };
+    }
+
+    // ============================================================
     // WebOS-Core — WindowManager
     // 核心大腦：管理所有視窗的生命週期與狀態
     // ============================================================
@@ -428,9 +510,13 @@
             this._wins = new Map();
             this._zCounter = BASE_Z;
             this._cascadeCount = 0;
+            this._guideV = null;
+            this._guideH = null;
             this._container = opts.container ?? document.body;
             this._throttleMs = opts.throttleMs ?? 16;
             this._isolated = opts.isolated ?? false;
+            this._snapEnabled = opts.snap ?? true;
+            this._snapThreshold = opts.snapThreshold ?? 20;
             this.events = new EventBus();
             injectStyles();
             if (this._isolated) {
@@ -471,10 +557,26 @@
             const dragResize = new DragResizeHandler(elements.root, elements.header, {
                 throttleMs: this._throttleMs,
                 containerEl: this._isolated ? this._container : undefined,
+                snapFn: this._snapEnabled ? (x, y, w, h) => {
+                    const cw = this._isolated ? this._container.offsetWidth : window.innerWidth;
+                    const ch = this._isolated ? this._container.offsetHeight : window.innerHeight;
+                    const others = [];
+                    this._wins.forEach((win2, wid) => {
+                        if (wid !== state.id && !win2.state.isMinimized && !win2.state.isMaximized) {
+                            others.push({ x: win2.state.x, y: win2.state.y, width: win2.state.width, height: win2.state.height });
+                        }
+                    });
+                    const result = snapPosition({ x, y, width: w, height: h }, { width: cw, height: ch }, others, this._snapThreshold);
+                    this._updateSnapGuides(result.guides);
+                    return { x: result.x, y: result.y };
+                } : undefined,
                 onDrag: (x, y) => {
                     state.x = x;
                     state.y = y;
                     this.events.emit('window:moved', { ...state });
+                },
+                onDragEnd: () => {
+                    this._hideSnapGuides();
                 },
                 onResize: (x, y, w, h) => {
                     state.x = x;
@@ -635,6 +737,10 @@
         destroy() {
             [...this._wins.keys()].forEach(id => this.close(id));
             this.events.clearAll();
+            this._guideV?.remove();
+            this._guideH?.remove();
+            this._guideV = null;
+            this._guideH = null;
             if (this._isolated) {
                 this._container.classList.remove('wos-isolated');
             }
@@ -642,6 +748,48 @@
         // ─────────────────────────────────────────
         // Private helpers
         // ─────────────────────────────────────────
+        /** 延遲建立 snap guide 元素（僅需要時才建立） */
+        _ensureGuides() {
+            if (this._guideV)
+                return;
+            this._guideV = document.createElement('div');
+            this._guideV.className = 'wos-snap-guide wos-snap-guide--v';
+            this._guideH = document.createElement('div');
+            this._guideH.className = 'wos-snap-guide wos-snap-guide--h';
+            this._container.appendChild(this._guideV);
+            this._container.appendChild(this._guideH);
+        }
+        /** 根據 SnapResult 顯示 / 隱藏 guide 線 */
+        _updateSnapGuides(guides) {
+            this._ensureGuides();
+            const vGuide = guides.find(g => g.axis === 'v');
+            const hGuide = guides.find(g => g.axis === 'h');
+            if (this._guideV) {
+                if (vGuide !== undefined) {
+                    this._guideV.style.left = `${vGuide.pos}px`;
+                    this._guideV.style.display = 'block';
+                }
+                else {
+                    this._guideV.style.display = 'none';
+                }
+            }
+            if (this._guideH) {
+                if (hGuide !== undefined) {
+                    this._guideH.style.top = `${hGuide.pos}px`;
+                    this._guideH.style.display = 'block';
+                }
+                else {
+                    this._guideH.style.display = 'none';
+                }
+            }
+        }
+        /** 拖曳結束時隱藏所有 guide 線 */
+        _hideSnapGuides() {
+            if (this._guideV)
+                this._guideV.style.display = 'none';
+            if (this._guideH)
+                this._guideH.style.display = 'none';
+        }
         _deactivateOthers(exceptId) {
             this._wins.forEach((win, id) => {
                 if (id !== exceptId && win.state.isActive) {
@@ -667,9 +815,50 @@
         }
     }
 
+    // ============================================================
+    // WebOS-Core — Theme Switcher
+    // 動態切換主題 CSS 的工具函式
+    // ============================================================
+    /**
+     * 動態切換 WebOS 主題。
+     *
+     * 第一次呼叫時，若頁面中不存在指定 id 的 `<link>` 元素，
+     * 會自動建立一個並插入 `<head>`。
+     *
+     * @param preset  `'light'` 或 `'dark'`
+     * @param options 選填設定（basePath / linkId）
+     *
+     * @example
+     * // ESM
+     * import { setTheme } from 'webos-core';
+     * setTheme('dark');
+     *
+     * // UMD
+     * WebOS.setTheme('dark');
+     *
+     * // 自訂路徑（例如主題放在 /assets/themes/）
+     * setTheme('dark', { basePath: '/assets/themes' });
+     */
+    function setTheme(preset, options = {}) {
+        const { basePath = 'themes', linkId = 'wos-theme' } = options;
+        const href = `${basePath}/${preset}.css`;
+        let link = document.getElementById(linkId);
+        if (!link) {
+            link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+        }
+        if (link.getAttribute('href') !== href) {
+            link.href = href;
+        }
+    }
+
     exports.EventBus = EventBus;
     exports.WindowManager = WindowManager;
     exports.eventBus = eventBus;
+    exports.setTheme = setTheme;
+    exports.snapPosition = snapPosition;
 
 }));
 //# sourceMappingURL=webos-core.umd.js.map

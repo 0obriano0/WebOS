@@ -13,3 +13,5 @@ export type {
 export type { WinEvent } from './core/WindowManager.js';
 export type { SnapRect, SnapGuide, SnapResult } from './core/SnapHelper.js';
 export { snapPosition } from './core/SnapHelper.js';
+export type { WosThemePreset, SetThemeOptions } from './themes/setTheme.js';
+export { setTheme } from './themes/setTheme.js';

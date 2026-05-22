@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態紀錄
 
-> 最後更新：2026-05-21（Snap 吸附功能 + Demo 更新 + Docs Vite 6 升級）  
+> 最後更新：2026-05-21（Snap 吸附功能 + Demo 更新 + Docs Vite 6 升級 + UI 主題切換全 Demo）  
 > 用途：電腦重裝 / VS Code 重裝後快速恢復開發環境
 
 ---
@@ -38,7 +38,11 @@ WebOS/
 │   │   ├── DragResizeHandler.ts← 拖曳 / 縮放（含節流 + snapFn callback）
 │   │   └── SnapHelper.ts       ← Snap 吸附計算（純函式，零 DOM 依賴）
 │   ├── renderers/
-│   │   └── DOMRenderer.ts      ← DOM 結構生成 + CSS 注入
+│   │   └── DOMRenderer.ts      ← DOM 結構生成 + CSS 注入（所有色值使用 var(--wos-*)）
+│   ├── themes/
+│   │   ├── light.css           ← 亮色主題（14 個 :root CSS 自訂屬性）
+│   │   ├── dark.css            ← 暗色主題（14 個 :root CSS 自訂屬性）
+│   │   └── setTheme.ts         ← setTheme(preset, options?) 工具函式（管理 <link> 元素）
 │   └── adapters/
 │       ├── vue/
 │       │   ├── useWindowManager.ts  ← Vue 3 Composable
@@ -55,7 +59,10 @@ WebOS/
 │   ├── webos-core.umd.js.map   ← Source map
 │   ├── webos-core.umd.min.js   ← UMD bundle（壓縮版 ~12KB）
 │   ├── index.d.ts              ← TypeScript 宣告
-│   └── index.d.ts.map
+│   ├── index.d.ts.map
+│   └── themes/                 ← 主題 CSS（build-themes.mjs 複製自 src/themes/）
+│       ├── light.css
+│       └── dark.css
 │
 ├── demo/
 │   ├── index.html              ← Demo 首頁（連結到各 demo）
@@ -66,11 +73,15 @@ WebOS/
 │   ├── vue/                    ← Vue 3 Demo（獨立 Vite 專案）
 │   │   ├── package.json
 │   │   ├── vite.config.ts
+│   │   ├── public/
+│   │   │   └── themes/         ← 主題 CSS（build-themes.mjs 複製）
 │   │   └── src/
 │   ├── react/                  ← React 18 Demo（獨立 Vite 專案）
 │   │   ├── package.json
 │   │   ├── vite.config.ts      ← port:3002，cacheDir→tmpdir（Dropbox 安全）
 │   │   ├── tsconfig.json       ← jsx:react-jsx，paths: @webos + @types/react
+│   │   ├── public/
+│   │   │   └── themes/         ← 主題 CSS（build-themes.mjs 複製）
 │   │   └── src/
 │   │       ├── main.tsx        ← createRoot + StrictMode
 │   │       ├── App.tsx         ← Dock + Taskbar + Event Log + createPortal
@@ -81,6 +92,8 @@ WebOS/
 │   │           ├── CounterApp.tsx
 │   │           ├── TodoApp.tsx
 │   │           └── FormApp.tsx
+│   ├── theme-editor/
+│   │   └── index.html          ← 🎨 Theme Editor（免建置單檔，可視化編輯 14 個 --wos-* CSS 變數 + 即時預覽 + 匯出 CSS）
 │   └── docs/                   ← 開發手冊（Wijmo 風格，獨立 Vite + Vue 3）
 │       ├── package.json
 │       ├── vite.config.ts      ← port:3002，cacheDir→tmpdir（Dropbox 安全）
@@ -114,6 +127,7 @@ WebOS/
 │
 ├── scripts/
 │   ├── clean.mjs               ← 清除 dist/（含 Dropbox EBUSY retry）
+│   ├── build-themes.mjs        ← 複製 src/themes/*.css → dist/themes/ + demo/*/public/themes/
 │   └── pack-release.mjs        ← 打包 release/ 給同事用
 │
 ├── release/                    ← npm run release 產出（給同事的交付物）
@@ -209,6 +223,7 @@ npm run release
 | `tsconfig.json` | 根專案 TypeScript 設定（type-check `src/core` + `src/renderers` + `src/index.ts`） |
 | `rollup.lib.config.mjs` | Library 建置（ES + ES.min + UMD + UMD.min + .d.ts），peer deps `vue`/`react`/`react-dom` 為 external |
 | `scripts/clean.mjs` | 清除 dist/（Dropbox retry 機制） |
+| `scripts/build-themes.mjs` | 複製 `src/themes/*.css` 到 `dist/themes/` + `demo/vue/public/themes/` + `demo/react/public/themes/` |
 | `scripts/pack-release.mjs` | 打包 release/ 交付資料夾 |
 
 > **注意**：`src/adapters/` 的型別由各自 demo 的 tsconfig 負責（需 vue/react peer deps）。
@@ -527,14 +542,133 @@ npm run dev   # 預設 http://localhost:3008
 
 ---
 
+### 20. 2026-05-21 UI 主題切換功能
+
+#### 架構設計
+
+- **主題完全由純 CSS 負責，與 JS bundle 完全獨立**
+- `src/themes/light.css` + `src/themes/dark.css`：定義 14 個 `:root` CSS 自訂屬性
+- `src/renderers/DOMRenderer.ts`：所有色值改為 `var(--wos-*, fallback)` 格式
+  - fallback 值 = 亮色主題預設值，不載入任何主題 CSS 也能正常顯示（亮色）
+- `scripts/build-themes.mjs`：複製 `src/themes/` → `dist/themes/`
+- `package.json` `build:lib` 加入 `&& node scripts/build-themes.mjs`
+
+#### 建置輸出
+
+```
+dist/
+├── webos-core.es.js / .min.js    ← JS bundle（不含任何主題色）
+├── webos-core.umd.js / .min.js   ← UMD bundle
+├── index.d.ts
+└── themes/                       ← 主題資料夾（獨立）
+    ├── light.css
+    └── dark.css
+```
+
+| 變數 | 說明 |
+|------|------|
+| `--wos-border` | 視窗外框顏色 |
+| `--wos-border-active` | 作用中視窗外框顏色 |
+| `--wos-shadow` | 視窗陰影 |
+| `--wos-shadow-active` | 作用中視窗陰影 |
+| `--wos-window-bg` | 視窗外層背景 |
+| `--wos-header-bg` | 標題列背景 |
+| `--wos-header-border` | 標題列底線顏色 |
+| `--wos-title-color` | 標題文字顏色 |
+| `--wos-btn-color` | 按鈕圖示顏色 |
+| `--wos-btn-hover-bg` | 按鈕 hover 背景 |
+| `--wos-btn-close-hover-bg` | 關閉按鈕 hover 背景 |
+| `--wos-btn-close-hover-color` | 關閉按鈕 hover 文字 |
+| `--wos-body-bg` | 內容區背景 |
+| `--wos-snap-guide-color` | Snap 引導線顏色 |
+
+#### `setTheme()` 工具函式
+
+- `src/themes/setTheme.ts` → 隨主 bundle 一起 export（ESM + UMD）
+  - 自動建立 `<link id="wos-theme">` 並插入 `<head>`（若不存在）
+  - 僅在 href 改變時才更新（避免不必要的 CSS 重新載入）
+  - `basePath` 預設 `'themes'`（Vite SPA 用 `'/themes'`；UMD 相對路徑視情況）
+  - `linkId` 預設 `'wos-theme'`（可自訂以支援多主題實例）
+
+```typescript
+import { setTheme } from 'webos-core'
+setTheme('dark')                                    // 使用預設 basePath
+setTheme('light', { basePath: '/themes' })          // Vite SPA
+setTheme('dark',  { basePath: '../../dist/themes' }) // 相對路徑（pure HTML）
+```
+
+UMD：
+```javascript
+WebOS.setTheme('dark', { basePath: '../../dist/themes' })
+```
+
+#### 建置輸出
+
+```
+dist/
+├── webos-core.es.js / .min.js    ← JS bundle（不含任何主題色）
+├── webos-core.umd.js / .min.js   ← UMD bundle
+├── index.d.ts
+└── themes/                       ← 主題資料夾（獨立）
+    ├── light.css
+    └── dark.css
+```
+
+`scripts/build-themes.mjs`：一次複製到三個目標
+- `dist/themes/`
+- `demo/vue/public/themes/`
+- `demo/react/public/themes/`
+
+#### Demo 全面更新
+
+| Demo | 主題載入方式 | 切換方式 |
+|------|-------------|---------|
+| vanilla | `<link id="wos-theme">` 預設亮色 | ☀️/🌙 Dock 按鈕，`setTheme('dark', { basePath: '../../dist/themes' })` |
+| jquery | `<link id="wos-theme">` 預設亮色 | ☀️/🌙 Dock 按鈕，`WebOS.setTheme()` |
+| vue | `setTheme('light', { basePath: '/themes' })` 初始化 | 🌙/☀️ 切換 Dock 按鈕，`currentTheme` 響應式狀態 |
+| react | `setTheme` 初始調用 | 🌙/☀️ Dock 按鈕，`useState` + `useCallback` |
+
+> ⚠️ **已修正**：jQuery demo 中插入主題按鈕時，`edit` 操作意外截斷了 `$('#app-dock').on('click', '.dock-item[data-app]', ...)` 開頭，導致 Dock 點擊完全失效。已還原完整事件綁定。
+
+---
+
+### 21. 2026-05-22 主題設計編輯器 (Theme Editor)
+
+#### 功能總覽
+
+- 新增 `demo/theme-editor/index.html`（單一 HTML 檔案，免 Node / 免建置工具）
+- 載入 `../../dist/webos-core.umd.js`，直接使用現有 UMD bundle
+- 支援視覺化編輯全部 14 個 `--wos-*` CSS 變數：
+  - hex 色彩變數（11 個）：`<input type="color">` + hex 文字輸入**雙向同步**
+  - shadow / rgba 複雜值（3 個）：純文字 `<input>` 直接編輯
+- 即時預覽：`document.documentElement.style.setProperty()` 直接修改 `:root` CSS 變數，WebOS 示範視窗即時反應
+- Light / Dark 預設按鈕：一鍵套用預設值，同步更新所有輸入控制項
+- 匯出 CSS：生成 `:root { }` 格式字串，提供「複製到剪貼簿」＋「下載 .css 檔案」
+- 背景切換：深色 / 深色格線 / 淺色三種預覽背景
+- 已更新 `demo/index.html`，加入 🎨 Theme Editor 入口卡片
+
+#### 技術細節
+
+| 項目 | 說明 |
+|------|------|
+| 免建置 | 純 HTML + 原生 JS，直接用瀏覽器開啟或 HTTP Server 均可 |
+| 雙向同步 | color picker 改色 → 更新 hex text input；hex text 輸入 → blur 時 normalize |
+| CSS 即時反映 | `document.documentElement.style.setProperty(name, value)` 覆寫 `:root` |
+| 預覽視窗 | `WindowManager({ isolated: true, snap: false })`，開兩個示範視窗 |
+| 匯出格式 | `:root { --wos-xxx: value; }` 標準 CSS，可直接取代 `dist/themes/*.css` |
+
+---
+
 ## 九、待開發功能（Roadmap）
 
 - [x] **React 包裝層** ✅ `src/adapters/react/` + `demo/react/` + Docs `ReactPage.vue`
 - [x] **jQuery 整合範例** ✅ `demo/jquery/index.html` + Docs `JqueryPage.vue`
 - [x] **視窗 Snap 吸附功能** ✅ `src/core/SnapHelper.ts` + `WindowManager` + 全 demo 更新
+- [x] **UI 主題切換** ✅ `src/themes/*.css` → `dist/themes/` 純 CSS 獨立輸出；`setTheme()` 工具函式隨 bundle export；全 4 個 Demo 均已整合（Vanilla / jQuery / Vue / React）
+- [x] **主題設計編輯器** ✅ `demo/theme-editor/index.html`（免建置單檔）；14 個 `--wos-*` 變數可視化編輯；color picker + hex 輸入雙向同步；shadow/rgba 文字輸入；即時預覽（WebOS UMD）；Light/Dark 預設切換；匯出 CSS（複製 / 下載）
 - [ ] **工作區（虛擬桌面）多頁切換**
 - [ ] **視窗狀態序列化 / 還原**（localStorage）
-- [ ] **Docs 補充**：Snap / 工作區功能頁面
+- [ ] **Docs 補充**：Snap / 主題 / 工作區功能頁面
 - [ ] **CDN 發佈**（考慮 jsDelivr / unpkg）
 
 ---

@@ -24,6 +24,13 @@
         <span class="dock-icon">💣</span>
         <span class="dock-label">關閉全部</span>
       </button>
+
+      <div class="dock-separator" />
+
+      <button class="dock-item" :title="currentTheme === 'light' ? '切換暗色' : '切換亮色'" @click="toggleTheme">
+        <span class="dock-icon">{{ currentTheme === 'light' ? '🌙' : '☀️' }}</span>
+        <span class="dock-label">{{ currentTheme === 'light' ? '暗色' : '亮色' }}</span>
+      </button>
     </nav>
 
     <!-- ══════════════════════════════════════════
@@ -68,6 +75,7 @@
 import { ref, computed, markRaw } from 'vue'
 import { useWindowManager } from '@webos/adapters/vue/useWindowManager'
 import type { VueWindowEntry } from '@webos/adapters/vue/useWindowManager'
+import { setTheme } from '@webos/themes/setTheme'
 
 // ── 匯入所有 .vue 視窗元件 ──
 import WelcomeApp from './windows/WelcomeApp.vue'
@@ -146,6 +154,16 @@ function onTaskbarClick(win: VueWindowEntry) {
 
 function destroyAll() {
   destroy()
+}
+
+// ── Theme ──
+const currentTheme = ref<'light' | 'dark'>('light')
+setTheme('light', { basePath: '/themes' })
+
+function toggleTheme() {
+  const next = currentTheme.value === 'light' ? 'dark' : 'light'
+  currentTheme.value = next
+  setTheme(next, { basePath: '/themes' })
 }
 
 // ── 啟動時開啟歡迎視窗 ──

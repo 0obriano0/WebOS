@@ -19,6 +19,7 @@ export default function WelcomeApp() {
         <li>✅ <code>createPortal</code> 將元件渲染進視窗 DOM</li>
         <li>✅ 狀態自動保留（最小化不銷毀元件）</li>
         <li>✅ <strong>Snap 吸附</strong>：拖曳靠近邊緣自動對齊</li>
+        <li>✅ <strong>主題切換</strong>：點擊 Dock 下方 ☀️/🌙 切換亮/暗色主題</li>
       </ul>
       <p style={{ color: '#888', fontSize: 12, marginTop: 'auto' }}>
         點擊左側 Dock 開啟其他示範視窗 →

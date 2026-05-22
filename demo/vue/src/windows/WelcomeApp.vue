@@ -9,6 +9,7 @@
       <li>✅ Keep-Alive：最小化不銷毀 Vue 元件狀態</li>
       <li>✅ 跨視窗 EventBus</li>
       <li>✅ Vue 3 Composable 整合</li>
+      <li>✅ <strong>主題切換</strong>：點擊 Dock 下方 ☀️/🌙 切換亮/暗色主題</li>
     </ul>
     <p class="hint">點擊左側 Dock 圖示開啟應用程式 👈</p>
   </div>

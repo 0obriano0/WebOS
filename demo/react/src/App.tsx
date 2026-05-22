@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useWindowManager } from '@webos/adapters/react/useWindowManager'
 import type { ReactWindowEntry } from '@webos/adapters/react/useWindowManager'
+import { setTheme } from '@webos/themes/setTheme'
 
 import WelcomeApp  from './windows/WelcomeApp'
 import TextEditor  from './windows/TextEditor'
@@ -36,6 +37,13 @@ export default function App() {
     useWindowManager({ throttleMs: 16, snap: true })
 
   const [logs, setLogs] = useState<string[]>(['📡 Event Log'])
+  const [theme, setThemeState] = useState<'light' | 'dark'>('light')
+
+  const toggleTheme = useCallback(() => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    setThemeState(next)
+    setTheme(next, { basePath: '/themes' })
+  }, [theme])
 
   const openApp = (appId: string) => {
     const app = APP_MAP[appId]
@@ -101,6 +109,17 @@ export default function App() {
         <button className="dock-item" title="關閉全部" onClick={() => destroy()}>
           <span className="dock-icon">💣</span>
           <span className="dock-label">關閉全部</span>
+        </button>
+
+        <div className="dock-separator" />
+
+        <button
+          className="dock-item"
+          title={theme === 'light' ? '切換暗色' : '切換亮色'}
+          onClick={toggleTheme}
+        >
+          <span className="dock-icon">{theme === 'light' ? '🌙' : '☀️'}</span>
+          <span className="dock-label">{theme === 'light' ? '暗色' : '亮色'}</span>
         </button>
       </nav>
 

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebOS Theme Editor</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --editor-bg: #1a1a2e;
+      --panel-bg: #16213e;
+      --panel-border: #2a2a4a;
+      --input-bg: #0f3460;
+      --input-border: #2a4a7a;
+      --text-primary: #e0e0f0;
+      --text-secondary: #8888aa;
+      --accent: #5b8dee;
+      --accent-hover: #7aadff;
+      --btn-bg: #2a2a4a;
+      --btn-hover: #3a3a6a;
+      --group-title: #a0b4d0;
+      --success: #42b883;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--editor-bg);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 52px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+      flex-shrink: 0;
+      gap: 12px;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-logo { font-size: 1.3rem; }
+    .header-title { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
+    .header-sub { font-size: 0.75rem; color: var(--text-secondary); }
+    .header-presets { display: flex; gap: 8px; align-items: center; }
+    .preset-label { font-size: 0.75rem; color: var(--text-secondary); margin-right: 4px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--panel-border);
+      background: var(--btn-bg);
+      color: var(--text-primary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--btn-hover); border-color: var(--accent); color: #fff; }
+    .btn-accent {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+    .btn-accent:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-success { background: var(--success); border-color: var(--success); color: #fff; }
+    .btn-success:hover { background: #56d6a0; border-color: #56d6a0; }
+
+    /* ── Main Layout ────────────────────────────── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Left Panel (Editor) ────────────────────── */
+    .editor-panel {
+      width: 340px;
+      flex-shrink: 0;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .editor-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px;
+    }
+    .editor-scroll::-webkit-scrollbar { width: 6px; }
+    .editor-scroll::-webkit-scrollbar-track { background: transparent; }
+    .editor-scroll::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 3px; }
+
+    .var-group { margin-bottom: 20px; }
+    .var-group-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--group-title);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .var-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .var-label {
+      font-size: 0.73rem;
+      color: var(--text-secondary);
+      font-family: 'Consolas', 'Fira Code', monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .var-label[title] { cursor: help; }
+    .var-inputs { display: flex; align-items: center; gap: 6px; }
+
+    /* Color input row */
+    input[type="color"] {
+      width: 32px; height: 28px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      cursor: pointer;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    input[type="text"].hex-input {
+      width: 82px;
+      padding: 5px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      font-family: 'Consolas', 'Fira Code', monospace;
+    }
+    input[type="text"].text-input {
+      width: 180px;
+      padding: 5px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 0.72rem;
+      font-family: 'Consolas', 'Fira Code', monospace;
+    }
+    input[type="text"]:focus, input[type="color"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* ── Export Panel (bottom of left) ─────────── */
+    .export-panel {
+      border-top: 1px solid var(--panel-border);
+      padding: 12px 14px;
+      flex-shrink: 0;
+    }
+    .export-panel-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--group-title);
+      margin-bottom: 10px;
+    }
+    .export-btns { display: flex; gap: 8px; }
+    .copy-feedback {
+      font-size: 0.72rem;
+      color: var(--success);
+      margin-top: 6px;
+      min-height: 16px;
+      transition: opacity 0.3s;
+    }
+
+    /* ── Right Panel (Preview) ──────────────────── */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #0d0d1a;
+    }
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+      flex-shrink: 0;
+    }
+    .preview-toolbar-title {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .preview-bg-label {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+    .bg-select {
+      padding: 4px 8px;
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    #preview-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Preview background options */
+    #preview-area.bg-dark   { background: #1a1a2e; }
+    #preview-area.bg-light  { background: #e8eaf0; }
+    #preview-area.bg-grid   {
+      background-color: #0d0d1a;
+      background-image:
+        linear-gradient(rgba(91,141,238,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,141,238,0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Override WebOS window positions for preview */
+    #preview-area .wos-window {
+      position: absolute !important;
+    }
+
+    /* ── Responsive ─────────────────────────────── */
+    @media (max-width: 768px) {
+      .main { flex-direction: column; }
+      .editor-panel { width: 100%; height: 50vh; border-right: none; border-bottom: 1px solid var(--panel-border); }
+      .preview-panel { height: 50vh; }
+      .header-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="header-logo">🎨</span>
+    <div>
+      <div class="header-title">WebOS Theme Editor</div>
+      <div class="header-sub">可視化編輯 CSS 變數並即時預覽</div>
+    </div>
+  </div>
+  <div class="header-presets">
+    <span class="preset-label">預設主題：</span>
+    <button class="btn" id="btn-preset-light">☀️ Light</button>
+    <button class="btn" id="btn-preset-dark">🌙 Dark</button>
+    <a class="btn" href="../index.html" style="text-decoration:none;">← Demo 首頁</a>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Left: Editor Panel -->
+  <div class="editor-panel">
+    <div class="editor-scroll" id="editor-scroll">
+      <!-- Injected by JS -->
+    </div>
+    <div class="export-panel">
+      <div class="export-panel-title">📤 匯出主題</div>
+      <div class="export-btns">
+        <button class="btn btn-accent" id="btn-copy">📋 複製 CSS</button>
+        <button class="btn btn-success" id="btn-download">💾 下載 .css</button>
+      </div>
+      <div class="copy-feedback" id="copy-feedback"></div>
+    </div>
+  </div>
+
+  <!-- Right: Preview Panel -->
+  <div class="preview-panel">
+    <div class="preview-toolbar">
+      <span class="preview-toolbar-title">👁 即時預覽</span>
+      <span class="preview-bg-label">背景：</span>
+      <select class="bg-select" id="bg-select">
+        <option value="bg-dark">深色桌面</option>
+        <option value="bg-grid" selected>深色格線</option>
+        <option value="bg-light">淺色桌面</option>
+      </select>
+    </div>
+    <div id="preview-area" class="bg-grid"></div>
+  </div>
+</div>
+
+<!-- WebOS UMD Bundle -->
+<script src="../../dist/webos-core.umd.js"></script>
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════
+   1. CSS 變數定義 (14 個 --wos-* 變數)
+═══════════════════════════════════════════════ */
+const VAR_DEFS = [
+  {
+    group: '🖼 Window Frame',
+    vars: [
+      { name: '--wos-border',          type: 'color',  label: '--wos-border',          tip: '視窗邊框顏色（未聚焦）' },
+      { name: '--wos-border-active',   type: 'color',  label: '--wos-border-active',   tip: '視窗邊框顏色（聚焦中）' },
+      { name: '--wos-window-bg',       type: 'color',  label: '--wos-window-bg',        tip: '視窗外層背景（邊框區）' },
+      { name: '--wos-shadow',          type: 'text',   label: '--wos-shadow',           tip: '視窗陰影（未聚焦），box-shadow 格式' },
+      { name: '--wos-shadow-active',   type: 'text',   label: '--wos-shadow-active',    tip: '視窗陰影（聚焦中），box-shadow 格式' },
+    ]
+  },
+  {
+    group: '📌 Header Bar',
+    vars: [
+      { name: '--wos-header-bg',       type: 'color',  label: '--wos-header-bg',        tip: '標題列背景色' },
+      { name: '--wos-header-border',   type: 'color',  label: '--wos-header-border',    tip: '標題列底部分隔線色' },
+      { name: '--wos-title-color',     type: 'color',  label: '--wos-title-color',      tip: '標題文字顏色' },
+    ]
+  },
+  {
+    group: '🔘 Buttons',
+    vars: [
+      { name: '--wos-btn-color',              type: 'color', label: '--wos-btn-color',              tip: '控制按鈕圖示顏色（預設）' },
+      { name: '--wos-btn-hover-bg',           type: 'color', label: '--wos-btn-hover-bg',           tip: '控制按鈕 hover 背景色（最小化 / 最大化）' },
+      { name: '--wos-btn-close-hover-bg',     type: 'color', label: '--wos-btn-close-hover-bg',     tip: '關閉按鈕 hover 背景色' },
+      { name: '--wos-btn-close-hover-color',  type: 'color', label: '--wos-btn-close-hover-color',  tip: '關閉按鈕 hover 圖示顏色' },
+    ]
+  },
+  {
+    group: '📄 Body & Snap',
+    vars: [
+      { name: '--wos-body-bg',         type: 'color',  label: '--wos-body-bg',          tip: '視窗內容區背景色' },
+      { name: '--wos-snap-guide-color',type: 'text',   label: '--wos-snap-guide-color', tip: 'Snap 吸附引導線顏色，rgba 格式' },
+    ]
+  },
+];
+
+/* ═══════════════════════════════════════════════
+   2. 預設主題值
+═══════════════════════════════════════════════ */
+const PRESETS = {
+  light: {
+    '--wos-border':               '#d0d0d0',
+    '--wos-border-active':        '#b0b8c8',
+    '--wos-shadow':               '0 4px 24px rgba(0, 0, 0, 0.18)',
+    '--wos-shadow-active':        '0 8px 36px rgba(0, 0, 0, 0.28)',
+    '--wos-window-bg':            '#d0d0d0',
+    '--wos-header-bg':            '#f5f5f5',
+    '--wos-header-border':        '#e0e0e0',
+    '--wos-title-color':          '#333333',
+    '--wos-btn-color':            '#555555',
+    '--wos-btn-hover-bg':         '#e0e0e0',
+    '--wos-btn-close-hover-bg':   '#ff5f57',
+    '--wos-btn-close-hover-color':'#ffffff',
+    '--wos-body-bg':              '#ffffff',
+    '--wos-snap-guide-color':     'rgba(0, 120, 255, 0.55)',
+  },
+  dark: {
+    '--wos-border':               '#3a3a4a',
+    '--wos-border-active':        '#5b8dee',
+    '--wos-shadow':               '0 4px 24px rgba(0, 0, 0, 0.50)',
+    '--wos-shadow-active':        '0 8px 36px rgba(0, 0, 0, 0.70)',
+    '--wos-window-bg':            '#2a2a3a',
+    '--wos-header-bg':            '#1e1e2e',
+    '--wos-header-border':        '#3a3a4a',
+    '--wos-title-color':          '#e0e0f0',
+    '--wos-btn-color':            '#a0a0b8',
+    '--wos-btn-hover-bg':         '#3a3a4a',
+    '--wos-btn-close-hover-bg':   '#ff5f57',
+    '--wos-btn-close-hover-color':'#ffffff',
+    '--wos-body-bg':              '#13131f',
+    '--wos-snap-guide-color':     'rgba(91, 141, 238, 0.70)',
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   3. 狀態：目前所有變數的值
+═══════════════════════════════════════════════ */
+const currentValues = Object.assign({}, PRESETS.dark);
+
+/* ── 工具：hex <→ RGB ─────────────────────────── */
+function hexToRgb(hex) {
+  hex = hex.replace(/^#/, '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const n = parseInt(hex, 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+/* ── 解析字串顏色為 hex（盡力而為）─────────────── */
+function colorStrToHex(val) {
+  val = val.trim();
+  if (/^#[0-9a-fA-F]{3,8}$/.test(val)) {
+    // Already hex — normalise to 6-digit
+    let h = val.replace('#', '');
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    return '#' + h.slice(0, 6);
+  }
+  // rgb(r,g,b) or rgba(r,g,b,a)
+  const m = val.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if (m) return rgbToHex(+m[1], +m[2], +m[3]);
+  return '#888888'; // fallback
+}
+
+/* ═══════════════════════════════════════════════
+   4. 渲染編輯器面板
+═══════════════════════════════════════════════ */
+function buildEditorPanel() {
+  const container = document.getElementById('editor-scroll');
+  container.innerHTML = '';
+
+  VAR_DEFS.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'var-group';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'var-group-title';
+    titleEl.textContent = group.group;
+    groupEl.appendChild(titleEl);
+
+    group.vars.forEach(v => {
+      const row = document.createElement('div');
+      row.className = 'var-row';
+
+      const labelEl = document.createElement('div');
+      labelEl.className = 'var-label';
+      labelEl.textContent = v.label;
+      labelEl.title = v.tip;
+      row.appendChild(labelEl);
+
+      const inputsEl = document.createElement('div');
+      inputsEl.className = 'var-inputs';
+
+      if (v.type === 'color') {
+        const colorInput = document.createElement('input');
+        colorInput.type = 'color';
+        colorInput.id = 'ci-' + v.name.slice(2);
+        colorInput.value = colorStrToHex(currentValues[v.name]);
+
+        const hexInput = document.createElement('input');
+        hexInput.type = 'text';
+        hexInput.className = 'hex-input';
+        hexInput.id = 'hi-' + v.name.slice(2);
+        hexInput.value = colorStrToHex(currentValues[v.name]);
+        hexInput.maxLength = 9;
+        hexInput.spellcheck = false;
+
+        // color → hex text
+        colorInput.addEventListener('input', () => {
+          hexInput.value = colorInput.value;
+          applyVar(v.name, colorInput.value);
+        });
+
+        // hex text → color picker
+        hexInput.addEventListener('input', () => {
+          const val = hexInput.value.trim();
+          if (/^#[0-9a-fA-F]{6}$/.test(val) || /^#[0-9a-fA-F]{8}$/.test(val)) {
+            colorInput.value = val.slice(0, 7);
+            applyVar(v.name, val);
+          } else {
+            applyVar(v.name, val); // apply even partial, CSS will ignore invalid
+          }
+        });
+        hexInput.addEventListener('blur', () => {
+          // normalise on blur
+          const val = hexInput.value.trim();
+          const normed = colorStrToHex(val);
+          if (/^#/.test(val)) {
+            hexInput.value = normed;
+            colorInput.value = normed;
+            applyVar(v.name, normed);
+          }
+        });
+
+        inputsEl.appendChild(colorInput);
+        inputsEl.appendChild(hexInput);
+      } else {
+        // text input (shadow / rgba)
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.className = 'text-input';
+        textInput.id = 'ti-' + v.name.slice(2);
+        textInput.value = currentValues[v.name];
+        textInput.spellcheck = false;
+        textInput.addEventListener('input', () => {
+          applyVar(v.name, textInput.value);
+        });
+        inputsEl.appendChild(textInput);
+      }
+
+      row.appendChild(inputsEl);
+      groupEl.appendChild(row);
+    });
+
+    container.appendChild(groupEl);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   5. 套用 CSS 變數
+═══════════════════════════════════════════════ */
+function applyVar(name, value) {
+  currentValues[name] = value;
+  document.documentElement.style.setProperty(name, value);
+}
+
+function applyAllVars(values) {
+  Object.entries(values).forEach(([name, value]) => applyVar(name, value));
+}
+
+/* ═══════════════════════════════════════════════
+   6. 同步輸入控制項的值（用於 preset 切換）
+═══════════════════════════════════════════════ */
+function syncInputsToCurrentValues() {
+  VAR_DEFS.forEach(group => {
+    group.vars.forEach(v => {
+      const val = currentValues[v.name];
+      if (v.type === 'color') {
+        const ci = document.getElementById('ci-' + v.name.slice(2));
+        const hi = document.getElementById('hi-' + v.name.slice(2));
+        if (ci && hi) {
+          const hex = colorStrToHex(val);
+          ci.value = hex;
+          hi.value = hex;
+        }
+      } else {
+        const ti = document.getElementById('ti-' + v.name.slice(2));
+        if (ti) ti.value = val;
+      }
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   7. 預覽視窗（WebOS WM）
+═══════════════════════════════════════════════ */
+let wm = null;
+
+function initPreview() {
+  const container = document.getElementById('preview-area');
+
+  wm = new WebOS.WindowManager({
+    container,
+    isolated: true,
+    snap: false,
+  });
+
+  // 主示範視窗
+  wm.open({
+    id: 'preview-main',
+    title: '📝 文字編輯器 — 示範視窗',
+    width: 500,
+    height: 320,
+    x: 40,
+    y: 30,
+    content: buildPreviewContent('main'),
+  });
+
+  // 次要視窗
+  wm.open({
+    id: 'preview-sub',
+    title: '⚙️ 設定',
+    width: 280,
+    height: 200,
+    x: 580,
+    y: 80,
+    content: buildPreviewContent('sub'),
+  });
+}
+
+function buildPreviewContent(type) {
+  const el = document.createElement('div');
+  el.style.cssText = 'padding: 16px; font-size: 0.85rem; line-height: 1.7; color: inherit;';
+  if (type === 'main') {
+    el.innerHTML = `
+      <p style="margin-bottom:10px;opacity:.8;">這是一個示範視窗，用於預覽目前的主題設定。</p>
+      <p style="margin-bottom:10px;opacity:.7;">拖曳視窗、點選控制按鈕（最小化 / 最大化 / 關閉）來測試互動效果。</p>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button onclick="wm.minimize('preview-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-border);background:var(--wos-btn-hover-bg);color:var(--wos-title-color);cursor:pointer;font-size:0.78rem;">最小化</button>
+        <button onclick="wm.maximize('preview-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-border);background:var(--wos-btn-hover-bg);color:var(--wos-title-color);cursor:pointer;font-size:0.78rem;">最大化</button>
+        <button onclick="wm.restore('preview-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-border);background:var(--wos-btn-hover-bg);color:var(--wos-title-color);cursor:pointer;font-size:0.78rem;">還原</button>
+      </div>
+    `;
+  } else {
+    el.innerHTML = `
+      <p style="opacity:.8;margin-bottom:8px;">次要視窗示範</p>
+      <p style="opacity:.6;font-size:0.78rem;">邊框、陰影、標題列樣式由左側 CSS 變數控制。</p>
+    `;
+  }
+  return el;
+}
+
+/* ═══════════════════════════════════════════════
+   8. 匯出 CSS
+═══════════════════════════════════════════════ */
+function generateCSS() {
+  const lines = ['/* WebOS-Core — Custom Theme */', ':root {'];
+  Object.entries(currentValues).forEach(([name, value]) => {
+    lines.push(`  ${name.padEnd(32)}: ${value};`);
+  });
+  lines.push('}');
+  return lines.join('\n');
+}
+
+function showFeedback(msg, success = true) {
+  const el = document.getElementById('copy-feedback');
+  el.textContent = msg;
+  el.style.color = success ? 'var(--success)' : '#ff7070';
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 2500);
+}
+
+document.getElementById('btn-copy').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(generateCSS());
+    showFeedback('✓ 已複製到剪貼簿！');
+  } catch {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = generateCSS();
+    ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showFeedback('✓ 已複製！');
+  }
+});
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  const css = generateCSS();
+  const blob = new Blob([css], { type: 'text/css' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'webos-custom-theme.css';
+  a.click();
+  URL.revokeObjectURL(url);
+  showFeedback('✓ 下載已開始！');
+});
+
+/* ═══════════════════════════════════════════════
+   9. 預設主題按鈕
+═══════════════════════════════════════════════ */
+document.getElementById('btn-preset-light').addEventListener('click', () => {
+  Object.assign(currentValues, PRESETS.light);
+  applyAllVars(currentValues);
+  syncInputsToCurrentValues();
+});
+
+document.getElementById('btn-preset-dark').addEventListener('click', () => {
+  Object.assign(currentValues, PRESETS.dark);
+  applyAllVars(currentValues);
+  syncInputsToCurrentValues();
+});
+
+/* ═══════════════════════════════════════════════
+   10. 背景切換
+═══════════════════════════════════════════════ */
+document.getElementById('bg-select').addEventListener('change', (e) => {
+  const area = document.getElementById('preview-area');
+  area.className = e.target.value;
+});
+
+/* ═══════════════════════════════════════════════
+   11. 初始化
+═══════════════════════════════════════════════ */
+applyAllVars(currentValues); // 套用 dark 預設到 :root
+buildEditorPanel();
+initPreview();
+</script>
+</body>
+</html>

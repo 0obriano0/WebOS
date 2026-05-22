@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WebOS-Core — jQuery Demo</title>
+  <link id="wos-theme" rel="stylesheet" href="../../dist/themes/light.css">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="../../dist/webos-core.umd.js"></script>
   <style>
@@ -212,6 +213,13 @@
   <div class="dock-separator"></div>
   <button class="dock-item" id="dock-destroy" title="關閉全部">
     💣<span class="dock-label">關閉全部</span>
+  </button>
+  <div class="dock-separator"></div>
+  <button class="dock-item" id="dock-theme-light" title="亮色主題">
+    ☀️<span class="dock-label">亮色</span>
+  </button>
+  <button class="dock-item" id="dock-theme-dark" title="暗色主題">
+    🌙<span class="dock-label">暗色</span>
   </button>
 </div>
 
@@ -522,6 +530,13 @@
     updateDock();
     updateTaskbar();
   }
+
+  $('#dock-theme-light').on('click', function() {
+    WebOS.setTheme('light', { basePath: '../../dist/themes' });
+  });
+  $('#dock-theme-dark').on('click', function() {
+    WebOS.setTheme('dark', { basePath: '../../dist/themes' });
+  });
 
   // ── Dock 點擊 ──
   $('#app-dock').on('click', '.dock-item[data-app]', function() {

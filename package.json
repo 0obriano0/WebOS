@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "build:lib": "rollup -c rollup.lib.config.mjs",
+    "build:lib": "rollup -c rollup.lib.config.mjs && node scripts/build-themes.mjs",
     "build:watch": "tsc --noEmit --watch",
     "dev": "npx http-server demo -p 3000 -o",
     "clean": "node scripts/clean.mjs",

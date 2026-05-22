@@ -13,18 +13,18 @@ const BASE_CSS = `
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  border: 4px solid #d0d0d0;
+  border: 4px solid var(--wos-border, #d0d0d0);
   border-radius: 6px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  background: #d0d0d0;
+  box-shadow: var(--wos-shadow, 0 4px 24px rgba(0,0,0,0.18));
+  background: var(--wos-window-bg, #d0d0d0);
   overflow: hidden;
   min-width: 200px;
   min-height: 120px;
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
 .wos-window.wos-active {
-  border-color: #b0b8c8;
-  box-shadow: 0 8px 36px rgba(0,0,0,0.28);
+  border-color: var(--wos-border-active, #b0b8c8);
+  box-shadow: var(--wos-shadow-active, 0 8px 36px rgba(0,0,0,0.28));
 }
 .wos-window.wos-minimized {
   display: none !important;
@@ -58,8 +58,8 @@ const BASE_CSS = `
   align-items: center;
   padding: 0 8px;
   height: 36px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--wos-header-bg, #f5f5f5);
+  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
   cursor: move;
   user-select: none;
   flex-shrink: 0;
@@ -68,7 +68,7 @@ const BASE_CSS = `
   flex: 1;
   font-size: 13px;
   font-weight: 600;
-  color: #333;
+  color: var(--wos-title-color, #333333);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -84,17 +84,17 @@ const BASE_CSS = `
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: #555;
+  color: var(--wos-btn-color, #555555);
   margin-left: 2px;
   transition: background 0.1s;
 }
-.wos-btn:hover { background: #e0e0e0; }
-.wos-btn.wos-btn-close:hover { background: #ff5f57; color: #fff; }
+.wos-btn:hover { background: var(--wos-btn-hover-bg, #e0e0e0); }
+.wos-btn.wos-btn-close:hover { background: var(--wos-btn-close-hover-bg, #ff5f57); color: var(--wos-btn-close-hover-color, #ffffff); }
 .wos-body {
   flex: 1;
   overflow: auto;
   position: relative;
-  background: #fff;
+  background: var(--wos-body-bg, #ffffff);
 }
 /* ── Snap guide lines ─────────────────────────────── */
 .wos-snap-guide {
@@ -102,7 +102,7 @@ const BASE_CSS = `
   pointer-events: none;
   z-index: 2147483647;
   display: none;
-  background: rgba(0, 120, 255, 0.55);
+  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));
 }
 .wos-snap-guide--v {
   width: 1px;

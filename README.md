@@ -21,6 +21,7 @@ The core handles all window lifecycle, drag/resize, focus, and z-order — your 
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
 - ✅ ES Module + UMD builds — works with bundlers or plain `<script>` tags
 - ✅ Minified builds — `webos-core.es.min.js` / `webos-core.umd.min.js`
+- ✅ **Theme system** — built-in light/dark CSS themes with CSS custom properties; `setTheme()` utility for runtime switching
 
 ---
 
@@ -223,6 +224,60 @@ Returns:
 
 ---
 
+## Theming
+
+WebOS-Core uses CSS custom properties for all window styles. Built-in **light** and **dark** themes are included as standalone CSS files in `dist/themes/`.
+
+### Loading a theme
+
+```html
+<!-- Place in <head>; swap href to change theme -->
+<link id="wos-theme" rel="stylesheet" href="dist/themes/light.css">
+```
+
+### `setTheme(preset, options?)`
+
+Utility function exported from the main bundle. Manages the theme `<link>` element automatically.
+
+```typescript
+import { setTheme } from 'webos-core'
+
+setTheme('dark')                              // switches to dark (uses 'themes/' basePath by default)
+setTheme('light', { basePath: '/themes' })    // explicit basePath for Vite/SPA
+setTheme('dark',  { linkId: 'my-theme-link' }) // custom link element ID
+```
+
+**UMD / Script Tag:**
+
+```javascript
+WebOS.setTheme('dark', { basePath: 'dist/themes' })
+```
+
+### CSS custom properties
+
+All 14 window style properties can be overridden to create your own theme:
+
+```css
+:root {
+  --wos-window-bg:    #ffffff;
+  --wos-header-bg:    #f0f0f0;
+  --wos-title-color:  #333333;
+  --wos-border:       #d0d0d0;
+  --wos-border-active: #4a90e2;
+  --wos-shadow:       0 2px 12px rgba(0,0,0,0.12);
+  --wos-shadow-active: 0 4px 24px rgba(0,0,0,0.22);
+  --wos-header-border: #e0e0e0;
+  --wos-btn-color:    #555555;
+  --wos-btn-hover-bg: rgba(0,0,0,0.08);
+  --wos-btn-close-hover-bg:    #e53e3e;
+  --wos-btn-close-hover-color: #ffffff;
+  --wos-body-bg:      #ffffff;
+  --wos-snap-guide-color: rgba(74,144,226,0.4);
+}
+```
+
+---
+
 ## Build Output
 
 | File | Format | Size | Use when |
@@ -232,6 +287,8 @@ Returns:
 | `dist/webos-core.umd.js` | UMD | ~26 KB | Script tag, jQuery, legacy pages (dev) |
 | `dist/webos-core.umd.min.js` | UMD | ~12 KB | Production CDN / script tag |
 | `dist/index.d.ts` | TypeScript declarations | — | IDE autocomplete & type checking |
+| `dist/themes/light.css` | CSS | ~1 KB | Built-in light theme |
+| `dist/themes/dark.css` | CSS | ~1 KB | Built-in dark theme |
 
 ---
 

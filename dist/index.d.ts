@@ -69,6 +69,16 @@ interface WindowManagerOptions {
      * 啟用後容器會自動加上 wos-isolated CSS class。
      */
     isolated?: boolean;
+    /**
+     * 啟用視窗拖曳時的 Snap 吸附功能，預設 true。
+     * 拖曳到容器邊緣或其他視窗邊緣時，自動對齊並顯示藍色 guide 線。
+     */
+    snap?: boolean;
+    /**
+     * Snap 吸附感應距離（px），預設 20。
+     * 視窗距離吸附目標小於此值時觸發吸附。
+     */
+    snapThreshold?: number;
 }
 declare class WindowManager {
     private readonly _wins;
@@ -77,6 +87,10 @@ declare class WindowManager {
     private readonly _container;
     private readonly _throttleMs;
     private readonly _isolated;
+    private readonly _snapEnabled;
+    private readonly _snapThreshold;
+    private _guideV;
+    private _guideH;
     readonly events: EventBus;
     constructor(opts?: WindowManagerOptions);
     /**
@@ -116,9 +130,81 @@ declare class WindowManager {
     setTitle(id: string, title: string): void;
     /** 銷毀所有視窗，清除事件 */
     destroy(): void;
+    /** 延遲建立 snap guide 元素（僅需要時才建立） */
+    private _ensureGuides;
+    /** 根據 SnapResult 顯示 / 隱藏 guide 線 */
+    private _updateSnapGuides;
+    /** 拖曳結束時隱藏所有 guide 線 */
+    private _hideSnapGuides;
     private _deactivateOthers;
     private _focusTopWindow;
 }
 
-export { EventBus, WindowManager, eventBus };
-export type { EventCallback, SlotType, WinEvent, WindowConfig, WindowState };
+interface SnapRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+interface SnapGuide {
+    /** 'v' = 垂直線（固定 x），'h' = 水平線（固定 y） */
+    axis: 'v' | 'h';
+    /** 線在容器座標系的位置（px） */
+    pos: number;
+}
+interface SnapResult {
+    x: number;
+    y: number;
+    guides: SnapGuide[];
+}
+/**
+ * 計算拖曳視窗的吸附位置。
+ *
+ * @param drag          拖曳中視窗的建議位置與大小
+ * @param containerSize 容器的寬高（isolated 用容器；否則用 viewport）
+ * @param others        其他非最小化 / 非最大化視窗的位置與大小
+ * @param threshold     吸附感應距離（px）
+ */
+declare function snapPosition(drag: SnapRect, containerSize: {
+    width: number;
+    height: number;
+}, others: SnapRect[], threshold: number): SnapResult;
+
+/** 內建主題名稱 */
+type WosThemePreset = 'light' | 'dark';
+interface SetThemeOptions {
+    /**
+     * 主題 CSS 檔案所在目錄路徑（不含結尾 `/`）。
+     * 預設為 `'themes'`，對應 `dist/themes/` 相對位置。
+     */
+    basePath?: string;
+    /**
+     * 用來識別主題 `<link>` 元素的 id。
+     * 預設為 `'wos-theme'`。
+     */
+    linkId?: string;
+}
+/**
+ * 動態切換 WebOS 主題。
+ *
+ * 第一次呼叫時，若頁面中不存在指定 id 的 `<link>` 元素，
+ * 會自動建立一個並插入 `<head>`。
+ *
+ * @param preset  `'light'` 或 `'dark'`
+ * @param options 選填設定（basePath / linkId）
+ *
+ * @example
+ * // ESM
+ * import { setTheme } from 'webos-core';
+ * setTheme('dark');
+ *
+ * // UMD
+ * WebOS.setTheme('dark');
+ *
+ * // 自訂路徑（例如主題放在 /assets/themes/）
+ * setTheme('dark', { basePath: '/assets/themes' });
+ */
+declare function setTheme(preset: WosThemePreset, options?: SetThemeOptions): void;
+
+export { EventBus, WindowManager, eventBus, setTheme, snapPosition };
+export type { EventCallback, SetThemeOptions, SlotType, SnapGuide, SnapRect, SnapResult, WinEvent, WindowConfig, WindowState, WosThemePreset };
