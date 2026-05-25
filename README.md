@@ -2,29 +2,25 @@
 
 A **framework-agnostic** web virtual desktop window management engine.
 
-The core handles all window lifecycle, drag/resize, focus, and z-order — your UI framework handles the content.
-
-[![npm version](https://img.shields.io/npm/v/webos-core.svg)](https://www.npmjs.com/package/webos-core)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 ---
 
 ## Features
 
-- ✅ Open, close, minimize, maximize, restore windows
-- ✅ Drag & resize with throttling (60 fps by default)
-- ✅ **Snap alignment** — windows magnetically snap to edges and each other while dragging
+- ✅ Open / close / minimize / maximize / restore windows
+- ✅ Drag & resize with throttling (60 fps default)
+- ✅ **Snap alignment** — windows snap to edges and each other while dragging
 - ✅ Focus / z-order management
 - ✅ Event bus — subscribe to any window lifecycle event
-- ✅ Isolated mode — embed a desktop inside any page element
-- ✅ **RWD viewport clamping** — windows auto-clamp on container resize (ResizeObserver); new windows never open off-screen
-- ✅ Vue 3 adapter — `useWindowManager` composable + `Teleport` support
+- ✅ Isolated mode — embed a desktop inside any container element
+- ✅ **RWD viewport clamping** — windows auto-clamp via `ResizeObserver`; never open off-screen
+- ✅ **Theme system** — light/dark CSS themes with 22 CSS custom properties; `setTheme()` runtime switching
+- ✅ **BorderLayout** — N/S/E/W/Center docking layout; `data-region` HTML-first declaration; collapsible mini strip; draggable splitters; nested layouts
+- ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area
+- ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
-- ✅ ES Module + UMD builds — works with bundlers or plain `<script>` tags
-- ✅ Minified builds — `webos-core.es.min.js` / `webos-core.umd.min.js`
-- ✅ **Theme system** — built-in light/dark CSS themes with CSS custom properties; `setTheme()` utility for runtime switching
-- ✅ **BorderLayout** — EasyUI-style N/S/E/W/Center docking layout; HTML-first `data-region` declaration; collapsible panels with mini strip; draggable splitters; nested layouts
-- ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, sync with WindowManager; drag threshold; icon snap; RWD scrollable icon area
+- ✅ ES Module + UMD builds — bundlers or plain `<script>` tags
 
 ---
 
@@ -36,17 +32,18 @@ The core handles all window lifecycle, drag/resize, focus, and z-order — your 
 npm install webos-core
 ```
 
-### CDN / Script Tag (UMD)
+### Script Tag (UMD, no build step)
 
 ```html
 <script src="dist/webos-core.umd.js"></script>
+<!-- window.WebOS is now available -->
 ```
 
 ---
 
 ## Quick Start
 
-### ES Module (Vite / Webpack / native `type="module"`)
+### ES Module
 
 ```typescript
 import { WindowManager } from 'webos-core'
@@ -57,45 +54,28 @@ const wm = new WindowManager({
 })
 
 const el = document.createElement('div')
-el.style.padding = '20px'
-el.innerHTML = '<h3>Hello, World!</h3>'
+el.innerHTML = '<p style="padding:20px">Hello, World!</p>'
 
 wm.open({ id: 'hello', title: 'My Window', content: el })
 ```
 
-### Script Tag (UMD / no build step)
+### Script Tag (UMD)
 
 ```html
-<!DOCTYPE html>
-<html>
-<body>
-  <div id="desktop" style="width:100vw; height:100vh; position:relative;"></div>
-
-  <script src="dist/webos-core.umd.js"></script>
-  <script>
-    var wm = new window.WebOS.WindowManager({
-      container: document.getElementById('desktop'),
-      isolated: true
-    })
-
-    var el = document.createElement('div')
-    el.style.padding = '20px'
-    el.textContent = 'Hello from UMD!'
-
-    wm.open({ id: 'hello', title: 'My Window', content: el })
-  </script>
-</body>
-</html>
+<div id="desktop" style="width:100vw; height:100vh; position:relative;"></div>
+<script src="dist/webos-core.umd.js"></script>
+<script>
+  var wm = new window.WebOS.WindowManager({
+    container: document.getElementById('desktop'),
+    isolated: true
+  })
+  var el = document.createElement('div')
+  el.textContent = 'Hello from UMD!'
+  wm.open({ id: 'hello', title: 'My Window', content: el })
+</script>
 ```
 
 ### Vue 3
-
-Add a path alias in your `vite.config.ts`:
-
-```typescript
-// vite.config.ts
-resolve: { alias: { '@webos': '/path/to/webos-core/src' } }
-```
 
 ```vue
 <template>
@@ -103,7 +83,6 @@ resolve: { alias: { '@webos': '/path/to/webos-core/src' } }
     <button @click="openVueWindow({ id: 'w1', title: 'My Window', component: MyComp })">
       Open Window
     </button>
-
     <Teleport v-for="win in windows" :key="win.id" :to="win.bodyEl">
       <component :is="win.component" v-bind="win.props ?? {}" />
     </Teleport>
@@ -133,7 +112,6 @@ export default function App() {
       <button onClick={() => openReactWindow({ id: 'w1', title: 'My Window', component: MyComp })}>
         Open Window
       </button>
-
       {windows.map(win =>
         win.component
           ? createPortal(<win.component {...(win.props ?? {})} />, win.bodyEl)
@@ -155,12 +133,12 @@ export default function App() {
 | `container` | `HTMLElement` | `document.body` | Desktop container element |
 | `isolated` | `boolean` | `false` | Constrain windows to container (`position: absolute`) |
 | `throttleMs` | `number` | `16` | Drag/resize throttle interval (ms) |
-| `snap` | `boolean` | `true` | Enable magnetic snap alignment while dragging |
-| `snapThreshold` | `number` | `20` | Snap trigger distance in pixels |
+| `snap` | `boolean` | `true` | Enable snap alignment while dragging |
+| `snapThreshold` | `number` | `20` | Snap trigger distance (px) |
 
-> **RWD**: `WindowManager` automatically monitors container size changes via `ResizeObserver` and clamps all windows back into view when the viewport shrinks.
+> **RWD**: Automatically monitors container size via `ResizeObserver` and clamps all windows back into view when the viewport shrinks.
 
-### Core Methods
+### Methods
 
 | Method | Description |
 |--------|-------------|
@@ -180,199 +158,77 @@ export default function App() {
 
 ```typescript
 interface WindowConfig {
-  id: string           // Unique window ID (required)
-  title: string        // Window title bar text
-  content: any         // HTMLElement, or null when using framework adapters
-  slotType?: 'dom' | 'vue' | 'react'  // Renderer mode, default 'dom'
-  x?: number           // Initial X position (px)
-  y?: number           // Initial Y position (px)
-  width?: number       // Initial width (px), default 640
-  height?: number      // Initial height (px), default 480
-  props?: Record<string, unknown>
+  id:        string    // Unique window ID (required)
+  title:     string    // Window title bar text
+  content:   any       // HTMLElement, or null when using framework adapters
+  x?:        number    // Initial X position (px)
+  y?:        number    // Initial Y position (px)
+  width?:    number    // Initial width (px), default 640
+  height?:   number    // Initial height (px), default 480
+  props?:    Record<string, unknown>
+  slotType?: 'dom' | 'vue' | 'react'
 }
 ```
 
 ### Events
 
 ```typescript
-wm.events.on('window:opened',    (state) => { /* ... */ })
-wm.events.on('window:closed',    (state) => { /* ... */ })
-wm.events.on('window:focused',   (state) => { /* ... */ })
-wm.events.on('window:minimized', (state) => { /* ... */ })
-wm.events.on('window:maximized', (state) => { /* ... */ })
-wm.events.on('window:restored',  (state) => { /* ... */ })
-wm.events.on('window:moved',     (state) => { /* ... */ })
-wm.events.on('window:resized',   (state) => { /* ... */ })
+wm.events.on('window:opened',    (state) => { })
+wm.events.on('window:closed',    (state) => { })
+wm.events.on('window:focused',   (state) => { })
+wm.events.on('window:minimized', (state) => { })
+wm.events.on('window:maximized', (state) => { })
+wm.events.on('window:restored',  (state) => { })
+wm.events.on('window:moved',     (state) => { })
+wm.events.on('window:resized',   (state) => { })
 ```
-
-### Desktop Module (`webos-core/desktop`)
-
-Import desktop features from the desktop subpath export:
-
-```typescript
-import { Desktop } from 'webos-core/desktop'
-import { WindowManager } from 'webos-core'
-```
-
-### Dock Sync With WindowManager
-
-`Desktop` provides a built-in API to sync running windows to Dock items.
-
-- Open window -> add Dock icon
-- Close window -> remove Dock icon
-- Dock drag-to-reorder stays available
-
-```typescript
-import { Desktop } from 'webos-core/desktop'
-import { WindowManager } from 'webos-core'
-
-const desktop = new Desktop({
-  container: document.getElementById('desktop-root')!,
-  dock: {
-    position: 'bottom',
-    items: [],
-  },
-})
-
-const wm = new WindowManager({
-  container: desktop.getElement(),
-  isolated: true,
-})
-
-const stopSync = desktop.syncDockWithWindows(wm, {
-  getAppIdFromWindowId(windowId) {
-    return windowId.startsWith('app-') ? windowId.slice(4) : windowId
-  },
-  getDockItem(appId, event) {
-    return {
-      label: event.title ?? appId,
-      icon: '🪟',
-    }
-  },
-  onDockItemClick(appId) {
-    wm.open({ id: 'app-' + appId, title: appId, content: document.createElement('div') })
-  },
-})
-
-// Later: stop syncing and remove synced dock items
-stopSync()
-// or desktop.unsyncDockWithWindows()
-```
-
-#### `desktop.syncDockWithWindows(manager, options?)`
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `getAppIdFromWindowId` | `(windowId) => string \| null` | strip `app-` prefix when present | Convert window ID to app ID. Return `null` to skip. |
-| `getDockItem` | `(appId, event) => { label, icon } \| null` | `label: event.title ?? appId`, `icon: '🪟'` | Build Dock display content. Return `null` to skip the window. |
-| `onDockItemClick` | `(appId, windowId) => void` | focus window | Custom click action. |
-| `dockItemIdPrefix` | `string` | `'running-'` | Prefix for generated Dock item IDs. |
-| `dedupeByAppId` | `boolean` | `true` | Keep one Dock item per app ID. |
-| `syncExisting` | `boolean` | `true` | Sync windows that are already open at bind time. |
-
-Returns:
-
-- `() => void` cleanup function (equivalent to `desktop.unsyncDockWithWindows()`).
-
-#### `desktop.unsyncDockWithWindows()`
-
-- Unsubscribes internal event listeners.
-- Removes Dock items created by sync API.
-- Automatically called by `desktop.destroy()`.
-
-### Desktop Config (`DesktopConfig`)
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `container` | `HTMLElement` | `document.body` | Container for the desktop |
-| `background` | `string` | CSS var | Desktop background (color or gradient) |
-| `storageKey` | `string` | `'wos-desktop'` | localStorage key prefix for icon positions |
-| `dragThreshold` | `number` | `6` | Global drag start threshold (px); per-icon override via `DesktopIconConfig.dragThreshold` |
-| `iconSnap` | `boolean` | `true` | Enable icon snap alignment while dragging |
-| `iconSnapThreshold` | `number` | `20` | Icon snap trigger distance (px) |
-| `dock` | `DockConfig` | `{}` | Dock configuration |
-| `icons` | `DesktopIconConfig[]` | `[]` | Initial desktop icons |
-
-### Vue 3 Adapter — `useWindowManager(opts?)`
-
-Returns:
-
-| Return | Type | Description |
-|--------|------|-------------|
-| `wm` | `WindowManager` | Underlying instance (advanced use) |
-| `windows` | `ShallowRef<VueWindowEntry[]>` | Reactive window list for `v-for` + `<Teleport>` |
-| `openVueWindow(config)` | `fn` | Open a Vue component window |
-| `close / minimize / maximize / restore / focus / setTitle` | `fn` | Shorthand methods |
-
-### React 18 Adapter — `useWindowManager(opts?)`
-
-Returns:
-
-| Return | Type | Description |
-|--------|------|-------------|
-| `wm` | `WindowManager` | Underlying instance (advanced use) |
-| `windows` | `ReactWindowEntry[]` | State array for `createPortal` mapping |
-| `openReactWindow(config)` | `fn` | Open a React component window |
-| `close / minimize / maximize / restore / focus / setTitle` | `fn` | Shorthand methods |
 
 ---
 
 ## Theming
 
-WebOS-Core uses CSS custom properties for all window styles. Built-in **light** and **dark** themes are included as standalone CSS files in `dist/themes/`.
+Built-in `dist/themes/light.css` and `dist/themes/dark.css` each contain **22 CSS custom properties** (15 Core + 7 Desktop). A single `<link>` tag covers both the window manager and the Desktop module.
 
-### Loading a theme
+### Load a theme
 
 ```html
-<!-- Place in <head>; swap href to change theme -->
 <link id="wos-theme" rel="stylesheet" href="dist/themes/light.css">
 ```
 
 ### `setTheme(preset, options?)`
 
-Utility function exported from the main bundle. Manages the theme `<link>` element automatically.
-
 ```typescript
 import { setTheme } from 'webos-core'
 
-setTheme('dark')                              // switches to dark (uses 'themes/' basePath by default)
-setTheme('light', { basePath: '/themes' })    // explicit basePath for Vite/SPA
-setTheme('dark',  { linkId: 'my-theme-link' }) // custom link element ID
+setTheme('dark')                               // default basePath: 'themes'
+setTheme('light', { basePath: '/themes' })     // Vite SPA
+setTheme('dark',  { basePath: 'dist/themes' }) // relative path
+// UMD: WebOS.setTheme('dark', { basePath: 'dist/themes' })
 ```
 
-**UMD / Script Tag:**
-
-```javascript
-WebOS.setTheme('dark', { basePath: 'dist/themes' })
-```
-
-### CSS custom properties
-
-All CSS custom properties can be overridden to create your own theme. There are **22 variables** total — 15 for the Core window manager and 7 for the Desktop module.
-
-#### Core window properties (15)
+### CSS Custom Properties — Core (15)
 
 ```css
 :root {
-  --wos-window-bg:    #ffffff;
-  --wos-header-bg:    #f0f0f0;
-  --wos-title-color:  #333333;
-  --wos-border:       #d0d0d0;
-  --wos-border-active: #4a90e2;
-  --wos-shadow:       0 2px 12px rgba(0,0,0,0.12);
-  --wos-shadow-active: 0 4px 24px rgba(0,0,0,0.22);
-  --wos-header-border: #e0e0e0;
-  --wos-btn-color:    #555555;
-  --wos-btn-hover-bg: rgba(0,0,0,0.08);
+  --wos-window-bg:             #ffffff;
+  --wos-header-bg:             #f0f0f0;
+  --wos-title-color:           #333333;
+  --wos-border:                #d0d0d0;
+  --wos-border-active:         #4a90e2;
+  --wos-shadow:                0 2px 12px rgba(0,0,0,0.12);
+  --wos-shadow-active:         0 4px 24px rgba(0,0,0,0.22);
+  --wos-header-border:         #e0e0e0;
+  --wos-btn-color:             #555555;
+  --wos-btn-hover-bg:          rgba(0,0,0,0.08);
   --wos-btn-close-hover-bg:    #e53e3e;
   --wos-btn-close-hover-color: #ffffff;
-  --wos-body-bg:      #ffffff;
-  --wos-body-color:   #222222;
-  --wos-snap-guide-color: rgba(74,144,226,0.4);
+  --wos-body-bg:               #ffffff;
+  --wos-body-color:            #222222;
+  --wos-snap-guide-color:      rgba(74,144,226,0.4);
 }
 ```
 
-#### Desktop module properties (7)
+### CSS Custom Properties — Desktop module (7)
 
 ```css
 :root {
@@ -386,45 +242,79 @@ All CSS custom properties can be overridden to create your own theme. There are 
 }
 ```
 
-> **Tip:** The built-in `dist/themes/dark.css` and `light.css` include **both** Core and Desktop variables, so a single `<link>` tag is all you need.
+---
+
+## Desktop Module
+
+```typescript
+import { Desktop } from 'webos-core/desktop'
+import { WindowManager } from 'webos-core'
+
+const desktop = new Desktop({
+  container: document.getElementById('root')!,
+  dock: { position: 'bottom', items: [] },
+  iconSnap: true,
+  dragThreshold: 6,
+})
+
+const wm = new WindowManager({
+  container: desktop.getElement(),
+  isolated: true,
+})
+
+desktop.addIcon({ id: 'notepad', label: '📝 Notepad', icon: '📝', onOpen: () => {
+  wm.open({ id: 'notepad', title: 'Notepad', content: document.createElement('div') })
+}})
+
+// Sync running windows ↔ Dock items automatically
+const stopSync = desktop.syncDockWithWindows(wm)
+// Later: stopSync() to detach
+```
+
+### `DesktopConfig`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `container` | `HTMLElement` | `document.body` | Container for the desktop |
+| `dragThreshold` | `number` | `6` | Global drag start threshold (px) |
+| `iconSnap` | `boolean` | `true` | Enable icon snap alignment |
+| `iconSnapThreshold` | `number` | `20` | Icon snap trigger distance (px) |
+| `storageKey` | `string` | `'wos-desktop'` | localStorage key prefix for icon positions |
+| `dock` | `DockConfig` | `{}` | Dock configuration |
+| `icons` | `DesktopIconConfig[]` | `[]` | Initial desktop icons |
+
+### `desktop.syncDockWithWindows(manager, options?)`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `getAppIdFromWindowId` | `(windowId) => string \| null` | strip `app-` prefix | Map window ID → app ID. Return `null` to skip. |
+| `getDockItem` | `(appId, event) => { label, icon } \| null` | title + 🪟 | Build Dock display. Return `null` to skip. |
+| `onDockItemClick` | `(appId, windowId) => void` | focus window | Custom click handler |
+| `dedupeByAppId` | `boolean` | `true` | One Dock item per app ID |
+| `syncExisting` | `boolean` | `true` | Sync already-open windows at bind time |
+
+Returns a `() => void` cleanup function (same as `desktop.unsyncDockWithWindows()`).
 
 ---
 
 ## BorderLayout
 
-Embed an EasyUI-style docking layout inside any window. Declare regions with `data-region` attributes — `WindowManager.open()` auto-detects and renders the layout.
-
-### HTML-first declaration
+Embed an EasyUI-style docking layout inside any window. `wm.open()` auto-detects `data-region` children and renders the layout.
 
 ```html
 <script>
 const content = document.createElement('div')
 content.innerHTML = `
-  <div data-region="north" data-title="Toolbar"  data-icon="🔧" data-size="40" data-collapsible></div>
-  <div data-region="west"  data-title="Nav"      data-icon="📁" data-size="200" data-collapsible>
-    <p>Sidebar content</p>
+  <div data-region="north" data-title="Toolbar" data-icon="🔧" data-size="40" data-collapsible></div>
+  <div data-region="west"  data-title="Nav"     data-icon="📁" data-size="200" data-collapsible>
+    <p>Sidebar</p>
   </div>
-  <div data-region="east"  data-title="Props"    data-icon="🔍" data-size="180" data-collapsible></div>
-  <div data-region="south" data-title="Status"   data-size="28"  data-collapsible></div>
-  <div data-region="center">
-    <p>Main content</p>
-  </div>
+  <div data-region="center"><p>Main content</p></div>
+  <div data-region="east"  data-title="Props"   data-icon="🔍" data-size="180" data-collapsible></div>
+  <div data-region="south" data-title="Status"  data-size="28" data-collapsible></div>
 `
-wm.open({ id: 'my-app', title: 'My App', width: 900, height: 600, content })
+wm.open({ id: 'app', title: 'My App', width: 900, height: 600, content })
 </script>
-```
-
-### JS-first declaration
-
-```typescript
-import { BorderLayout } from 'webos-core'
-
-const layout = new BorderLayout({
-  container: myElement,
-  west:   { size: 200, minSize: 80, collapsible: true, title: 'Nav',   icon: '📁' },
-  center: { },
-  east:   { size: 180, minSize: 80, collapsible: true, title: 'Props', icon: '🔍' },
-})
 ```
 
 ### `data-*` attributes
@@ -439,9 +329,31 @@ const layout = new BorderLayout({
 | `data-title="Label"` | Show region header bar |
 | `data-icon="🔧"` | Icon shown before title |
 
-### Collapsed strip
+When collapsed, a region shrinks to a **28px mini strip**: expand button → icon → rotated title.
 
-When collapsed, a region shrinks to a **28px mini strip** (EasyUI style): expand button at top → icon → rotated title. Click the button to expand.
+---
+
+## Vue 3 Adapter
+
+`useWindowManager(opts?)` returns:
+
+| Return | Type | Description |
+|--------|------|-------------|
+| `wm` | `WindowManager` | Underlying instance |
+| `windows` | `ShallowRef<VueWindowEntry[]>` | Reactive list for `v-for` + `<Teleport>` |
+| `openVueWindow(config)` | `fn` | Open a Vue component window |
+| `close / minimize / maximize / restore / focus / setTitle` | `fn` | Proxy methods |
+
+## React 18 Adapter
+
+`useWindowManager(opts?)` returns:
+
+| Return | Type | Description |
+|--------|------|-------------|
+| `wm` | `WindowManager` | Underlying instance |
+| `windows` | `ReactWindowEntry[]` | State array for `createPortal` mapping |
+| `openReactWindow(config)` | `fn` | Open a React component window |
+| `close / minimize / maximize / restore / focus / setTitle` | `fn` | Proxy methods |
 
 ---
 
@@ -450,39 +362,36 @@ When collapsed, a region shrinks to a **28px mini strip** (EasyUI style): expand
 | File | Format | Size | Use when |
 |------|--------|------|----------|
 | `dist/webos-core.es.js` | ESM | ~23 KB | Vite / Webpack / `type="module"` (dev) |
-| `dist/webos-core.es.min.js` | ESM | ~12 KB | Production ESM bundle |
-| `dist/webos-core.umd.js` | UMD | ~26 KB | Script tag, jQuery, legacy pages (dev) |
-| `dist/webos-core.umd.min.js` | UMD | ~12 KB | Production CDN / script tag |
-| `dist/index.d.ts` | TypeScript declarations | — | IDE autocomplete & type checking |
-| `dist/themes/light.css` | CSS | ~2 KB | Built-in light theme (Core + Desktop vars) |
-| `dist/themes/dark.css` | CSS | ~2 KB | Built-in dark theme (Core + Desktop vars) |
+| `dist/webos-core.es.min.js` | ESM | ~12 KB | Production ESM |
+| `dist/webos-core.umd.js` | UMD | ~26 KB | Script tag / jQuery (dev) |
+| `dist/webos-core.umd.min.js` | UMD | ~12 KB | Production CDN |
+| `dist/webos-desktop.es.js / .min.js` | ESM | — | Desktop module (ESM) |
+| `dist/webos-desktop.umd.js / .min.js` | UMD | — | Desktop module (`window.WebOSDesktop`) |
+| `dist/index.d.ts` | TypeScript | — | Core type declarations |
+| `dist/webos-desktop.d.ts` | TypeScript | — | Desktop type declarations |
+| `dist/themes/light.css` | CSS | ~2 KB | Light theme (Core + Desktop) |
+| `dist/themes/dark.css` | CSS | ~2 KB | Dark theme (Core + Desktop) |
 
 ---
 
 ## Building from Source
 
 ```bash
-# Install dependencies
 npm install
 
-# Type-check only (no output)
-npm run build
-
-# Build ES + UMD bundles → dist/
-npm run build:lib
-
-# Clean dist/ and rebuild + package release/
-npm run release
+npm run build        # Type-check only (tsc --noEmit, no JS output)
+npm run build:lib    # Build all bundles → dist/
+npm run clean        # Clean dist/
+npm run release      # clean + build:lib + package release/
 ```
 
-> **Note:** Requires Node.js 18+. The library build uses Rollup.
+> Requires **Node.js 18+**. Library build uses Rollup.
 
 ---
 
 ## Browser Support
 
-Any modern browser supporting ES2020 (`optional chaining`, `nullish coalescing`, `Map`, `Set`).  
-UMD bundle also works in older environments when transpiled by your build tool.
+Any modern browser supporting ES2020 (`optional chaining`, `nullish coalescing`, `Map`, `Set`).
 
 ---
 
@@ -491,3 +400,4 @@ UMD bundle also works in older environments when transpiled by your build tool.
 Apache-2.0 © 2026 Brian Cheng
 
 See [LICENSE](LICENSE) for full terms.
+
