@@ -1,26 +1,33 @@
 /* WebOS-Core — Dark Theme */
 :root {
-  --wos-border:               #3a3a4a;
-  --wos-border-active:        #5b8dee;
-  --wos-shadow:               0 4px 24px rgba(0, 0, 0, 0.50);
-  --wos-shadow-active:        0 8px 36px rgba(0, 0, 0, 0.70);
-  --wos-window-bg:            #2a2a3a;
-  --wos-header-bg:            #1e1e2e;
-  --wos-header-border:        #3a3a4a;
-  --wos-title-color:          #e0e0f0;
-  --wos-btn-color:            #a0a0b8;
-  --wos-btn-hover-bg:         #3a3a4a;
-  --wos-btn-close-hover-bg:   #ff5f57;
-  --wos-btn-close-hover-color:#ffffff;
-  --wos-body-bg:              #13131f;
-  --wos-body-color:           #e0e0f0;
+  --wos-window-border:               #3a3a4a;
+  --wos-window-border-active:        #5b8dee;
+  --wos-window-shadow:               0 4px 24px rgba(0, 0, 0, 0.50);
+  --wos-window-shadow-active:        0 8px 36px rgba(0, 0, 0, 0.70);
+  --wos-window-header-bg:            #1e1e2e;
+  --wos-layout-header-bg:     #252535;
+  --wos-layout-header-border: #3a3a4a;
+  --wos-layout-title-color:   #c0c0d8;
+  --wos-layout-btn-color:     #8080a0;
+  --wos-layout-btn-hover-bg:  #3a3a4a;
+  --wos-layout-splitter-bg:   #2a2a3a;
+  --wos-layout-splitter-active: #5b8dee;
+  --wos-window-header-border:        #3a3a4a;
+  --wos-window-title-color:          #e0e0f0;
+  --wos-window-btn-color:            #a0a0b8;
+  --wos-window-btn-hover-bg:         #3a3a4a;
+  --wos-window-btn-close-hover-bg:   #ff5f57;
+  --wos-window-btn-close-hover-color:#ffffff;
+  --wos-window-body-bg:              #13131f;
+  --wos-window-body-color:           #e0e0f0;
   --wos-snap-guide-color:     rgba(91, 141, 238, 0.70);
 
   /* ── Desktop ─────────────────────────────────────────── */
   --wos-desktop-bg:           linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%);
   --wos-desktop-icon-text:    #ffffff;
   --wos-desktop-icon-hover-bg:rgba(255, 255, 255, 0.15);
-  --wos-dock-bg:              rgba(20, 30, 50, 0.75);
+  --wos-dock-bg:              rgba(20, 30, 50, 0.2);
+  --wos-dock-backdrop-filter: blur(4px);
   --wos-dock-border:          rgba(255, 255, 255, 0.10);
   --wos-dock-item-hover-bg:   rgba(255, 255, 255, 0.12);
   --wos-font:                 system-ui, -apple-system, sans-serif;

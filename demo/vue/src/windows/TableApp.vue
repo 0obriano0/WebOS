@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="table-app">
     <div class="toolbar">
       <input v-model="search" class="search-input" placeholder="🔍 搜尋姓名或部門..." />
@@ -92,7 +92,7 @@ function sortBy(key: string) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
   color: #e2e8f0;
   overflow: hidden;
 }
@@ -131,7 +131,7 @@ thead th {
   white-space: nowrap;
   position: sticky;
   top: 0;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
 }
 .sortable { cursor: pointer; user-select: none; }
 .sortable:hover { color: #93c5fd; }

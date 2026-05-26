@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="todo-app">
     <div class="input-row">
       <input
@@ -95,7 +95,7 @@ function clearDone() {
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
   color: #e2e8f0;
   overflow: hidden;
 }

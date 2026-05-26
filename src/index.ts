@@ -2,6 +2,7 @@
 // WebOS-Core — Public Entry Point
 // ============================================================
 
+export { getCoreCSS } from './renderers/DOMRenderer.js';
 export { WindowManager } from './core/WindowManager.js';
 export { EventBus, eventBus } from './core/EventBus.js';
 export type {

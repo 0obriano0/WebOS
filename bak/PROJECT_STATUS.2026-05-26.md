@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態（AI 快查版）
 
-> 最後更新：2026-05-26 17:52 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
+> 最後更新：2026-05-26 09:59 ｜ 備份：`bak/PROJECT_STATUS.2026-05-25.md`
 > 此文件為 AI 輔助開發設計，優先說明「現在是什麼」，歷史細節見備份。
 
 ---
@@ -24,8 +24,6 @@
 | 拖曳 + 縮放 + Snap 吸附（拖曳 & 縮放）+ Snap 間距設定 | ✅ | `src/core/DragResizeHandler.ts`, `SnapHelper.ts` |
 | `resizable: false` — 禁用放大按鈕 + 邊框縮放（固定大小視窗） | ✅ | `src/core/types.ts`, `DOMRenderer.ts`, `DragResizeHandler.ts`, `WindowManager.ts` |
 | DOM 渲染 + CSS 變數主題系統 | ✅ | `src/renderers/DOMRenderer.ts` |
-| CSS 單一來源（Single Source of Truth） — webos-core.css / webos-desktop.css | ✅ | `src/styles/*.css` |
-| Rollup rawCss() plugin — build time 將 `.css` 轉為 JS 字串內嵌 | ✅ | `rollup.lib.config.mjs` |
 | light.css / dark.css（Core + Desktop 變數） | ✅ | `src/themes/*.css` |
 | `setTheme()` 工具函式 | ✅ | `src/themes/setTheme.ts` |
 | BorderLayout（5 區域 + 折疊 Strip） | ✅ | `src/layout/BorderLayout.ts` |
@@ -34,8 +32,6 @@
 | Vue 3 Composable | ✅ | `src/adapters/vue/useWindowManager.ts` |
 | React 18 Hook | ✅ | `src/adapters/react/useWindowManager.ts` |
 | Demo（vanilla / jQuery / Vue / React / Desktop / Theme Editor / Layout） | ✅ | `demo/` |
-| Theme Editor — Tab 3 完整桌面預覽 + 雙 CSS 即時注入（core + desktop 同時） | ✅ | `demo/theme-editor/index.html` |
-| Dock 毛玻璃效果（`--wos-dock-backdrop-filter`）— `overflow:clip` 修正讓視窗可穿透顯示 | ✅ | `src/styles/webos-desktop.css`, `webos-core.css`, `desktop/Desktop.ts` |
 | Docs 開發手冊（Vue3 SPA，i18n EN/zh-TW，17 頁，含 WindowConfig 完整選項表） | ✅ | `demo/docs/` |
 
 **尚未實作：**
@@ -51,7 +47,6 @@
 WebOS/
 ├── src/
 │   ├── index.ts                    ← Core 公開 Entry Point
-│   ├── css.d.ts                    ← TypeScript module declaration（*.css → string）
 │   ├── core/
 │   │   ├── WindowManager.ts        ← 視窗生命週期（含 Snap 引導線、RWD Clamp）
 │   │   ├── DragResizeHandler.ts    ← 拖曳/縮放（snapFn callback、throttle）
@@ -59,10 +54,7 @@ WebOS/
 │   │   ├── EventBus.ts
 │   │   └── types.ts
 │   ├── renderers/
-│   │   └── DOMRenderer.ts          ← DOM 結構 + CSS 注入（import BASE_CSS from styles/webos-core.css）
-│   ├── styles/
-│   │   ├── webos-core.css          ← Core CSS 單一來源（視窗結構/Snap/Dock 基礎樣式）
-│   │   └── webos-desktop.css       ← Desktop CSS 單一來源（桌面/Dock/Icon 樣式）
+│   │   └── DOMRenderer.ts          ← DOM 結構 + CSS 注入（全部色值用 var(--wos-*)）
 │   ├── themes/
 │   │   ├── light.css               ← 亮色（Core 15 vars + Desktop 7 vars）
 │   │   ├── dark.css                ← 暗色（Core 15 vars + Desktop 7 vars）
@@ -75,7 +67,7 @@ WebOS/
 │   │   ├── Desktop.ts              ← 桌面主容器（icon 拖放、Snap、Sentinel、RWD）
 │   │   ├── Dock.ts                 ← 快速啟動 Dock（HTML5 D&D 排序、active 指示）
 │   │   ├── DesktopIcon.ts          ← 桌面圖示（dragThreshold、snapFn、localStorage）
-│   │   ├── styles.ts               ← injectDesktopStyles()（import DESKTOP_CSS from styles/webos-desktop.css）
+│   │   ├── styles.ts               ← injectDesktopStyles()（含 --wos-desktop-* 變數）
 │   │   └── types.ts                ← DesktopConfig / DockConfig / DesktopIconConfig
 │   └── adapters/
 │       ├── vue/useWindowManager.ts ← Vue 3 Composable
@@ -87,10 +79,7 @@ WebOS/
 │   ├── webos-desktop.es.js / .min.js
 │   ├── webos-desktop.umd.js / .min.js
 │   ├── index.d.ts / webos-desktop.d.ts
-│   ├── themes/light.css, dark.css  ← build-themes.mjs 從 src/themes/ 複製
-│   └── styles/
-│       ├── webos-core.css          ← build-themes.mjs 從 src/styles/ 複製（可直接 <link>）
-│       └── webos-desktop.css       ← build-themes.mjs 從 src/styles/ 複製（可直接 <link>）
+│   └── themes/light.css, dark.css  ← build-themes.mjs 從 src/themes/ 複製
 │
 ├── demo/
 │   ├── index.html                  ← Demo 首頁
@@ -98,14 +87,14 @@ WebOS/
 │   ├── vanilla/index.html
 │   ├── jquery/index.html
 │   ├── desktop/index.html          ← 完整虛擬桌面體驗
-│   ├── theme-editor/index.html     ← 🎨 Theme Editor（Tab1 Core / Tab2 Desktop / Tab3 完整桌面預覽+CSS 即時注入）
+│   ├── theme-editor/index.html     ← 🎨 Theme Editor（Core + Desktop 雙分頁，免建置）
 │   ├── layout/index.html
 │   ├── vue/                        ← 獨立 Vite 專案（port 3008）
 │   ├── react/                      ← 獨立 Vite 專案（port 3002）
 │   └── docs/                       ← 開發手冊 Vite SPA（port 3002）
 │
 ├── scripts/
-│   ├── build-themes.mjs            ← 複製 src/themes/ → dist/themes/ + src/styles/ → dist/styles/ + demo/
+│   ├── build-themes.mjs            ← 複製 src/themes/ → dist/themes/ + demo/*/public/themes/
 │   ├── clean.mjs                   ← 清除 dist/（含 Dropbox EBUSY retry）
 │   └── pack-release.mjs            ← 打包 release/ 交付物
 │
@@ -119,7 +108,7 @@ WebOS/
 
 ## 4. CSS 自訂屬性（完整 22 個）
 
-### Core 視窗（15 個）— 來源：`src/styles/webos-core.css`
+### Core 視窗（15 個）— 來源：`src/renderers/DOMRenderer.ts`
 
 | 變數 | 說明 | Light 預設 |
 |------|------|-----------|
@@ -139,20 +128,19 @@ WebOS/
 | `--wos-body-color` | 視窗內容文字 | `#222222` |
 | `--wos-snap-guide-color` | Snap 引導線 | `rgba(74,144,226,0.4)` |
 
-### Desktop 模組（8 個）— 來源：`src/styles/webos-desktop.css`
+### Desktop 模組（7 個）— 來源：`src/desktop/styles.ts`
 
 | 變數 | 說明 | Light 預設 |
 |------|------|-----------|
 | `--wos-desktop-bg` | 桌面背景（支援 gradient） | `linear-gradient(135deg,#f0f4f8,#e2e8f0)` |
 | `--wos-desktop-icon-text` | 桌面圖示文字 | `#1a202c` |
 | `--wos-desktop-icon-hover-bg` | 圖示 hover 背景 | `rgba(0,0,0,0.08)` |
-| `--wos-dock-bg` | Dock 背景（支援 rgba） | `rgba(220,225,240,0.20)` |
-| `--wos-dock-backdrop-filter` | Dock 毛玻璃模糊（`blur(Npx)` 或 `none`） | `blur(4px)` |
+| `--wos-dock-bg` | Dock 背景（支援 rgba） | `rgba(255,255,255,0.75)` |
 | `--wos-dock-border` | Dock 邊框（支援 rgba） | `rgba(0,0,0,0.10)` |
 | `--wos-dock-item-hover-bg` | Dock 項目 hover 背景 | `rgba(0,0,0,0.06)` |
 | `--wos-font` | 全域字體 | `system-ui,-apple-system,sans-serif` |
 
-> **注意**：`rgba` / `linear-gradient` / `blur()` 型別的變數必須用 `type: 'text'`（非 color picker），否則值會被截掉。
+> **注意**：`rgba` / `linear-gradient` 型別的變數必須用 `type: 'text'`（非 color picker），否則 alpha 會被截掉。
 
 ---
 
@@ -258,9 +246,6 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 20 | Dock 動態切換位置 | `Dock.setPosition()` 切換 CSS class；`Desktop.setDockPosition()` 同步更新 `_iconAreaEl` 與 `_windowAreaEl` 的 inset |
 | 21 | Desktop `getElement()` 與最大化裁切 | 原本 `getElement()` 回傳含 Dock 的 `_desktopEl`，WM 最大化計算佔滿整個桌面，視窗被 Dock 蓋住。改為新增 `_windowAreaEl`（排除 Dock 的區域），`getElement()` 改回傳它。`getDesktopElement()` 取全桌面根元素 |
 | 22 | `_windowAreaEl` position 被 wos-isolated 覆蓋 | `wos-isolated` CSS 設 `position:relative`，把 `_windowAreaEl` 的 `position:absolute` 蓋掉導致高度塌陷。修法：`.wos-desktop-window-area { position: absolute !important }` + `pointer-events: none; > * { pointer-events: auto }` |
-| 23 | CSS Single Source of Truth | 移除 `DOMRenderer.ts` 中的 `BASE_CSS` 內嵌字串（~116 行）與 `desktop/styles.ts` 的 `DESKTOP_CSS`（~271 行）。改為 `import BASE_CSS from '../styles/webos-core.css'`。Rollup 以 `rawCss()` inline plugin 將 `.css` import 轉成 JS 字串，`src/css.d.ts` 補 TypeScript module declaration。`src/styles/*.css` 是唯一 CSS source，也複製至 `dist/styles/` 供 `<link>` 直接使用 |
-| 24 | Dock `backdrop-filter` 被 `overflow:hidden` 阻斷 | Chrome 已知問題：`overflow:hidden` 會建立 scroll container，阻斷 `backdrop-filter` 的 compositing 穿透。修法：`.wos-desktop`、`.wos-desktop-window-area`、`.wos-isolated` 全部改為 `overflow:clip`（視覺效果相同，但不建立 scroll container）。支援 Chrome 90+, Firefox 102+, Safari 16+ |
-| 25 | `_windowAreaEl` 有 inset 導致視窗被裁切，無法滑入 Dock 下方 | 視窗區域改為全尺寸（inset 全部 0），讓視窗可自由拖到 Dock 下方。同時設 `--wos-dock-inset-{top/bottom/left/right}` CSS 變數在 `.wos-desktop`，最大化 CSS 改讀這組變數計算邊界，確保最大化不蓋住 Dock |
 
 ---
 
@@ -278,8 +263,6 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | `webos-desktop.d.ts` | TypeScript | Desktop 型別宣告 |
 | `themes/light.css` | CSS | ~2 KB，Core + Desktop 22 vars |
 | `themes/dark.css` | CSS | ~2 KB，Core + Desktop 22 vars |
-| `styles/webos-core.css` | CSS | Core 視窗結構樣式（可直接 `<link>`） |
-| `styles/webos-desktop.css` | CSS | Desktop / Dock / Icon 樣式（可直接 `<link>`） |
 
 ---
 
@@ -291,7 +274,7 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | Vanilla JS | `demo/vanilla/index.html` | 純 JS，snap=true |
 | jQuery | `demo/jquery/index.html` | UMD + jQuery CDN，5 個應用 |
 | Desktop | `demo/desktop/index.html` | 完整虛擬桌面（Dock + Icons + WindowManager + BorderLayout 範例視窗） |
-| Theme Editor | `demo/theme-editor/index.html` | Tab1 Core CSS 變數 / Tab2 Desktop CSS 變數 / Tab3 完整桌面預覽 + 雙 CSS 即時注入（core + desktop）+ Win11 預設樣式 |
+| Theme Editor | `demo/theme-editor/index.html` | Core + Desktop 雙分頁，module banner，text 預覽色塊 |
 | Layout | `demo/layout/index.html` | BorderLayout 東西南北中 + 巢狀 + Panel |
 | Vue 3 | `demo/vue/` | useWindowManager composable，port 3008 |
 | React 18 | `demo/react/` | useWindowManager hook + createPortal，port 3002 |

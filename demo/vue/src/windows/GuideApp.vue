@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="guide-app">
     <h2 class="title">🧩 Vue Composable 指南</h2>
 
@@ -56,7 +56,7 @@ const apiItems = [
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
   color: #e2e8f0;
   font-family: 'Segoe UI', sans-serif;
 }

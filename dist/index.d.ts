@@ -64,6 +64,9 @@ interface WindowConfig {
 /** 事件巴士回呼型別 */
 type EventCallback<T = unknown> = (data: T) => void;
 
+/** 回傳 Core CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
+declare function getCoreCSS(): string;
+
 declare class EventBus {
     private readonly _listeners;
     /** 訂閱事件 */
@@ -108,6 +111,12 @@ interface WindowManagerOptions {
      * 大於 0 時，兩視窗對齊後會保留指定像素的空隙；容器邊緣不受影響。
      */
     snapGap?: number;
+    /**
+     * 是否自動注入 Core CSS 樣式，預設 true。
+     * 設為 false 時不注入任何樣式，由使用者完全自行控制 CSS。
+     * 可搭配 `getCoreCSS()` 取得預設 CSS 作為修改基礎。
+     */
+    injectStyles?: boolean;
 }
 declare class WindowManager {
     private readonly _wins;
@@ -347,5 +356,5 @@ declare class Panel {
     destroy(): void;
 }
 
-export { BorderLayout, EventBus, Panel, WindowManager, eventBus, setTheme, snapPosition };
+export { BorderLayout, EventBus, Panel, WindowManager, eventBus, getCoreCSS, setTheme, snapPosition };
 export type { BorderLayoutOptions, EventCallback, LayoutRegion, PanelOptions, RegionConfig, SetThemeOptions, SlotType, SnapGuide, SnapRect, SnapResult, WinEvent, WindowConfig, WindowState, WosThemePreset };

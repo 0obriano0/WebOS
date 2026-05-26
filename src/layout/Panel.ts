@@ -24,8 +24,8 @@ const PANEL_CSS = `
   height: 30px;
   min-height: 30px;
   padding: 0 8px;
-  background: var(--wos-header-bg, #f5f5f5);
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);
+  border-bottom: 1px solid var(--wos-layout-header-border, #e0e0e0);
   user-select: none;
   flex-shrink: 0;
   cursor: default;
@@ -34,7 +34,7 @@ const PANEL_CSS = `
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: var(--wos-title-color, #333);
+  color: var(--wos-layout-title-color, #333);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -50,14 +50,14 @@ const PANEL_CSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--wos-btn-color, #555);
+  color: var(--wos-layout-btn-color, #555);
   flex-shrink: 0;
   transition: background 0.1s;
   line-height: 1;
 }
 .wos-panel-toggle:hover {
-  background: var(--wos-btn-hover-bg, #e0e0e0);
-  border-color: var(--wos-border, #d0d0d0);
+  background: var(--wos-layout-btn-hover-bg, #e0e0e0);
+  border-color: var(--wos-layout-splitter-bg, #d0d0d0);
 }
 .wos-panel-body {
   flex: 1;

@@ -30,8 +30,7 @@ const LAYOUT_CSS = `
   align-items: center;
   height: 28px;
   padding: 0 0 0 8px;
-  background: var(--wos-header-bg, #f5f5f5);
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);, #e0e0e0);
   flex-shrink: 0;
   user-select: none;
   overflow: hidden;
@@ -47,7 +46,7 @@ const LAYOUT_CSS = `
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: var(--wos-title-color, #333);
+  color: var(--wos-layout-title-color, #333);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -58,14 +57,14 @@ const LAYOUT_CSS = `
   width: 26px;
   height: 28px;
   border: none;
-  border-left: 1px solid var(--wos-header-border, #e0e0e0);
-  background: var(--wos-header-bg, #f5f5f5);
+  border-left: 1px solid var(--wos-layout-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--wos-btn-color, #555);
+  color: var(--wos-layout-btn-color, #555);
   transition: background 0.1s, color 0.1s;
   z-index: 11;
   line-height: 1;
@@ -73,8 +72,8 @@ const LAYOUT_CSS = `
   padding: 0;
 }
 .wos-region-collapse-btn:hover {
-  background: var(--wos-btn-hover-bg, #d8e4f0);
-  color: var(--wos-title-color, #333);
+  background: var(--wos-layout-btn-hover-bg, #d8e4f0);
+  color: var(--wos-layout-title-color, #333);
 }
 .wos-region-body {
   position: absolute;
@@ -106,7 +105,7 @@ const LAYOUT_CSS = `
   height: 28px;
   font-size: 14px;
   border-left: none;
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  border-bottom: 1px solid var(--wos-layout-header-border, #e0e0e0);
   margin-left: 0;
   flex-shrink: 0;
 }
@@ -132,7 +131,7 @@ const LAYOUT_CSS = `
 /* Splitters */
 .wos-layout-splitter {
   position: absolute;
-  background: var(--wos-border, #d0d0d0);
+  background: var(--wos-layout-splitter-bg, #d0d0d0);
   box-sizing: border-box;
   z-index: 10;
   user-select: none;
@@ -140,7 +139,7 @@ const LAYOUT_CSS = `
 }
 .wos-layout-splitter:hover,
 .wos-layout-splitter.wos-splitter-dragging {
-  background: var(--wos-border-active, #b0b8c8);
+  background: var(--wos-layout-splitter-active, #b0b8c8);
 }
 .wos-layout-splitter--v {
   cursor: col-resize;

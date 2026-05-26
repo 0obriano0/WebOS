@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="editor-app">
     <textarea
       v-model="text"
@@ -46,7 +46,7 @@ async function copyText() {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
 }
 .editor-textarea {
   flex: 1;

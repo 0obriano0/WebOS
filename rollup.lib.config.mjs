@@ -19,6 +19,20 @@ import typescript from '@rollup/plugin-typescript'
 import terser from '@rollup/plugin-terser'
 import dts from 'rollup-plugin-dts'
 
+/** Inline plugin: import CSS files as raw strings */
+function rawCss() {
+  return {
+    name: 'raw-css',
+    transform(code, id) {
+      if (!id.endsWith('.css')) return null;
+      return {
+        code: `export default ${JSON.stringify(code)};`,
+        map: { mappings: '' },
+      };
+    },
+  };
+}
+
 const coreInput    = 'src/index.ts'
 const desktopInput = 'src/desktop/index.ts'
 const external     = ['vue', 'react', 'react-dom']   // peer deps — not bundled
@@ -31,6 +45,7 @@ export default [
     input: coreInput,
     external,
     plugins: [
+      rawCss(),
       resolve(),
       typescript({
         tsconfig: './tsconfig.json',
@@ -59,6 +74,7 @@ export default [
     input: coreInput,
     external,
     plugins: [
+      rawCss(),
       resolve(),
       typescript({
         tsconfig: './tsconfig.json',
@@ -101,6 +117,7 @@ export default [
     input: desktopInput,
     external,
     plugins: [
+      rawCss(),
       resolve(),
       typescript({
         tsconfig: './tsconfig.json',
@@ -128,6 +145,7 @@ export default [
     input: desktopInput,
     external,
     plugins: [
+      rawCss(),
       resolve(),
       typescript({
         tsconfig: './tsconfig.json',

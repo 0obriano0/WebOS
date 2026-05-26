@@ -101,37 +101,35 @@ let wm: WindowManager | null = null
 const demoTheme = ref<'light' | 'dark'>('light')
 
 const LIGHT_VARS = {
-  '--wos-window-bg': '#ffffff',
-  '--wos-header-bg': '#f0f0f0',
-  '--wos-title-color': '#333333',
-  '--wos-border': '#d0d0d0',
-  '--wos-border-active': '#4a90e2',
-  '--wos-shadow': '0 2px 12px rgba(0,0,0,0.12)',
-  '--wos-shadow-active': '0 4px 24px rgba(0,0,0,0.22)',
-  '--wos-header-border': '#e0e0e0',
-  '--wos-btn-color': '#555555',
-  '--wos-btn-hover-bg': 'rgba(0,0,0,0.08)',
-  '--wos-btn-close-hover-bg': '#e53e3e',
-  '--wos-btn-close-hover-color': '#ffffff',
-  '--wos-body-bg': '#ffffff',
-  '--wos-body-color': '#222222',
+  '--wos-window-header-bg': '#f0f0f0',
+  '--wos-window-title-color': '#333333',
+  '--wos-window-border': '#d0d0d0',
+  '--wos-window-border-active': '#4a90e2',
+  '--wos-window-shadow': '0 2px 12px rgba(0,0,0,0.12)',
+  '--wos-window-shadow-active': '0 4px 24px rgba(0,0,0,0.22)',
+  '--wos-window-header-border': '#e0e0e0',
+  '--wos-window-btn-color': '#555555',
+  '--wos-window-btn-hover-bg': 'rgba(0,0,0,0.08)',
+  '--wos-window-btn-close-hover-bg': '#e53e3e',
+  '--wos-window-btn-close-hover-color': '#ffffff',
+  '--wos-window-body-bg': '#ffffff',
+  '--wos-window-body-color': '#222222',
   '--wos-snap-guide-color': 'rgba(74,144,226,0.4)',
 }
 const DARK_VARS = {
-  '--wos-window-bg': '#1e1e2e',
-  '--wos-header-bg': '#181825',
-  '--wos-title-color': '#cdd6f4',
-  '--wos-border': '#313244',
-  '--wos-border-active': '#89b4fa',
-  '--wos-shadow': '0 2px 12px rgba(0,0,0,0.5)',
-  '--wos-shadow-active': '0 4px 24px rgba(0,0,0,0.6)',
-  '--wos-header-border': '#313244',
-  '--wos-btn-color': '#a6adc8',
-  '--wos-btn-hover-bg': 'rgba(255,255,255,0.08)',
-  '--wos-btn-close-hover-bg': '#f38ba8',
-  '--wos-btn-close-hover-color': '#1e1e2e',
-  '--wos-body-bg': '#1e1e2e',
-  '--wos-body-color': '#cdd6f4',
+  '--wos-window-header-bg': '#181825',
+  '--wos-window-title-color': '#cdd6f4',
+  '--wos-window-border': '#313244',
+  '--wos-window-border-active': '#89b4fa',
+  '--wos-window-shadow': '0 2px 12px rgba(0,0,0,0.5)',
+  '--wos-window-shadow-active': '0 4px 24px rgba(0,0,0,0.6)',
+  '--wos-window-header-border': '#313244',
+  '--wos-window-btn-color': '#a6adc8',
+  '--wos-window-btn-hover-bg': 'rgba(255,255,255,0.08)',
+  '--wos-window-btn-close-hover-bg': '#f38ba8',
+  '--wos-window-btn-close-hover-color': '#1e1e2e',
+  '--wos-window-body-bg': '#1e1e2e',
+  '--wos-window-body-color': '#cdd6f4',
   '--wos-snap-guide-color': 'rgba(137,180,250,0.4)',
 }
 
@@ -153,20 +151,19 @@ function setDemoTheme(theme: 'light' | 'dark') {
 }
 
 const coreVars = [
-  { name: '--wos-window-bg',             desc: 'Window background',              value: '#ffffff',                           swatch: '#ffffff' },
-  { name: '--wos-header-bg',             desc: 'Title bar background',            value: '#f0f0f0',                           swatch: '#f0f0f0' },
-  { name: '--wos-title-color',           desc: 'Title bar text',                  value: '#333333',                           swatch: '#333333' },
-  { name: '--wos-border',                desc: 'Window border',                   value: '#d0d0d0',                           swatch: '#d0d0d0' },
-  { name: '--wos-border-active',         desc: 'Active window border',            value: '#4a90e2',                           swatch: '#4a90e2' },
-  { name: '--wos-shadow',                desc: 'Window shadow',                   value: '0 2px 12px rgba(0,0,0,0.12)',       swatch: null },
-  { name: '--wos-shadow-active',         desc: 'Active window shadow',            value: '0 4px 24px rgba(0,0,0,0.22)',       swatch: null },
-  { name: '--wos-header-border',         desc: 'Title bar bottom border',         value: '#e0e0e0',                           swatch: '#e0e0e0' },
-  { name: '--wos-btn-color',             desc: 'Control button icon',             value: '#555555',                           swatch: '#555555' },
-  { name: '--wos-btn-hover-bg',          desc: 'Control button hover background', value: 'rgba(0,0,0,0.08)',                  swatch: null },
-  { name: '--wos-btn-close-hover-bg',    desc: 'Close button hover background',   value: '#e53e3e',                           swatch: '#e53e3e' },
-  { name: '--wos-btn-close-hover-color', desc: 'Close button hover text',         value: '#ffffff',                           swatch: '#ffffff' },
-  { name: '--wos-body-bg',               desc: 'Window body background',          value: '#ffffff',                           swatch: '#ffffff' },
-  { name: '--wos-body-color',            desc: 'Window body text',                value: '#222222',                           swatch: '#222222' },
+  { name: '--wos-window-header-bg',             desc: 'Title bar background',            value: '#f0f0f0',                           swatch: '#f0f0f0' },
+  { name: '--wos-window-title-color',           desc: 'Title bar text',                  value: '#333333',                           swatch: '#333333' },
+  { name: '--wos-window-border',                desc: 'Window border',                   value: '#d0d0d0',                           swatch: '#d0d0d0' },
+  { name: '--wos-window-border-active',         desc: 'Active window border',            value: '#4a90e2',                           swatch: '#4a90e2' },
+  { name: '--wos-window-shadow',                desc: 'Window shadow',                   value: '0 2px 12px rgba(0,0,0,0.12)',       swatch: null },
+  { name: '--wos-window-shadow-active',         desc: 'Active window shadow',            value: '0 4px 24px rgba(0,0,0,0.22)',       swatch: null },
+  { name: '--wos-window-header-border',         desc: 'Title bar bottom border',         value: '#e0e0e0',                           swatch: '#e0e0e0' },
+  { name: '--wos-window-btn-color',             desc: 'Control button icon',             value: '#555555',                           swatch: '#555555' },
+  { name: '--wos-window-btn-hover-bg',          desc: 'Control button hover background', value: 'rgba(0,0,0,0.08)',                  swatch: null },
+  { name: '--wos-window-btn-close-hover-bg',    desc: 'Close button hover background',   value: '#e53e3e',                           swatch: '#e53e3e' },
+  { name: '--wos-window-btn-close-hover-color', desc: 'Close button hover text',         value: '#ffffff',                           swatch: '#ffffff' },
+  { name: '--wos-window-body-bg',               desc: 'Window body background',          value: '#ffffff',                           swatch: '#ffffff' },
+  { name: '--wos-window-body-color',            desc: 'Window body text',                value: '#222222',                           swatch: '#222222' },
   { name: '--wos-snap-guide-color',      desc: 'Snap guide line colour',          value: 'rgba(74,144,226,0.4)',              swatch: null },
 ]
 
@@ -185,7 +182,7 @@ onMounted(() => {
     wm = new WindowManager({ container: container.value, isolated: true, snap: true, snapGap: 4 })
     const div = document.createElement('div')
     div.style.cssText = 'padding:14px;font-size:13px;'
-    div.innerHTML = '<p style="margin:0 0 6px"><strong>Themed window</strong></p><p style="margin:0;font-size:12px;color:var(--wos-body-color,#666)">Toggle Light/Dark above</p>'
+    div.innerHTML = '<p style="margin:0 0 6px"><strong>Themed window</strong></p><p style="margin:0;font-size:12px;color:var(--wos-window-body-color,#666)">Toggle Light/Dark above</p>'
     wm.open({ id: 'theme-demo', title: 'Theme Preview', content: div, x: 30, y: 20, width: 260, height: 120 })
   }
   applyThemeVars('light')
@@ -224,8 +221,8 @@ setTheme('dark', { linkId: 'my-wos-theme' })
       lang: 'css',
       code: `/* Override individual variables after loading the theme */
 :root {
-  --wos-border-active: #7c3aed;   /* purple accent */
-  --wos-header-bg:     #f3f0ff;   /* lavender title bar */
+  --wos-window-border-active: #7c3aed;   /* purple accent */
+  --wos-window-header-bg:     #f3f0ff;   /* lavender title bar */
 }`,
     },
   ])

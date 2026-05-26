@@ -18,10 +18,10 @@ A **framework-agnostic** web virtual desktop window management engine.
 - ✅ **RWD viewport clamping** — windows auto-clamp via `ResizeObserver`; never open off-screen
 - ✅ **Theme system** — light/dark CSS themes with 22 CSS custom properties; `setTheme()` runtime switching
 - ✅ **BorderLayout** — N/S/E/W/Center docking layout; `data-region` HTML-first declaration; collapsible mini strip; draggable splitters; nested layouts
-- ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area, **frosted-glass backdrop-filter** on Dock
+- ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area
 - ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
-- ✅ **CSS pre-built files** — `dist/styles/webos-core.css` and `dist/styles/webos-desktop.css` for direct `<link>` use (single source of truth at `src/styles/*.css`)
+- ✅ ES Module + UMD builds — bundlers or plain `<script>` tags
 
 ---
 
@@ -208,22 +208,7 @@ wm.events.on('window:resized',   (state) => { })
 
 ## Theming
 
-Built-in `dist/themes/light.css` and `dist/themes/dark.css` each contain **23 CSS custom properties** (15 Core + 8 Desktop). A single `<link>` tag covers both the window manager and the Desktop module.
-
-Structural styles are provided separately as `dist/styles/webos-core.css` (window structure) and `dist/styles/webos-desktop.css` (Desktop / Dock / Icon). These are independent of theme variables and can be `<link>`ed directly:
-
-```html
-<link rel="stylesheet" href="dist/styles/webos-core.css">
-<link rel="stylesheet" href="dist/styles/webos-desktop.css">
-```
-
-Alternatively, use `getCoreCSS()` / `getDesktopCSS()` for programmatic injection:
-
-```typescript
-import { getCoreCSS } from 'webos-core'
-import { getDesktopCSS } from 'webos-core/desktop'
-// inject into shadow root, iframe, or custom container
-```
+Built-in `dist/themes/light.css` and `dist/themes/dark.css` each contain **22 CSS custom properties** (15 Core + 7 Desktop). A single `<link>` tag covers both the window manager and the Desktop module.
 
 ### Load a theme
 
@@ -264,22 +249,19 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 }
 ```
 
-### CSS Custom Properties — Desktop module (8)
+### CSS Custom Properties — Desktop module (7)
 
 ```css
 :root {
-  --wos-desktop-bg:             linear-gradient(135deg,#f0f4f8 0%,#e2e8f0 100%);
-  --wos-desktop-icon-text:      #1a202c;
-  --wos-desktop-icon-hover-bg:  rgba(0,0,0,0.08);
-  --wos-dock-bg:                rgba(220,225,240,0.20);  /* semi-transparent for frosted glass */
-  --wos-dock-backdrop-filter:   blur(4px);               /* frosted-glass blur behind dock */
-  --wos-dock-border:            rgba(0,0,0,0.10);
-  --wos-dock-item-hover-bg:     rgba(0,0,0,0.06);
-  --wos-font:                   system-ui,-apple-system,sans-serif;
+  --wos-desktop-bg:            linear-gradient(135deg,#f0f4f8 0%,#e2e8f0 100%);
+  --wos-desktop-icon-text:     #1a202c;
+  --wos-desktop-icon-hover-bg: rgba(0,0,0,0.08);
+  --wos-dock-bg:               rgba(255,255,255,0.75);
+  --wos-dock-border:           rgba(0,0,0,0.10);
+  --wos-dock-item-hover-bg:    rgba(0,0,0,0.06);
+  --wos-font:                  system-ui,-apple-system,sans-serif;
 }
 ```
-
-> Set `--wos-dock-backdrop-filter: none` to disable the blur effect entirely.
 
 ---
 
@@ -461,8 +443,6 @@ When collapsed, a region shrinks to a **28px mini strip**: expand button → ico
 | `dist/webos-desktop.d.ts` | TypeScript | — | Desktop type declarations |
 | `dist/themes/light.css` | CSS | ~2 KB | Light theme (Core + Desktop) |
 | `dist/themes/dark.css` | CSS | ~2 KB | Dark theme (Core + Desktop) |
-| `dist/styles/webos-core.css` | CSS | — | Core window structure styles (direct `<link>`) |
-| `dist/styles/webos-desktop.css` | CSS | — | Desktop / Dock / Icon styles (direct `<link>`) |
 
 ---
 

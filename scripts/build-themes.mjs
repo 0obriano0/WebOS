@@ -1,5 +1,6 @@
 // scripts/build-themes.mjs
 // 將 src/themes/ 下的 CSS 檔案複製到 dist/themes/ 及各 demo 的 public/themes/
+// 將 src/styles/ 下的 CSS 檔案複製到 dist/styles/
 
 import { cpSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
@@ -20,3 +21,10 @@ for (const dest of targets) {
   cpSync(src, dest, { recursive: true, filter: (s) => !s.endsWith('.ts') });
   console.log(`✅ ${dest.replace(root + '\\', '')} — 主題 CSS 已複製`);
 }
+
+// Copy src/styles/ → dist/styles/
+const stylesSrc  = join(root, 'src', 'styles');
+const stylesDest = join(root, 'dist', 'styles');
+mkdirSync(stylesDest, { recursive: true });
+cpSync(stylesSrc, stylesDest, { recursive: true });
+console.log(`✅ dist/styles — 預設樣式 CSS 已複製`);

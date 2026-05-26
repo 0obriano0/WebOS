@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="counter-app">
     <div class="render-badge">此元件已渲染 {{ renderCount }} 次</div>
     <div class="count-display" :class="{ positive: count > 0, negative: count < 0 }">{{ count }}</div>
@@ -62,7 +62,7 @@ function reset() {
   align-items: center;
   gap: 10px;
   padding: 16px;
-  background: var(--wos-body-bg, #0f172a);
+  background: var(--wos-window-body-bg, #0f172a);
   color: #e2e8f0;
   overflow-y: auto;
 }

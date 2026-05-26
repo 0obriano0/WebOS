@@ -5,6 +5,7 @@
 export { Desktop } from './Desktop.js';
 export { Dock } from './Dock.js';
 export { DesktopIcon } from './DesktopIcon.js';
+export { getDesktopCSS } from './styles.js';
 export type {
   DesktopConfig,
   DockConfig,

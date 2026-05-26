@@ -100,6 +100,12 @@ interface DesktopConfig {
      * 桌面圖示 Snap 吸附感應距離（px）。預設 20。
      */
     iconSnapThreshold?: number;
+    /**
+     * 是否自動注入 Desktop CSS 樣式，預設 true。
+     * 設為 false 時不注入任何樣式，由使用者完全自行控制 CSS。
+     * 可搭配 `getDesktopCSS()` 取得預設 CSS 作為修改基礎。
+     */
+    injectStyles?: boolean;
 }
 
 declare class Dock {
@@ -147,7 +153,11 @@ declare class Desktop {
     private _autoIconIndex;
     private _dockSyncCleanup;
     constructor(config?: DesktopConfig);
-    /** 同時更新 icon 區域與視窗區域的 inset */
+    /**
+     * 更新 icon 區域的 inset（避免 icon 被 Dock 遮住）。
+     * 視窗區域維持全尺寸（0,0,0,0），讓視窗可自由滑入 Dock 下方，
+     * 透過 CSS 變數 --wos-dock-inset-* 控制最大化時的邊界。
+     */
     private _applyInset;
     private _loadPositions;
     private _savePositions;
@@ -220,5 +230,8 @@ declare class DesktopIcon {
     destroy(): void;
 }
 
-export { Desktop, DesktopIcon, Dock };
+/** 回傳 Desktop CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
+declare function getDesktopCSS(): string;
+
+export { Desktop, DesktopIcon, Dock, getDesktopCSS };
 export type { DesktopConfig, DesktopIconConfig, DockConfig, DockItemConfig, DockPosition, DockSyncOptions, DockSyncWindowEvent, WindowManagerLike };

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
@@ -121,7 +121,7 @@
 
       // ── Tab bar ──────────────────────────────────────────────
       const tabs = document.createElement('div');
-      tabs.style.cssText = 'display:flex;gap:4px;padding:6px 8px;background:var(--wos-header-bg,#f0f0f0);border-bottom:1px solid var(--wos-header-border,#e0e0e0);flex-shrink:0';
+      tabs.style.cssText = 'display:flex;gap:4px;padding:6px 8px;background:var(--wos-window-header-bg,#f0f0f0);border-bottom:1px solid var(--wos-window-header-border,#e0e0e0);flex-shrink:0';
 
       const tabDefs = [
         { id: 'tab-border',  label: '📐 BorderLayout' },
@@ -134,7 +134,7 @@
       function switchTab(id) {
         Object.keys(paneEls).forEach(k => {
           paneEls[k].style.display    = k === id ? 'flex' : 'none';
-          tabBtns[k].style.background = k === id ? 'var(--wos-border-active,#4a90e2)' : 'transparent';
+          tabBtns[k].style.background = k === id ? 'var(--wos-window-border-active,#4a90e2)' : 'transparent';
           tabBtns[k].style.color      = k === id ? '#fff' : 'inherit';
         });
       }
@@ -142,7 +142,7 @@
       tabDefs.forEach(({ id, label }) => {
         const btn = document.createElement('button');
         btn.textContent = label;
-        btn.style.cssText = 'padding:4px 10px;border:1px solid var(--wos-border,#d0d0d0);border-radius:5px;cursor:pointer;background:transparent;font-size:12px;color:inherit;transition:background .15s';
+        btn.style.cssText = 'padding:4px 10px;border:1px solid var(--wos-window-border,#d0d0d0);border-radius:5px;cursor:pointer;background:transparent;font-size:12px;color:inherit;transition:background .15s';
         btn.onclick = () => switchTab(id);
         tabBtns[id] = btn;
         tabs.appendChild(btn);

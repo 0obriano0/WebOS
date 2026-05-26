@@ -63,7 +63,7 @@ export class Desktop {
   private _dockSyncCleanup: (() => void) | null = null;
 
   constructor(config: DesktopConfig = {}) {
-    injectDesktopStyles();
+    if (config.injectStyles !== false) injectDesktopStyles();
 
     this._container = config.container ?? document.body;
     this._storageKey = config.storageKey ?? 'wos-desktop';
@@ -108,7 +108,7 @@ export class Desktop {
     this._dock = new Dock(config.dock ?? {});
     this._desktopEl.appendChild(this._dock.getElement());
 
-    // 根據 Dock 位置調整 icon 區域與視窗區域邊距
+    // 根據 Dock 位置調整 icon 區域邊距；視窗區域故意全尺寸，讓視窗可滑入 Dock 下方
     const dockPos = config.dock?.position ?? 'bottom';
     const DOCK_SIZE = 68;  // 對齊 CSS .wos-dock-* 的高/寬
     const inset = dockInset(dockPos, DOCK_SIZE);
@@ -131,14 +131,30 @@ export class Desktop {
 
   // ── localStorage 位置記憶 ────────────────────────────────
 
-  /** 同時更新 icon 區域與視窗區域的 inset */
+  /**
+   * 更新 icon 區域的 inset（避免 icon 被 Dock 遮住）。
+   * 視窗區域維持全尺寸（0,0,0,0），讓視窗可自由滑入 Dock 下方，
+   * 透過 CSS 變數 --wos-dock-inset-* 控制最大化時的邊界。
+   */
   private _applyInset(inset: { top: number; bottom: number; left: number; right: number }): void {
-    for (const el of [this._iconAreaEl, this._windowAreaEl]) {
-      el.style.top    = `${inset.top}px`;
-      el.style.bottom = `${inset.bottom}px`;
-      el.style.left   = `${inset.left}px`;
-      el.style.right  = `${inset.right}px`;
-    }
+    // icon 區域：跟著 dock 縮排
+    this._iconAreaEl.style.top    = `${inset.top}px`;
+    this._iconAreaEl.style.bottom = `${inset.bottom}px`;
+    this._iconAreaEl.style.left   = `${inset.left}px`;
+    this._iconAreaEl.style.right  = `${inset.right}px`;
+
+    // 視窗區域：永遠全尺寸，讓 backdrop-filter 能穿透看到視窗
+    this._windowAreaEl.style.top    = '0';
+    this._windowAreaEl.style.bottom = '0';
+    this._windowAreaEl.style.left   = '0';
+    this._windowAreaEl.style.right  = '0';
+
+    // 告知 CSS 目前 Dock 的 inset，供最大化視窗使用
+    const s = this._desktopEl.style;
+    s.setProperty('--wos-dock-inset-top',    `${inset.top}px`);
+    s.setProperty('--wos-dock-inset-bottom', `${inset.bottom}px`);
+    s.setProperty('--wos-dock-inset-left',   `${inset.left}px`);
+    s.setProperty('--wos-dock-inset-right',  `${inset.right}px`);
   }
 
   private _loadPositions(): Record<string, { x: number; y: number }> {

@@ -1,3 +1,72 @@
+var BASE_CSS = "/* ============================================================\r\n * WebOS-Core — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-core.css\">\r\n *\r\n * When using injectStyles: false option, these styles will\r\n * NOT be injected automatically — this file is your starting\r\n * point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n.wos-window {\r\n  position: fixed;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-direction: column;\r\n  border: 4px solid var(--wos-window-border, #d0d0d0);\r\n  border-radius: 6px;\r\n  box-shadow: var(--wos-window-shadow, 0 4px 24px rgba(0,0,0,0.18));\r\n  background: transparent;\r\n  overflow: hidden;\r\n  min-width: 200px;\r\n  min-height: 120px;\r\n  transition: box-shadow 0.15s, border-color 0.15s;\r\n}\r\n.wos-window.wos-active {\r\n  border-color: var(--wos-window-border-active, #b0b8c8);\r\n  box-shadow: var(--wos-window-shadow-active, 0 8px 36px rgba(0,0,0,0.28));\r\n}\r\n.wos-window.wos-minimized {\r\n  display: none !important;\r\n}\r\n.wos-window.wos-maximized {\r\n  left: 72px !important;\r\n  top: 0 !important;\r\n  width: calc(100vw - 72px) !important;\r\n  height: calc(100vh - 48px) !important;\r\n  border-radius: 0;\r\n  border-width: 0;\r\n}\r\n\r\n/* ── Isolated container mode ──────────────────────────── */\r\n.wos-isolated {\r\n  position: relative;\r\n  overflow: clip;\r\n}\r\n.wos-isolated .wos-window {\r\n  position: absolute;\r\n}\r\n.wos-isolated .wos-window.wos-maximized {\r\n  left:   var(--wos-dock-inset-left,   0px) !important;\r\n  top:    var(--wos-dock-inset-top,    0px) !important;\r\n  width:  calc(100% - var(--wos-dock-inset-left, 0px) - var(--wos-dock-inset-right,  0px)) !important;\r\n  height: calc(100% - var(--wos-dock-inset-top,  0px) - var(--wos-dock-inset-bottom, 0px)) !important;\r\n  border-radius: 0;\r\n}\r\n\r\n/* ── Header ───────────────────────────────────────────── */\r\n.wos-header {\r\n  display: flex;\r\n  align-items: center;\r\n  padding: 0 8px;\r\n  height: 36px;\r\n  background: var(--wos-window-header-bg, #f5f5f5);\r\n  border-bottom: 1px solid var(--wos-window-header-border, #e0e0e0);\r\n  cursor: move;\r\n  user-select: none;\r\n  flex-shrink: 0;\r\n}\r\n.wos-title {\r\n  flex: 1;\r\n  font-size: 13px;\r\n  font-weight: 600;\r\n  color: var(--wos-window-title-color, #333333);\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n}\r\n\r\n/* ── Control buttons ──────────────────────────────────── */\r\n.wos-btn {\r\n  width: 24px;\r\n  height: 24px;\r\n  border: none;\r\n  border-radius: 4px;\r\n  background: transparent;\r\n  cursor: pointer;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 14px;\r\n  color: var(--wos-window-btn-color, #555555);\r\n  margin-left: 2px;\r\n  transition: background 0.1s;\r\n}\r\n.wos-btn:hover { background: var(--wos-window-btn-hover-bg, #e0e0e0); }\r\n.wos-btn.wos-btn-close:hover {\r\n  background: var(--wos-window-btn-close-hover-bg, #ff5f57);\r\n  color: var(--wos-window-btn-close-hover-color, #ffffff);\r\n}\r\n.wos-btn:disabled {\r\n  opacity: 0.3;\r\n  cursor: not-allowed;\r\n}\r\n.wos-btn:disabled:hover { background: transparent; }\r\n\r\n/* ── Body ─────────────────────────────────────────────── */\r\n.wos-body {\r\n  flex: 1;\r\n  overflow: auto;\r\n  position: relative;\r\n  background: var(--wos-window-body-bg, #ffffff);\r\n  color: var(--wos-window-body-color, #222222);\r\n}\r\n.wos-body.wos-has-layout {\r\n  overflow: hidden;\r\n}\r\n\r\n/* ── Snap guide lines ─────────────────────────────────── */\r\n.wos-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 2147483647;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n";
+
+// ============================================================
+// WebOS-Core — DOM Window Renderer
+// 負責建立視窗外殼 DOM 節點、注入樣式
+// ============================================================
+const STYLE_ID = 'wos-core-styles';
+/** 回傳 Core CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
+function getCoreCSS() {
+    return BASE_CSS;
+}
+function injectStyles() {
+    if (document.getElementById(STYLE_ID))
+        return;
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = BASE_CSS;
+    document.head.appendChild(style);
+}
+/** 建立視窗外殼 DOM，回傳各主要元素參照 */
+function createWindowDOM(state) {
+    const root = document.createElement('div');
+    root.className = 'wos-window';
+    root.dataset.wosId = state.id;
+    applyGeometry(root, state);
+    root.style.zIndex = String(state.zIndex);
+    // ── Header ──
+    const header = document.createElement('div');
+    header.className = 'wos-header';
+    const title = document.createElement('span');
+    title.className = 'wos-title';
+    title.textContent = state.title;
+    const btnMin = createButton('－', 'wos-btn-min', '最小化');
+    const btnMax = createButton('□', 'wos-btn-max', '最大化');
+    const btnClose = createButton('✕', 'wos-btn-close', '關閉');
+    if (!state.resizable) {
+        btnMax.disabled = true;
+        btnMax.title = '此視窗不可調整大小';
+    }
+    header.append(title, btnMin, btnMax, btnClose);
+    // ── Body ──
+    const body = document.createElement('div');
+    body.className = 'wos-body';
+    root.append(header, body);
+    // 注入視窗內容（DOM 型別）
+    if (state.slotType === 'dom' && state.content instanceof HTMLElement) {
+        body.appendChild(state.content);
+    }
+    return { root, header, title, body, btnMin, btnMax, btnClose };
+}
+function createButton(text, cls, ariaLabel) {
+    const btn = document.createElement('button');
+    btn.className = `wos-btn ${cls}`;
+    btn.textContent = text;
+    btn.setAttribute('aria-label', ariaLabel);
+    return btn;
+}
+/** 將 WindowState 的幾何資訊套用到 DOM 元素 */
+function applyGeometry(el, state) {
+    if (state.x !== undefined)
+        el.style.left = `${state.x}px`;
+    if (state.y !== undefined)
+        el.style.top = `${state.y}px`;
+    if (state.width !== undefined)
+        el.style.width = `${state.width}px`;
+    if (state.height !== undefined)
+        el.style.height = `${state.height}px`;
+}
+
 // ============================================================
 // WebOS-Core — Global Event Bus
 // 跨視窗事件系統，允許不同視窗間即時資料聯動
@@ -284,186 +353,6 @@ class DragResizeHandler {
 }
 
 // ============================================================
-// WebOS-Core — DOM Window Renderer
-// 負責建立視窗外殼 DOM 節點、注入樣式
-// ============================================================
-const STYLE_ID = 'wos-core-styles';
-const BASE_CSS = `
-.wos-window {
-  position: fixed;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  border: 4px solid var(--wos-border, #d0d0d0);
-  border-radius: 6px;
-  box-shadow: var(--wos-shadow, 0 4px 24px rgba(0,0,0,0.18));
-  background: var(--wos-window-bg, #d0d0d0);
-  overflow: hidden;
-  min-width: 200px;
-  min-height: 120px;
-  transition: box-shadow 0.15s, border-color 0.15s;
-}
-.wos-window.wos-active {
-  border-color: var(--wos-border-active, #b0b8c8);
-  box-shadow: var(--wos-shadow-active, 0 8px 36px rgba(0,0,0,0.28));
-}
-.wos-window.wos-minimized {
-  display: none !important;
-}
-.wos-window.wos-maximized {
-  left: 72px !important;
-  top: 0 !important;
-  width: calc(100vw - 72px) !important;
-  height: calc(100vh - 48px) !important;
-  border-radius: 0;
-  border-width: 0;
-}
-/* ── Isolated container mode ──────────────────────────── */
-.wos-isolated {
-  position: relative;
-  overflow: hidden;
-}
-.wos-isolated .wos-window {
-  position: absolute;
-}
-.wos-isolated .wos-window.wos-maximized {
-  left: 0 !important;
-  top: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0;
-}
-/* ─────────────────────────────────────────────────────── */
-.wos-header {
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  height: 36px;
-  background: var(--wos-header-bg, #f5f5f5);
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
-  cursor: move;
-  user-select: none;
-  flex-shrink: 0;
-}
-.wos-title {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--wos-title-color, #333333);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.wos-btn {
-  width: 24px;
-  height: 24px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: var(--wos-btn-color, #555555);
-  margin-left: 2px;
-  transition: background 0.1s;
-}
-.wos-btn:hover { background: var(--wos-btn-hover-bg, #e0e0e0); }
-.wos-btn.wos-btn-close:hover { background: var(--wos-btn-close-hover-bg, #ff5f57); color: var(--wos-btn-close-hover-color, #ffffff); }
-.wos-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.wos-btn:disabled:hover { background: transparent; }
-.wos-body {
-  flex: 1;
-  overflow: auto;
-  position: relative;
-  background: var(--wos-body-bg, #ffffff);
-  color: var(--wos-body-color, #222222);
-}
-.wos-body.wos-has-layout {
-  overflow: hidden;
-}
-/* ── Snap guide lines ─────────────────────────────── */
-.wos-snap-guide {
-  position: absolute;
-  pointer-events: none;
-  z-index: 2147483647;
-  display: none;
-  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));
-}
-.wos-snap-guide--v {
-  width: 1px;
-  top: 0;
-  bottom: 0;
-}
-.wos-snap-guide--h {
-  height: 1px;
-  left: 0;
-  right: 0;
-}
-`;
-function injectStyles() {
-    if (document.getElementById(STYLE_ID))
-        return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = BASE_CSS;
-    document.head.appendChild(style);
-}
-/** 建立視窗外殼 DOM，回傳各主要元素參照 */
-function createWindowDOM(state) {
-    const root = document.createElement('div');
-    root.className = 'wos-window';
-    root.dataset.wosId = state.id;
-    applyGeometry(root, state);
-    root.style.zIndex = String(state.zIndex);
-    // ── Header ──
-    const header = document.createElement('div');
-    header.className = 'wos-header';
-    const title = document.createElement('span');
-    title.className = 'wos-title';
-    title.textContent = state.title;
-    const btnMin = createButton('－', 'wos-btn-min', '最小化');
-    const btnMax = createButton('□', 'wos-btn-max', '最大化');
-    const btnClose = createButton('✕', 'wos-btn-close', '關閉');
-    if (!state.resizable) {
-        btnMax.disabled = true;
-        btnMax.title = '此視窗不可調整大小';
-    }
-    header.append(title, btnMin, btnMax, btnClose);
-    // ── Body ──
-    const body = document.createElement('div');
-    body.className = 'wos-body';
-    root.append(header, body);
-    // 注入視窗內容（DOM 型別）
-    if (state.slotType === 'dom' && state.content instanceof HTMLElement) {
-        body.appendChild(state.content);
-    }
-    return { root, header, title, body, btnMin, btnMax, btnClose };
-}
-function createButton(text, cls, ariaLabel) {
-    const btn = document.createElement('button');
-    btn.className = `wos-btn ${cls}`;
-    btn.textContent = text;
-    btn.setAttribute('aria-label', ariaLabel);
-    return btn;
-}
-/** 將 WindowState 的幾何資訊套用到 DOM 元素 */
-function applyGeometry(el, state) {
-    if (state.x !== undefined)
-        el.style.left = `${state.x}px`;
-    if (state.y !== undefined)
-        el.style.top = `${state.y}px`;
-    if (state.width !== undefined)
-        el.style.width = `${state.width}px`;
-    if (state.height !== undefined)
-        el.style.height = `${state.height}px`;
-}
-
-// ============================================================
 // WebOS-Core — Snap Helper
 // 純計算模組：計算視窗拖曳時的吸附位置與 guide 線位置
 // ============================================================
@@ -641,8 +530,7 @@ const LAYOUT_CSS = `
   align-items: center;
   height: 28px;
   padding: 0 0 0 8px;
-  background: var(--wos-header-bg, #f5f5f5);
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);, #e0e0e0);
   flex-shrink: 0;
   user-select: none;
   overflow: hidden;
@@ -658,7 +546,7 @@ const LAYOUT_CSS = `
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: var(--wos-title-color, #333);
+  color: var(--wos-layout-title-color, #333);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -669,14 +557,14 @@ const LAYOUT_CSS = `
   width: 26px;
   height: 28px;
   border: none;
-  border-left: 1px solid var(--wos-header-border, #e0e0e0);
-  background: var(--wos-header-bg, #f5f5f5);
+  border-left: 1px solid var(--wos-layout-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--wos-btn-color, #555);
+  color: var(--wos-layout-btn-color, #555);
   transition: background 0.1s, color 0.1s;
   z-index: 11;
   line-height: 1;
@@ -684,8 +572,8 @@ const LAYOUT_CSS = `
   padding: 0;
 }
 .wos-region-collapse-btn:hover {
-  background: var(--wos-btn-hover-bg, #d8e4f0);
-  color: var(--wos-title-color, #333);
+  background: var(--wos-layout-btn-hover-bg, #d8e4f0);
+  color: var(--wos-layout-title-color, #333);
 }
 .wos-region-body {
   position: absolute;
@@ -717,7 +605,7 @@ const LAYOUT_CSS = `
   height: 28px;
   font-size: 14px;
   border-left: none;
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  border-bottom: 1px solid var(--wos-layout-header-border, #e0e0e0);
   margin-left: 0;
   flex-shrink: 0;
 }
@@ -743,7 +631,7 @@ const LAYOUT_CSS = `
 /* Splitters */
 .wos-layout-splitter {
   position: absolute;
-  background: var(--wos-border, #d0d0d0);
+  background: var(--wos-layout-splitter-bg, #d0d0d0);
   box-sizing: border-box;
   z-index: 10;
   user-select: none;
@@ -751,7 +639,7 @@ const LAYOUT_CSS = `
 }
 .wos-layout-splitter:hover,
 .wos-layout-splitter.wos-splitter-dragging {
-  background: var(--wos-border-active, #b0b8c8);
+  background: var(--wos-layout-splitter-active, #b0b8c8);
 }
 .wos-layout-splitter--v {
   cursor: col-resize;
@@ -1127,8 +1015,8 @@ const PANEL_CSS = `
   height: 30px;
   min-height: 30px;
   padding: 0 8px;
-  background: var(--wos-header-bg, #f5f5f5);
-  border-bottom: 1px solid var(--wos-header-border, #e0e0e0);
+  background: var(--wos-layout-header-bg, #f5f5f5);
+  border-bottom: 1px solid var(--wos-layout-header-border, #e0e0e0);
   user-select: none;
   flex-shrink: 0;
   cursor: default;
@@ -1137,7 +1025,7 @@ const PANEL_CSS = `
   flex: 1;
   font-size: 12px;
   font-weight: 600;
-  color: var(--wos-title-color, #333);
+  color: var(--wos-layout-title-color, #333);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1153,14 +1041,14 @@ const PANEL_CSS = `
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--wos-btn-color, #555);
+  color: var(--wos-layout-btn-color, #555);
   flex-shrink: 0;
   transition: background 0.1s;
   line-height: 1;
 }
 .wos-panel-toggle:hover {
-  background: var(--wos-btn-hover-bg, #e0e0e0);
-  border-color: var(--wos-border, #d0d0d0);
+  background: var(--wos-layout-btn-hover-bg, #e0e0e0);
+  border-color: var(--wos-layout-splitter-bg, #d0d0d0);
 }
 .wos-panel-body {
   flex: 1;
@@ -1303,7 +1191,8 @@ class WindowManager {
         this._snapThreshold = opts.snapThreshold ?? 20;
         this._snapGap = opts.snapGap ?? 0;
         this.events = new EventBus();
-        injectStyles();
+        if (opts.injectStyles !== false)
+            injectStyles();
         if (this._isolated) {
             this._container.classList.add('wos-isolated');
         }
@@ -1764,5 +1653,5 @@ function setTheme(preset, options = {}) {
     }
 }
 
-export { BorderLayout, EventBus, Panel, WindowManager, eventBus, setTheme, snapPosition };
+export { BorderLayout, EventBus, Panel, WindowManager, eventBus, getCoreCSS, setTheme, snapPosition };
 //# sourceMappingURL=webos-core.es.js.map

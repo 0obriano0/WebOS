@@ -111,4 +111,10 @@ export interface DesktopConfig {
    * 桌面圖示 Snap 吸附感應距離（px）。預設 20。
    */
   iconSnapThreshold?: number;
+  /**
+   * 是否自動注入 Desktop CSS 樣式，預設 true。
+   * 設為 false 時不注入任何樣式，由使用者完全自行控制 CSS。
+   * 可搭配 `getDesktopCSS()` 取得預設 CSS 作為修改基礎。
+   */
+  injectStyles?: boolean;
 }

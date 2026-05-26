@@ -281,282 +281,16 @@ class DesktopIcon {
     }
 }
 
+var DESKTOP_CSS = "/* ============================================================\r\n * WebOS-Desktop — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-desktop.css\">\r\n *\r\n * When using injectStyles: false option in Desktop config,\r\n * these styles will NOT be injected automatically — this file\r\n * is your starting point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n/* ── Desktop container ───────────────────────────────── */\r\n.wos-desktop {\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: clip;\r\n  background: var(--wos-desktop-bg, linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%));\r\n  user-select: none;\r\n  font-family: var(--wos-font, system-ui, -apple-system, sans-serif);\r\n}\r\n\r\n/* ── Icon area ───────────────────────────────────────── */\r\n.wos-desktop-icon-area {\r\n  position: absolute;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: auto;\r\n  scrollbar-width: thin;\r\n  scrollbar-color: rgba(255,255,255,0.2) transparent;\r\n}\r\n\r\n/* ── Window area ─────────────────────────────────────── */\r\n.wos-desktop-window-area {\r\n  position: absolute !important;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: clip;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-window-area > * {\r\n  pointer-events: auto;\r\n}\r\n\r\n/* ── Icon snap guides ────────────────────────────────── */\r\n.wos-icon-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 9999;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n\r\n/* ── Desktop icon ────────────────────────────────────── */\r\n.wos-desktop-icon {\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  width: 80px;\r\n  padding: 8px 4px 6px;\r\n  cursor: pointer;\r\n  border-radius: 8px;\r\n  transition: background 0.12s;\r\n}\r\n.wos-desktop-icon:hover {\r\n  background: var(--wos-desktop-icon-hover-bg, rgba(255,255,255,0.15));\r\n}\r\n.wos-desktop-icon.wos-icon-selected {\r\n  background: rgba(74,158,255,0.35);\r\n  outline: 1px solid rgba(74,158,255,0.6);\r\n}\r\n.wos-desktop-icon.wos-icon-dragging {\r\n  opacity: 0.45;\r\n  z-index: 9999;\r\n}\r\n.wos-desktop-icon-img {\r\n  width: 48px;\r\n  height: 48px;\r\n  font-size: 38px;\r\n  line-height: 1;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 10px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-icon-img img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-desktop-icon-label {\r\n  margin-top: 4px;\r\n  font-size: 11px;\r\n  color: var(--wos-desktop-icon-text, #fff);\r\n  text-align: center;\r\n  line-height: 1.3;\r\n  max-width: 76px;\r\n  word-break: break-word;\r\n  text-shadow: 0 1px 3px rgba(0,0,0,0.7);\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock ────────────────────────────────────────────── */\r\n.wos-dock {\r\n  position: absolute;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  gap: 4px;\r\n  background: var(--wos-dock-bg, rgba(20,30,50,0.75));\r\n  backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  -webkit-backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  border: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  padding: 6px 10px;\r\n  z-index: 9999;\r\n  box-sizing: border-box;\r\n  scrollbar-width: none;\r\n  -ms-overflow-style: none;\r\n}\r\n.wos-dock::-webkit-scrollbar { display: none; }\r\n.wos-dock.wos-dock-bottom {\r\n  bottom: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-top: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-top {\r\n  top: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-bottom: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-left {\r\n  top: 0; left: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-right: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n.wos-dock.wos-dock-right {\r\n  top: 0; right: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-left: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n\r\n/* ── Dock item ───────────────────────────────────────── */\r\n.wos-dock-item {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  justify-content: center;\r\n  cursor: pointer;\r\n  border-radius: 10px;\r\n  padding: 4px 6px;\r\n  position: relative;\r\n  transition: transform 0.15s, background 0.12s;\r\n  flex-shrink: 0;\r\n}\r\n.wos-dock-item:hover {\r\n  background: var(--wos-dock-item-hover-bg, rgba(255,255,255,0.12));\r\n  transform: scale(1.15) translateY(-3px);\r\n}\r\n.wos-dock-item.wos-dock-dragging {\r\n  opacity: 0.4;\r\n}\r\n.wos-dock-item.wos-dock-dragover {\r\n  background: rgba(74,158,255,0.25);\r\n  outline: 2px dashed rgba(74,158,255,0.7);\r\n  transform: scale(1.1);\r\n}\r\n.wos-dock-item.wos-dock-active {\r\n  background: rgba(74,158,255,0.2);\r\n}\r\n.wos-dock-item.wos-dock-active::after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: -5px;\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  width: 5px;\r\n  height: 5px;\r\n  border-radius: 50%;\r\n  background: rgba(74,158,255,0.9);\r\n}\r\n.wos-dock.wos-dock-top .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: -5px;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: unset;\r\n  right: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n\r\n/* ── Dock icon & label ───────────────────────────────── */\r\n.wos-dock-icon {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 8px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-dock-icon img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-dock-label {\r\n  font-size: 10px;\r\n  color: var(--wos-desktop-icon-text, rgba(255,255,255,0.85));\r\n  margin-top: 2px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 60px;\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock tooltip ────────────────────────────────────── */\r\n.wos-dock-tooltip {\r\n  position: absolute;\r\n  bottom: calc(100% + 6px);\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  background: rgba(0,0,0,0.8);\r\n  color: #fff;\r\n  font-size: 11px;\r\n  padding: 3px 8px;\r\n  border-radius: 4px;\r\n  white-space: nowrap;\r\n  pointer-events: none;\r\n  opacity: 0;\r\n  transition: opacity 0.15s;\r\n}\r\n.wos-dock-item:hover .wos-dock-tooltip {\r\n  opacity: 1;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip,\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  bottom: unset;\r\n  top: 50%;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip {\r\n  left: calc(100% + 6px);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  left: unset;\r\n  right: calc(100% + 6px);\r\n}\r\n";
+
 // ============================================================
 // WebOS-Desktop — CSS 注入（僅注入一次）
 // ============================================================
 const STYLE_ID = 'wos-desktop-styles';
-const DESKTOP_CSS = `
-/* ── Desktop container ───────────────────────────────── */
-.wos-desktop {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--wos-desktop-bg, linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%));
-  user-select: none;
-  font-family: var(--wos-font, system-ui, -apple-system, sans-serif);
+/** 回傳 Desktop CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
+function getDesktopCSS() {
+    return DESKTOP_CSS;
 }
-
-/* ── Icon area ───────────────────────────────────────── */
-.wos-desktop-icon-area {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  overflow: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
-}
-
-/* ── Window area (WindowManager container, same inset as icon-area) ── */
-.wos-desktop-window-area {
-  position: absolute !important;  /* prevent .wos-isolated from overriding to relative */
-  top: 0; left: 0; right: 0; bottom: 0;
-  overflow: hidden;
-  pointer-events: none;  /* let clicks fall through to icon area */
-}
-.wos-desktop-window-area > * {
-  pointer-events: auto;  /* but windows themselves must receive clicks */
-}
-
-/* ── Icon area snap guides ───────────────────────────── */
-.wos-icon-snap-guide {
-  position: absolute;
-  pointer-events: none;
-  z-index: 9999;
-  display: none;
-  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));
-}
-.wos-icon-snap-guide.wos-snap-guide--v {
-  width: 1px;
-  top: 0;
-  bottom: 0;
-}
-.wos-icon-snap-guide.wos-snap-guide--h {
-  height: 1px;
-  left: 0;
-  right: 0;
-}
-
-/* ── Desktop icon ────────────────────────────────────── */
-.wos-desktop-icon {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 80px;
-  padding: 8px 4px 6px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.12s;
-}
-.wos-desktop-icon:hover {
-  background: var(--wos-desktop-icon-hover-bg, rgba(255,255,255,0.15));
-}
-.wos-desktop-icon.wos-icon-selected {
-  background: rgba(74,158,255,0.35);
-  outline: 1px solid rgba(74,158,255,0.6);
-}
-.wos-desktop-icon.wos-icon-dragging {
-  opacity: 0.45;
-  z-index: 9999;
-}
-.wos-desktop-icon-img {
-  width: 48px;
-  height: 48px;
-  font-size: 38px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  overflow: hidden;
-  pointer-events: none;
-}
-.wos-desktop-icon-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.wos-desktop-icon-label {
-  margin-top: 4px;
-  font-size: 11px;
-  color: var(--wos-desktop-icon-text, #fff);
-  text-align: center;
-  line-height: 1.3;
-  max-width: 76px;
-  word-break: break-word;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-  pointer-events: none;
-}
-
-/* ── Dock ────────────────────────────────────────────── */
-.wos-dock {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  background: var(--wos-dock-bg, rgba(20,30,50,0.75));
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));
-  padding: 6px 10px;
-  z-index: 9999;
-  box-sizing: border-box;
-  /* 隱藏 scrollbar 但保留捲動能力 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.wos-dock::-webkit-scrollbar { display: none; }
-.wos-dock.wos-dock-bottom {
-  bottom: 0; left: 0; right: 0;
-  flex-direction: row;
-  height: 68px;
-  border-top: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-.wos-dock.wos-dock-top {
-  top: 0; left: 0; right: 0;
-  flex-direction: row;
-  height: 68px;
-  border-bottom: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-.wos-dock.wos-dock-left {
-  top: 0; left: 0; bottom: 0;
-  flex-direction: column;
-  width: 68px;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px 6px;
-  border-right: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.wos-dock.wos-dock-right {
-  top: 0; right: 0; bottom: 0;
-  flex-direction: column;
-  width: 68px;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px 6px;
-  border-left: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-/* ── Dock item ───────────────────────────────────────── */
-.wos-dock-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 10px;
-  padding: 4px 6px;
-  position: relative;
-  transition: transform 0.15s, background 0.12s;
-  flex-shrink: 0;
-}
-.wos-dock-item:hover {
-  background: var(--wos-dock-item-hover-bg, rgba(255,255,255,0.12));
-  transform: scale(1.15) translateY(-3px);
-}
-.wos-dock-item.wos-dock-dragging {
-  opacity: 0.4;
-}
-.wos-dock-item.wos-dock-dragover {
-  background: rgba(74,158,255,0.25);
-  outline: 2px dashed rgba(74,158,255,0.7);
-  transform: scale(1.1);
-}
-.wos-dock-item.wos-dock-active {
-  background: rgba(74,158,255,0.2);
-}
-.wos-dock-item.wos-dock-active::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(74,158,255,0.9);
-}
-.wos-dock.wos-dock-top .wos-dock-item.wos-dock-active::after {
-  bottom: unset;
-  top: -5px;
-}
-.wos-dock.wos-dock-left .wos-dock-item.wos-dock-active::after {
-  bottom: unset;
-  top: 50%;
-  left: -5px;
-  transform: translateY(-50%);
-}
-.wos-dock.wos-dock-right .wos-dock-item.wos-dock-active::after {
-  bottom: unset;
-  top: 50%;
-  left: unset;
-  right: -5px;
-  transform: translateY(-50%);
-}
-.wos-dock-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  overflow: hidden;
-  pointer-events: none;
-}
-.wos-dock-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.wos-dock-label {
-  font-size: 10px;
-  color: var(--wos-desktop-icon-text, rgba(255,255,255,0.85));
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60px;
-  pointer-events: none;
-}
-.wos-dock-tooltip {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-.wos-dock-item:hover .wos-dock-tooltip {
-  opacity: 1;
-}
-.wos-dock.wos-dock-left .wos-dock-tooltip,
-.wos-dock.wos-dock-right .wos-dock-tooltip {
-  bottom: unset;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.wos-dock.wos-dock-left .wos-dock-tooltip {
-  left: calc(100% + 6px);
-}
-.wos-dock.wos-dock-right .wos-dock-tooltip {
-  left: unset;
-  right: calc(100% + 6px);
-}
-`;
 function injectDesktopStyles() {
     if (document.getElementById(STYLE_ID))
         return;
@@ -672,7 +406,8 @@ class Desktop {
         this._iconSentinel = null;
         this._autoIconIndex = 0;
         this._dockSyncCleanup = null;
-        injectDesktopStyles();
+        if (config.injectStyles !== false)
+            injectDesktopStyles();
         this._container = config.container ?? document.body;
         this._storageKey = config.storageKey ?? 'wos-desktop';
         this._dragThreshold = config.dragThreshold ?? 6;
@@ -709,7 +444,7 @@ class Desktop {
         // Dock
         this._dock = new Dock(config.dock ?? {});
         this._desktopEl.appendChild(this._dock.getElement());
-        // 根據 Dock 位置調整 icon 區域與視窗區域邊距
+        // 根據 Dock 位置調整 icon 區域邊距；視窗區域故意全尺寸，讓視窗可滑入 Dock 下方
         const dockPos = config.dock?.position ?? 'bottom';
         const DOCK_SIZE = 68; // 對齊 CSS .wos-dock-* 的高/寬
         const inset = dockInset(dockPos, DOCK_SIZE);
@@ -727,14 +462,28 @@ class Desktop {
         (config.icons ?? []).forEach(icon => this.addIcon(icon));
     }
     // ── localStorage 位置記憶 ────────────────────────────────
-    /** 同時更新 icon 區域與視窗區域的 inset */
+    /**
+     * 更新 icon 區域的 inset（避免 icon 被 Dock 遮住）。
+     * 視窗區域維持全尺寸（0,0,0,0），讓視窗可自由滑入 Dock 下方，
+     * 透過 CSS 變數 --wos-dock-inset-* 控制最大化時的邊界。
+     */
     _applyInset(inset) {
-        for (const el of [this._iconAreaEl, this._windowAreaEl]) {
-            el.style.top = `${inset.top}px`;
-            el.style.bottom = `${inset.bottom}px`;
-            el.style.left = `${inset.left}px`;
-            el.style.right = `${inset.right}px`;
-        }
+        // icon 區域：跟著 dock 縮排
+        this._iconAreaEl.style.top = `${inset.top}px`;
+        this._iconAreaEl.style.bottom = `${inset.bottom}px`;
+        this._iconAreaEl.style.left = `${inset.left}px`;
+        this._iconAreaEl.style.right = `${inset.right}px`;
+        // 視窗區域：永遠全尺寸，讓 backdrop-filter 能穿透看到視窗
+        this._windowAreaEl.style.top = '0';
+        this._windowAreaEl.style.bottom = '0';
+        this._windowAreaEl.style.left = '0';
+        this._windowAreaEl.style.right = '0';
+        // 告知 CSS 目前 Dock 的 inset，供最大化視窗使用
+        const s = this._desktopEl.style;
+        s.setProperty('--wos-dock-inset-top', `${inset.top}px`);
+        s.setProperty('--wos-dock-inset-bottom', `${inset.bottom}px`);
+        s.setProperty('--wos-dock-inset-left', `${inset.left}px`);
+        s.setProperty('--wos-dock-inset-right', `${inset.right}px`);
     }
     _loadPositions() {
         try {
@@ -1021,5 +770,5 @@ class Desktop {
     }
 }
 
-export { Desktop, DesktopIcon, Dock };
+export { Desktop, DesktopIcon, Dock, getDesktopCSS };
 //# sourceMappingURL=webos-desktop.es.js.map

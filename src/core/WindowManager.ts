@@ -55,6 +55,12 @@ export interface WindowManagerOptions {
    * 大於 0 時，兩視窗對齊後會保留指定像素的空隙；容器邊緣不受影響。
    */
   snapGap?: number;
+  /**
+   * 是否自動注入 Core CSS 樣式，預設 true。
+   * 設為 false 時不注入任何樣式，由使用者完全自行控制 CSS。
+   * 可搭配 `getCoreCSS()` 取得預設 CSS 作為修改基礎。
+   */
+  injectStyles?: boolean;
 }
 
 interface ManagedWindow {
@@ -88,7 +94,7 @@ export class WindowManager {
     this._snapThreshold = opts.snapThreshold ?? 20;
     this._snapGap = opts.snapGap ?? 0;
     this.events = new EventBus();
-    injectStyles();
+    if (opts.injectStyles !== false) injectStyles();
     if (this._isolated) {
       this._container.classList.add('wos-isolated');
     }
