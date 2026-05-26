@@ -105,7 +105,7 @@ interface DesktopConfig {
 declare class Dock {
     private readonly _el;
     private _items;
-    private readonly _position;
+    private _position;
     private readonly _iconSize;
     private readonly _showLabels;
     private _dragSrcIndex;
@@ -124,6 +124,8 @@ declare class Dock {
     removeItem(id: string): void;
     /** 取得目前排列順序的 items（含拖曳後的結果） */
     getItems(): DockItemConfig[];
+    /** 動態變更 Dock 停靠位置 */
+    setPosition(position: DockPosition): void;
     getElement(): HTMLElement;
     destroy(): void;
 }
@@ -132,6 +134,7 @@ declare class Desktop {
     private readonly _container;
     private readonly _desktopEl;
     private readonly _iconAreaEl;
+    private readonly _windowAreaEl;
     private readonly _dock;
     private readonly _icons;
     private readonly _storageKey;
@@ -144,6 +147,8 @@ declare class Desktop {
     private _autoIconIndex;
     private _dockSyncCleanup;
     constructor(config?: DesktopConfig);
+    /** 同時更新 icon 區域與視窗區域的 inset */
+    private _applyInset;
     private _loadPositions;
     private _savePositions;
     /** 移動 sentinel 到最遠 icon 的右下角，撐開 scrollHeight/scrollWidth */
@@ -160,6 +165,11 @@ declare class Desktop {
     /** 取得 Dock 實例，可動態增減 Dock 項目 */
     getDock(): Dock;
     /**
+     * 動態變更 Dock 停靠位置（top | bottom | left | right）。
+     * 同時更新 icon 區域 inset，使 icon 不被 Dock 遮住。
+     */
+    setDockPosition(position: DockPosition): void;
+    /**
      * 將 Dock 與 WindowManager 視窗生命週期同步。
      * - 開窗：新增 Dock item
      * - 關窗：移除 Dock item
@@ -168,8 +178,10 @@ declare class Desktop {
     syncDockWithWindows(manager: WindowManagerLike, options?: DockSyncOptions): () => void;
     /** 停止 Dock 與 WindowManager 同步，並移除同步產生的 Dock items。 */
     unsyncDockWithWindows(): void;
-    /** 取得桌面根元素（可作為 WindowManager 的 container） */
+    /** 取得視窗區域元素（排除 Dock，供 WindowManager 使用） */
     getElement(): HTMLElement;
+    /** 取得桌面根元素（含 Dock） */
+    getDesktopElement(): HTMLElement;
     /** 取得圖示區域元素 */
     getIconArea(): HTMLElement;
     /** 銷毀桌面，清除所有 DOM */

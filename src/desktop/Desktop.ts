@@ -49,6 +49,7 @@ export class Desktop {
   private readonly _container: HTMLElement;
   private readonly _desktopEl: HTMLElement;
   private readonly _iconAreaEl: HTMLElement;
+  private readonly _windowAreaEl: HTMLElement;
   private readonly _dock: Dock;
   private readonly _icons = new Map<string, DesktopIcon>();
   private readonly _storageKey: string;
@@ -82,6 +83,12 @@ export class Desktop {
     this._iconAreaEl.className = 'wos-desktop-icon-area';
     this._desktopEl.appendChild(this._iconAreaEl);
 
+    // 視窗區域：大小與 iconArea 相同（排除 Dock 佔用空間），
+    // 作為 WindowManager 的 container，確保最大化時不超過 Dock
+    this._windowAreaEl = document.createElement('div');
+    this._windowAreaEl.className = 'wos-desktop-window-area';
+    this._desktopEl.appendChild(this._windowAreaEl);
+
     // Snap guide 線（icon 拖曳吸附指示）
     if (this._iconSnapEnabled) {
       this._guideV = document.createElement('div');
@@ -101,15 +108,11 @@ export class Desktop {
     this._dock = new Dock(config.dock ?? {});
     this._desktopEl.appendChild(this._dock.getElement());
 
-    // 根據 Dock 位置調整 icon 區域邊距
+    // 根據 Dock 位置調整 icon 區域與視窗區域邊距
     const dockPos = config.dock?.position ?? 'bottom';
     const DOCK_SIZE = 68;  // 對齊 CSS .wos-dock-* 的高/寬
     const inset = dockInset(dockPos, DOCK_SIZE);
-    const areaStyle = this._iconAreaEl.style;
-    areaStyle.top = `${inset.top}px`;
-    areaStyle.bottom = `${inset.bottom}px`;
-    areaStyle.left = `${inset.left}px`;
-    areaStyle.right = `${inset.right}px`;
+    this._applyInset(inset);
 
     // 點擊桌面空白處取消圖示選取
     this._desktopEl.addEventListener('mousedown', (e) => {
@@ -127,6 +130,16 @@ export class Desktop {
   }
 
   // ── localStorage 位置記憶 ────────────────────────────────
+
+  /** 同時更新 icon 區域與視窗區域的 inset */
+  private _applyInset(inset: { top: number; bottom: number; left: number; right: number }): void {
+    for (const el of [this._iconAreaEl, this._windowAreaEl]) {
+      el.style.top    = `${inset.top}px`;
+      el.style.bottom = `${inset.bottom}px`;
+      el.style.left   = `${inset.left}px`;
+      el.style.right  = `${inset.right}px`;
+    }
+  }
 
   private _loadPositions(): Record<string, { x: number; y: number }> {
     try {
@@ -286,6 +299,16 @@ export class Desktop {
   }
 
   /**
+   * 動態變更 Dock 停靠位置（top | bottom | left | right）。
+   * 同時更新 icon 區域 inset，使 icon 不被 Dock 遮住。
+   */
+  setDockPosition(position: DockPosition): void {
+    const DOCK_SIZE = 68;
+    this._dock.setPosition(position);
+    this._applyInset(dockInset(position, DOCK_SIZE));
+  }
+
+  /**
    * 將 Dock 與 WindowManager 視窗生命週期同步。
    * - 開窗：新增 Dock item
    * - 關窗：移除 Dock item
@@ -411,8 +434,13 @@ export class Desktop {
     this._dockSyncCleanup = null;
   }
 
-  /** 取得桌面根元素（可作為 WindowManager 的 container） */
+  /** 取得視窗區域元素（排除 Dock，供 WindowManager 使用） */
   getElement(): HTMLElement {
+    return this._windowAreaEl;
+  }
+
+  /** 取得桌面根元素（含 Dock） */
+  getDesktopElement(): HTMLElement {
     return this._desktopEl;
   }
 

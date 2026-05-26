@@ -296,6 +296,13 @@ desktop.addIcon({ id: 'notepad', label: '📝 Notepad', icon: '📝', action: ()
 // Sync running windows ↔ Dock items automatically (zero config)
 const stopSync = desktop.syncDockWithWindows(wm)
 // Later: stopSync() to detach
+
+// Dynamically change Dock position at runtime
+desktop.setDockPosition('top')    // 'top' | 'bottom' | 'left' | 'right'
+// Icon area and window area insets update instantly
+
+// Get the full desktop root element (includes Dock)
+desktop.getDesktopElement()
 ```
 
 ### `DesktopConfig`
@@ -310,6 +317,20 @@ const stopSync = desktop.syncDockWithWindows(wm)
 | `dock` | `DockConfig` | `{}` | Dock configuration |
 | `icons` | `DesktopIconConfig[]` | `[]` | Initial desktop icons |
 
+### Desktop Methods
+
+| Method | Description |
+|--------|-------------|
+| `desktop.addIcon(config)` | Add a desktop icon |
+| `desktop.removeIcon(id)` | Remove a desktop icon |
+| `desktop.getDock()` | Get the `Dock` instance for advanced manipulation |
+| `desktop.setDockPosition(pos)` | Dynamically move Dock: `'top' \| 'bottom' \| 'left' \| 'right'`. Updates icon and window area insets instantly. |
+| `desktop.getElement()` | Get the window area element (Dock excluded) — use as `WindowManager` container |
+| `desktop.getDesktopElement()` | Get the full desktop root element (includes Dock) |
+| `desktop.syncDockWithWindows(wm, opts?)` | Sync Dock items with running windows |
+| `desktop.unsyncDockWithWindows()` | Stop sync |
+| `desktop.destroy()` | Tear down the desktop |
+
 ### `desktop.syncDockWithWindows(manager, options?)`
 
 | Option | Type | Default | Description |
@@ -322,7 +343,7 @@ const stopSync = desktop.syncDockWithWindows(wm)
 
 Returns a `() => void` cleanup function (same as `desktop.unsyncDockWithWindows()`).
 
-> **Demo** — `demo/desktop/index.html` ships a full virtual desktop experience with Dock, draggable icons, theme switching, snap-gap control, and a **📐 BorderLayout demo window** (Basic + Nested tabs).
+> **Demo** — `demo/desktop/index.html` ships a full virtual desktop experience with Dock, draggable icons, theme switching, snap-gap control, **live Dock position switching** (top/bottom/left/right), and a **📐 BorderLayout demo window** (Basic + Nested tabs).
 
 ---
 

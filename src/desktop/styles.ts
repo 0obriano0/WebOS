@@ -25,6 +25,17 @@ const DESKTOP_CSS = `
   scrollbar-color: rgba(255,255,255,0.2) transparent;
 }
 
+/* ── Window area (WindowManager container, same inset as icon-area) ── */
+.wos-desktop-window-area {
+  position: absolute !important;  /* prevent .wos-isolated from overriding to relative */
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  pointer-events: none;  /* let clicks fall through to icon area */
+}
+.wos-desktop-window-area > * {
+  pointer-events: auto;  /* but windows themselves must receive clicks */
+}
+
 /* ── Icon area snap guides ───────────────────────────── */
 .wos-icon-snap-guide {
   position: absolute;

@@ -146,6 +146,12 @@
         getItems() {
             return [...this._items];
         }
+        /** 動態變更 Dock 停靠位置 */
+        setPosition(position) {
+            this._el.classList.remove(`wos-dock-${this._position}`);
+            this._position = position;
+            this._el.classList.add(`wos-dock-${this._position}`);
+        }
         getElement() {
             return this._el;
         }
@@ -304,6 +310,17 @@
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+/* ── Window area (WindowManager container, same inset as icon-area) ── */
+.wos-desktop-window-area {
+  position: absolute !important;  /* prevent .wos-isolated from overriding to relative */
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  pointer-events: none;  /* let clicks fall through to icon area */
+}
+.wos-desktop-window-area > * {
+  pointer-events: auto;  /* but windows themselves must receive clicks */
 }
 
 /* ── Icon area snap guides ───────────────────────────── */
@@ -677,6 +694,11 @@
             this._iconAreaEl = document.createElement('div');
             this._iconAreaEl.className = 'wos-desktop-icon-area';
             this._desktopEl.appendChild(this._iconAreaEl);
+            // 視窗區域：大小與 iconArea 相同（排除 Dock 佔用空間），
+            // 作為 WindowManager 的 container，確保最大化時不超過 Dock
+            this._windowAreaEl = document.createElement('div');
+            this._windowAreaEl.className = 'wos-desktop-window-area';
+            this._desktopEl.appendChild(this._windowAreaEl);
             // Snap guide 線（icon 拖曳吸附指示）
             if (this._iconSnapEnabled) {
                 this._guideV = document.createElement('div');
@@ -693,15 +715,11 @@
             // Dock
             this._dock = new Dock(config.dock ?? {});
             this._desktopEl.appendChild(this._dock.getElement());
-            // 根據 Dock 位置調整 icon 區域邊距
+            // 根據 Dock 位置調整 icon 區域與視窗區域邊距
             const dockPos = config.dock?.position ?? 'bottom';
             const DOCK_SIZE = 68; // 對齊 CSS .wos-dock-* 的高/寬
             const inset = dockInset(dockPos, DOCK_SIZE);
-            const areaStyle = this._iconAreaEl.style;
-            areaStyle.top = `${inset.top}px`;
-            areaStyle.bottom = `${inset.bottom}px`;
-            areaStyle.left = `${inset.left}px`;
-            areaStyle.right = `${inset.right}px`;
+            this._applyInset(inset);
             // 點擊桌面空白處取消圖示選取
             this._desktopEl.addEventListener('mousedown', (e) => {
                 if (e.target === this._desktopEl || e.target === this._iconAreaEl) {
@@ -715,6 +733,15 @@
             (config.icons ?? []).forEach(icon => this.addIcon(icon));
         }
         // ── localStorage 位置記憶 ────────────────────────────────
+        /** 同時更新 icon 區域與視窗區域的 inset */
+        _applyInset(inset) {
+            for (const el of [this._iconAreaEl, this._windowAreaEl]) {
+                el.style.top = `${inset.top}px`;
+                el.style.bottom = `${inset.bottom}px`;
+                el.style.left = `${inset.left}px`;
+                el.style.right = `${inset.right}px`;
+            }
+        }
         _loadPositions() {
             try {
                 const raw = localStorage.getItem(`${this._storageKey}-icon-positions`);
@@ -850,6 +877,15 @@
             return this._dock;
         }
         /**
+         * 動態變更 Dock 停靠位置（top | bottom | left | right）。
+         * 同時更新 icon 區域 inset，使 icon 不被 Dock 遮住。
+         */
+        setDockPosition(position) {
+            const DOCK_SIZE = 68;
+            this._dock.setPosition(position);
+            this._applyInset(dockInset(position, DOCK_SIZE));
+        }
+        /**
          * 將 Dock 與 WindowManager 視窗生命週期同步。
          * - 開窗：新增 Dock item
          * - 關窗：移除 Dock item
@@ -969,8 +1005,12 @@
             this._dockSyncCleanup?.();
             this._dockSyncCleanup = null;
         }
-        /** 取得桌面根元素（可作為 WindowManager 的 container） */
+        /** 取得視窗區域元素（排除 Dock，供 WindowManager 使用） */
         getElement() {
+            return this._windowAreaEl;
+        }
+        /** 取得桌面根元素（含 Dock） */
+        getDesktopElement() {
             return this._desktopEl;
         }
         /** 取得圖示區域元素 */

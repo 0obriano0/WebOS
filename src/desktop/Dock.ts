@@ -29,7 +29,7 @@ function resolveIconEl(icon: string, size: number): HTMLElement {
 export class Dock {
   private readonly _el: HTMLElement;
   private _items: DockItemConfig[];
-  private readonly _position: DockPosition;
+  private _position: DockPosition;
   private readonly _iconSize: number;
   private readonly _showLabels: boolean;
   private _dragSrcIndex = -1;
@@ -166,6 +166,13 @@ export class Dock {
   /** 取得目前排列順序的 items（含拖曳後的結果） */
   getItems(): DockItemConfig[] {
     return [...this._items];
+  }
+
+  /** 動態變更 Dock 停靠位置 */
+  setPosition(position: DockPosition): void {
+    this._el.classList.remove(`wos-dock-${this._position}`);
+    this._position = position;
+    this._el.classList.add(`wos-dock-${this._position}`);
   }
 
   getElement(): HTMLElement {
