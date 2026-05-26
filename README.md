@@ -163,6 +163,8 @@ export default function App() {
 interface WindowConfig {
   id:          string    // Unique window ID (required)
   title:       string    // Window title bar text
+  icon?:       string    // Emoji or image URL shown in Dock (default: '🪟')
+  label?:      string    // Short Dock label; falls back to title when omitted
   content:     any       // HTMLElement, or null when using framework adapters
   x?:          number    // Initial X position (px)
   y?:          number    // Initial Y position (px)
@@ -282,10 +284,16 @@ const wm = new WindowManager({
 })
 
 desktop.addIcon({ id: 'notepad', label: '📝 Notepad', icon: '📝', action: () => {
-  wm.open({ id: 'notepad', title: 'Notepad', content: document.createElement('div') })
+  wm.open({
+    id:    'notepad',
+    title: '📝 Notepad',   // shown in window title bar
+    label: 'Notepad',      // short label shown in Dock (falls back to title if omitted)
+    icon:  '📝',           // icon shown in Dock
+    content: document.createElement('div'),
+  })
 }})
 
-// Sync running windows ↔ Dock items automatically
+// Sync running windows ↔ Dock items automatically (zero config)
 const stopSync = desktop.syncDockWithWindows(wm)
 // Later: stopSync() to detach
 ```
@@ -307,7 +315,7 @@ const stopSync = desktop.syncDockWithWindows(wm)
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `getAppIdFromWindowId` | `(windowId) => string \| null` | strip `app-` prefix | Map window ID → app ID. Return `null` to skip. |
-| `getDockItem` | `(appId, event) => { label, icon } \| null` | title + 🪟 | Build Dock display. Return `null` to skip. |
+| `getDockItem` | `(appId, event) => { label, icon } \| null` | `event.label ?? event.title` + `event.icon ?? 🪟` | Build Dock display. Return `null` to skip. |
 | `onDockItemClick` | `(appId, windowId) => void` | focus window | Custom click handler |
 | `dedupeByAppId` | `boolean` | `true` | One Dock item per app ID |
 | `syncExisting` | `boolean` | `true` | Sync already-open windows at bind time |

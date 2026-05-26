@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態（AI 快查版）
 
-> 最後更新：2026-05-25 17:01 ｜ 備份：`bak/PROJECT_STATUS.2026-05-25.md`
+> 最後更新：2026-05-26 09:33 ｜ 備份：`bak/PROJECT_STATUS.2026-05-25.md`
 > 此文件為 AI 輔助開發設計，優先說明「現在是什麼」，歷史細節見備份。
 
 ---
@@ -159,7 +159,9 @@ const wm = new WindowManager({
 
 // 開窗（WindowConfig）
 wm.open(config: WindowConfig)  // id 存在則 restore+focus
-// config: { id, title, content, x?, y?, width?, height?, resizable? }
+// config: { id, title, icon?, label?, content, x?, y?, width?, height?, resizable? }
+// icon:    emoji 或圖片 URL，供 Dock 自動同步顯示
+// label:   Dock 顯示用短標籤；有值時優先於 title，無值則 fallback 到 title
 // resizable: false → 禁用放大按鈕 + 邊框拖曳縮放（固定大小視窗模式）
 wm.close(id) / wm.minimize(id) / wm.maximize(id) / wm.restore(id)
 wm.focus(id) / wm.setTitle(id, title)
@@ -177,7 +179,11 @@ setTheme('dark' | 'light', { basePath?: string, linkId?: string })
 const desktop = new Desktop({ container, dock: { position: 'bottom', ... }, ... })
 const wm = new WindowManager({ container: desktop.getElement(), isolated: true })
 desktop.addIcon({ id, label, icon, action })
+
+// Dock 與 WindowManager 自動同步（零 config 即可）
 desktop.syncDockWithWindows(wm)
+// Dock 顯示文字優先順序：WindowConfig.label → WindowConfig.title
+// Dock 圖示來源：WindowConfig.icon（未傳則顯示 🪟）
 ```
 
 ---
@@ -229,6 +235,8 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 15 | Snap 縮放吸附座標 | `_applyResize` 轉換為容器相對座標後才傳給 `resizeSnapFn`；snapResize 回傳容器相對座標，不再需要扣 cLeft/cTop |
 | 16 | snapGap 邏輯 | 跨側吸附（近邊貼遠邊）加 gap；同側對齊（左對左）不加；容器邊緣一律不加 gap |
 | 17 | `resizable: false` 實作 | `WindowConfig` + `WindowState` 加 `resizable`；`DOMRenderer` 設 `btnMax.disabled`；`DragResizeHandler` guard `_onWinMouseDown` + `_updateResizeCursor`；`WindowManager.maximize()` 提前 return |
+| 18 | Dock z-index 被視窗壓住 | Dock `.wos-dock` z-index: 100 → **9999**；視窗 `BASE_Z=100`、`MAX_Z=8999`；新增 `_normalizeZ()` 在視窗 z-index 逼近 8999 時自動重新排序，確保工具列永遠在視窗上方 |
+| 19 | `syncDockWithWindows` 簡化 | `WindowConfig/State` 加 `icon?` + `label?`；Dock 預設直接讀取事件資料，無需傳 `getDockItem` config。`label` 優先於 `title` 顯示於 Dock |
 
 ---
 
