@@ -248,25 +248,43 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 // UMD: WebOS.setTheme('dark', { basePath: 'dist/themes' })
 ```
 
-### CSS Custom Properties — Core (15)
+### CSS Custom Properties — Core (14)
 
 ```css
 :root {
-  --wos-window-bg:             #ffffff;
-  --wos-header-bg:             #f0f0f0;
-  --wos-title-color:           #333333;
-  --wos-border:                #d0d0d0;
-  --wos-border-active:         #4a90e2;
-  --wos-shadow:                0 2px 12px rgba(0,0,0,0.12);
-  --wos-shadow-active:         0 4px 24px rgba(0,0,0,0.22);
-  --wos-header-border:         #e0e0e0;
-  --wos-btn-color:             #555555;
-  --wos-btn-hover-bg:          rgba(0,0,0,0.08);
-  --wos-btn-close-hover-bg:    #e53e3e;
-  --wos-btn-close-hover-color: #ffffff;
-  --wos-body-bg:               #ffffff;
-  --wos-body-color:            #222222;
-  --wos-snap-guide-color:      rgba(74,144,226,0.4);
+  /* Window chrome */
+  --wos-window-border:               #d0d0d0;
+  --wos-window-border-active:        #b0b8c8;
+  --wos-window-shadow:               0 4px 24px rgba(0,0,0,0.18);
+  --wos-window-shadow-active:        0 8px 36px rgba(0,0,0,0.28);
+  /* Header */
+  --wos-window-header-bg:            #f5f5f5;
+  --wos-window-header-border:        #e0e0e0;
+  --wos-window-title-color:          #333333;
+  /* Buttons */
+  --wos-window-btn-color:            #555555;
+  --wos-window-btn-hover-bg:         #e0e0e0;
+  --wos-window-btn-close-hover-bg:   #ff5f57;
+  --wos-window-btn-close-hover-color:#ffffff;
+  /* Body */
+  --wos-window-body-bg:              #ffffff;
+  --wos-window-body-color:           #222222;
+  /* Snap guide */
+  --wos-snap-guide-color:            rgba(0,120,255,0.55);
+}
+```
+
+### CSS Custom Properties — Layout module (7)
+
+```css
+:root {
+  --wos-layout-header-bg:       #ebebeb;
+  --wos-layout-header-border:   #d8d8d8;
+  --wos-layout-title-color:     #444444;
+  --wos-layout-btn-color:       #666666;
+  --wos-layout-btn-hover-bg:    #d8e4f0;
+  --wos-layout-splitter-bg:     #d0d0d0;
+  --wos-layout-splitter-active: #b0b8c8;
 }
 ```
 
@@ -274,13 +292,13 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 
 ```css
 :root {
-  --wos-desktop-bg:             linear-gradient(135deg,#f0f4f8 0%,#e2e8f0 100%);
-  --wos-desktop-icon-text:      #1a202c;
+  --wos-desktop-bg:             linear-gradient(135deg,#e8eaf0 0%,#d0d4e0 100%);
+  --wos-desktop-icon-text:      #1a1a2e;
   --wos-desktop-icon-hover-bg:  rgba(0,0,0,0.08);
   --wos-dock-bg:                rgba(220,225,240,0.20);  /* semi-transparent for frosted glass */
   --wos-dock-backdrop-filter:   blur(4px);               /* frosted-glass blur behind dock */
-  --wos-dock-border:            rgba(0,0,0,0.10);
-  --wos-dock-item-hover-bg:     rgba(0,0,0,0.06);
+  --wos-dock-border:            rgba(0,0,0,0.12);
+  --wos-dock-item-hover-bg:     rgba(0,0,0,0.08);
   --wos-font:                   system-ui,-apple-system,sans-serif;
 }
 ```
