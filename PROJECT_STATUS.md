@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態（AI 快查版）
 
-> 最後更新：2026-06-09 10:26 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
+> 最後更新：2026-06-09 10:48 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
 > 此文件為 AI 輔助開發設計，優先說明「現在是什麼」，歷史細節見備份。
 
 ---
@@ -276,6 +276,9 @@ taskView.destroy()
 desktop.syncDockWithWindows(wm, {
   showWindowPreview: true,                    // 預設 true；false = 關閉預覽
   previewSize: { width: 160, height: 100 },   // 每張卡片縮略圖尺寸
+  // Vue + Vuetify 環境下自動偵測 .v-application，通常不需設定
+  // 若自動偵測失敗（縮略圖無樣式），手動指定 CSS scope root：
+  // previewMountEl: document.getElementById('app'),
 })
 
 // 子視窗（parentId / modal）
@@ -360,6 +363,8 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 34 | Dock 群組預覽 Sticky hover | `showGroupPreview` 用兩個 timer（showTimer 280ms / hideTimer 120ms）；popup `mouseenter` 取消 hide timer；Dock item `mouseleave` 只 scheduleHide，不立刻關閉，讓使用者可滑入 popup |
 | 35 | Modal 關閉安全機制 | 點群組預覽父視窗 × 時，先掃所有子視窗找 `modal:true` 的；若存在則 shake 子視窗 + shake 對應卡片，不執行關閉；只有全部子視窗都是 non-modal 才 cascade 關閉 |
 | 36 | `syncExisting` parentId 遺漏 | 原本 `syncExisting` 路徑只傳 `id/title/label/icon`，漏傳 `parentId`，導致初始存在的子視窗未被過濾、會出現在 Dock。修法：讀 `state.parentId` 一併傳入 |
+| 37 | 群組預覽 popup 定位偏移（Vuetify / position:fixed 失效）| `buildGroupPreview` 用 `position:fixed` + `getBoundingClientRect()` viewport 座標，但若外層有 `transform`/`will-change`，`fixed` 會失效變成相對該容器定位。修法：在最後用 `popup.style.cssText +=` inline 覆寫 `position:fixed`，優先權高於 CSS class，不受外層 stacking context 影響 |
+| 38 | 群組預覽縮略圖 CSS scope 失效（Vuetify scoped CSS）| `cloneNode(true)` 後掛到 `document.body`，脫離 `.v-application` selector scope、Vue scoped `data-v-*` 及 Desktop CSS 變數繼承，縮略圖只剩文字。修法：`buildGroupPreview` 自動偵測第一個 `winEl` 最近的 `.v-application` 作為 popup 掛載點；找不到 fallback `document.body`。新增 `DockSyncOptions.previewMountEl` 供使用者手動指定 CSS scope root |
 
 ---
 

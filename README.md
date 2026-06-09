@@ -420,6 +420,7 @@ desktop.getDesktopElement()
 | `syncExisting` | `boolean` | `true` | Sync already-open windows at bind time |
 | `showWindowPreview` | `boolean` | `true` | Enable Windows-style group thumbnail preview on hover |
 | `previewSize` | `{ width: number; height: number }` | `{ width: 160, height: 100 }` | Thumbnail card size per window (aspect-ratio preserved) |
+| `previewMountEl` | `HTMLElement` | auto-detect `.v-application` | Element to mount the preview popup into. Auto-detects the nearest `.v-application` ancestor so Vuetify / Vue scoped CSS / CSS variables are inherited by cloned thumbnails. Pass your app root if the detection fails (e.g., `document.getElementById('app')`). |
 
 ### `Dock` Methods
 
@@ -433,6 +434,8 @@ desktop.getDesktopElement()
 ---
 
 > **Group thumbnail preview** — Hovering a Dock item for 280ms shows a Windows-style card strip: one card per window (parent + all children). Each card has a title and a × close button (appears on hover). The popup is sticky — mouse can move into it without it disappearing. Modal safety: clicking × on a parent card while a `modal` child exists shakes the child instead of closing. Thumbnails are automatically re-bound after drag-reorder or new window opens via `Dock.onRender`.
+>
+> **Vuetify / Scoped CSS** — The popup is auto-mounted inside the nearest `.v-application` ancestor (or `previewMountEl`) so cloned thumbnails correctly inherit Vuetify selectors, Vue `data-v-*` scoped styles, and CSS custom properties. Positioning always uses `position:fixed` with viewport coordinates, unaffected by the mount point.
 
 > **Demo** — `demo/desktop/index.html` ships a full virtual desktop experience with Dock, draggable icons, theme switching, snap-gap control, **live Dock position switching** (top/bottom/left/right), a **📐 BorderLayout demo window** (Basic + Nested tabs), and a **child window / modal dialog demo** (System Settings window).
 

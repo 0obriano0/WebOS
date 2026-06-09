@@ -87,12 +87,20 @@ interface DockSyncOptions {
     showWindowPreview?: boolean;
     /**
      * 預覽縮略圖的最大尺寸（px）。
-     * 縮略圖會按比例縮放，不超過此寬高。預設 `{ width: 240, height: 150 }`。
+     * 縮略圖會按比例縮放，不超過此寬高。預設 `{ width: 160, height: 100 }`。
      */
     previewSize?: {
         width: number;
         height: number;
     };
+    /**
+     * 群組預覽 popup 的掛載元素。
+     * 預設：自動偵測 `winEl` 最近的 `.v-application`，找不到則 fallback 到 `document.body`。
+     * 使用 Vue+Vuetify 時通常不需設定；如果你的 CSS scope root 不是 `.v-application`，
+     * 請傳入你的應用根元素（例如 `document.getElementById('app')`），以確保
+     * cloneNode 後的縮略圖仍在 CSS 作用域內（Vuetify/Scoped CSS/CSS 變數均可繼承）。
+     */
+    previewMountEl?: HTMLElement;
 }
 /** Dock 停靠位置 */
 type DockPosition = 'bottom' | 'top' | 'left' | 'right';

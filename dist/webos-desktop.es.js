@@ -405,7 +405,7 @@ const PREVIEW_CARD_H = 100;
  * 每個視窗（父 + 子）對應一張卡片，卡片含標題列與縮略圖。
  */
 function buildGroupPreview(opts) {
-    const { anchorEl, dockPos, windowIds, getWindowEl, getWinState, cardW, cardH, onCardClick, onCardClose } = opts;
+    const { anchorEl, dockPos, windowIds, getWindowEl, getWinState, cardW, cardH, onCardClick, onCardClose, mountEl } = opts;
     const HEADER_H = 26;
     const CARD_GAP = 6;
     const PADDING = 8;
@@ -485,8 +485,16 @@ function buildGroupPreview(opts) {
     }
     x = Math.max(8, Math.min(window.innerWidth - totalW - 8, x));
     y = Math.max(8, Math.min(window.innerHeight - totalH - 8, y));
-    popup.style.left = `${x}px`;
-    popup.style.top = `${y}px`;
+    // position:fixed inline — 防止外層 transform/will-change 建立新的 containing block
+    // 座標系與 getBoundingClientRect() 一致（viewport 座標），與掛載點無關
+    popup.style.cssText += `position:fixed;left:${x}px;top:${y}px;`;
+    // 儲存最終採用的掛載元素（mountEl → 第一個 winEl 最近的 .v-application → body）
+    // 掛在 CSS scope root 內確保 cloneNode 縮略圖繼承 Vuetify/Scoped CSS/CSS 變數
+    const firstWinEl = windowIds.length > 0 ? getWindowEl(windowIds[0]) : undefined;
+    const resolvedMount = mountEl ??
+        (firstWinEl?.closest('.v-application') ?? null) ??
+        document.body;
+    popup._mountEl = resolvedMount;
     return popup;
 }
 /** 圖示自動排列：每欄最多幾個 icon */
@@ -764,6 +772,7 @@ class Desktop {
         const enablePreview = options.showWindowPreview !== false;
         const previewCardW = options.previewSize?.width ?? PREVIEW_CARD_W;
         const previewCardH = options.previewSize?.height ?? PREVIEW_CARD_H;
+        const previewMountEl = options.previewMountEl; // undefined = 自動偵測 .v-application
         let previewEl = null;
         let previewShowTimer;
         let previewHideTimer;
@@ -829,11 +838,14 @@ class Desktop {
                     cardH: previewCardH,
                     onCardClick,
                     onCardClose,
+                    mountEl: previewMountEl,
                 });
                 // Sticky hover：滑鼠移入 popup 時取消隱藏計時器
                 previewEl.addEventListener('mouseenter', () => clearTimeout(previewHideTimer));
                 previewEl.addEventListener('mouseleave', scheduleHide);
-                document.body.appendChild(previewEl);
+                // 掛載到 _mountEl（.v-application 或 document.body），確保 CSS scope 繼承
+                const mount = previewEl._mountEl ?? document.body;
+                mount.appendChild(previewEl);
                 requestAnimationFrame(() => previewEl?.classList.add('wos-dock-group-preview--visible'));
             }, 280);
         };
