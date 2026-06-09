@@ -35,7 +35,9 @@ export interface WindowElements {
 export function createWindowDOM(state: WindowState): WindowElements {
   const root = document.createElement('div');
   root.className = 'wos-window';
+  if (state.parentId) root.classList.add('wos-child-window');
   root.dataset.wosId = state.id;
+  if (state.parentId) root.dataset.wosParentId = state.parentId;
   applyGeometry(root, state);
   root.style.zIndex = String(state.zIndex);
 
@@ -56,6 +58,12 @@ export function createWindowDOM(state: WindowState): WindowElements {
     btnMax.title = '此視窗不可調整大小';
   }
 
+  // 子視窗：隱藏最小化按鈕（符合 Windows 對話框習慣）
+  if (state.parentId) {
+    btnMin.style.display = 'none';
+    btnMin.setAttribute('aria-hidden', 'true');
+  }
+
   header.append(title, btnMin, btnMax, btnClose);
 
   // ── Body ──
@@ -70,6 +78,17 @@ export function createWindowDOM(state: WindowState): WindowElements {
   }
 
   return { root, header, title, body, btnMin, btnMax, btnClose };
+}
+
+/**
+ * 建立 Modal 遮罩層（覆蓋父視窗內容，不可操作）。
+ * 需插入父視窗的 root 元素內。
+ */
+export function createModalOverlay(): HTMLElement {
+  const el = document.createElement('div');
+  el.className = 'wos-modal-overlay';
+  el.setAttribute('aria-hidden', 'true');
+  return el;
 }
 
 function createButton(text: string, cls: string, ariaLabel: string): HTMLButtonElement {

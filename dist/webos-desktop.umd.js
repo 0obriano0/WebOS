@@ -312,7 +312,7 @@
         }
     }
 
-    var DESKTOP_CSS = "/* ============================================================\r\n * WebOS-Desktop — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-desktop.css\">\r\n *\r\n * When using injectStyles: false option in Desktop config,\r\n * these styles will NOT be injected automatically — this file\r\n * is your starting point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n/* ── Desktop container ───────────────────────────────── */\r\n.wos-desktop {\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: clip;\r\n  background: var(--wos-desktop-bg, linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%));\r\n  user-select: none;\r\n  font-family: var(--wos-font, system-ui, -apple-system, sans-serif);\r\n}\r\n\r\n/* ── Icon area ───────────────────────────────────────── */\r\n.wos-desktop-icon-area {\r\n  position: absolute;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: auto;\r\n  scrollbar-width: thin;\r\n  scrollbar-color: rgba(255,255,255,0.2) transparent;\r\n}\r\n\r\n/* ── Window area ─────────────────────────────────────── */\r\n.wos-desktop-window-area {\r\n  position: absolute !important;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: clip;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-window-area > * {\r\n  pointer-events: auto;\r\n}\r\n\r\n/* ── Icon snap guides ────────────────────────────────── */\r\n.wos-icon-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 9999;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n\r\n/* ── Desktop icon ────────────────────────────────────── */\r\n.wos-desktop-icon {\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  width: 80px;\r\n  padding: 8px 4px 6px;\r\n  cursor: pointer;\r\n  border-radius: 8px;\r\n  transition: background 0.12s;\r\n}\r\n.wos-desktop-icon:hover {\r\n  background: var(--wos-desktop-icon-hover-bg, rgba(255,255,255,0.15));\r\n}\r\n.wos-desktop-icon.wos-icon-selected {\r\n  background: rgba(74,158,255,0.35);\r\n  outline: 1px solid rgba(74,158,255,0.6);\r\n}\r\n.wos-desktop-icon.wos-icon-dragging {\r\n  opacity: 0.45;\r\n  z-index: 9999;\r\n}\r\n.wos-desktop-icon-img {\r\n  width: 48px;\r\n  height: 48px;\r\n  font-size: 38px;\r\n  line-height: 1;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 10px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-icon-img img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-desktop-icon-label {\r\n  margin-top: 4px;\r\n  font-size: 11px;\r\n  color: var(--wos-desktop-icon-text, #fff);\r\n  text-align: center;\r\n  line-height: 1.3;\r\n  max-width: 76px;\r\n  word-break: break-word;\r\n  text-shadow: 0 1px 3px rgba(0,0,0,0.7);\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock ────────────────────────────────────────────── */\r\n.wos-dock {\r\n  position: absolute;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  gap: 4px;\r\n  background: var(--wos-dock-bg, rgba(20,30,50,0.75));\r\n  backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  -webkit-backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  border: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  padding: 6px 10px;\r\n  z-index: 9999;\r\n  box-sizing: border-box;\r\n  scrollbar-width: none;\r\n  -ms-overflow-style: none;\r\n}\r\n.wos-dock::-webkit-scrollbar { display: none; }\r\n.wos-dock.wos-dock-bottom {\r\n  bottom: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-top: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-top {\r\n  top: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-bottom: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-left {\r\n  top: 0; left: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-right: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n.wos-dock.wos-dock-right {\r\n  top: 0; right: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-left: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n\r\n/* ── Dock item ───────────────────────────────────────── */\r\n.wos-dock-item {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  justify-content: center;\r\n  cursor: pointer;\r\n  border-radius: 10px;\r\n  padding: 4px 6px;\r\n  position: relative;\r\n  transition: transform 0.15s, background 0.12s;\r\n  flex-shrink: 0;\r\n}\r\n.wos-dock-item:hover {\r\n  background: var(--wos-dock-item-hover-bg, rgba(255,255,255,0.12));\r\n  transform: scale(1.15) translateY(-3px);\r\n}\r\n.wos-dock-item.wos-dock-dragging {\r\n  opacity: 0.4;\r\n}\r\n.wos-dock-item.wos-dock-dragover {\r\n  background: rgba(74,158,255,0.25);\r\n  outline: 2px dashed rgba(74,158,255,0.7);\r\n  transform: scale(1.1);\r\n}\r\n.wos-dock-item.wos-dock-active {\r\n  background: rgba(74,158,255,0.2);\r\n}\r\n.wos-dock-item.wos-dock-active::after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: -5px;\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  width: 5px;\r\n  height: 5px;\r\n  border-radius: 50%;\r\n  background: rgba(74,158,255,0.9);\r\n}\r\n.wos-dock.wos-dock-top .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: -5px;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: unset;\r\n  right: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n\r\n/* ── Dock icon & label ───────────────────────────────── */\r\n.wos-dock-icon {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 8px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-dock-icon img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-dock-label {\r\n  font-size: 10px;\r\n  color: var(--wos-desktop-icon-text, rgba(255,255,255,0.85));\r\n  margin-top: 2px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 60px;\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock tooltip ────────────────────────────────────── */\r\n.wos-dock-tooltip {\r\n  position: absolute;\r\n  bottom: calc(100% + 6px);\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  background: rgba(0,0,0,0.8);\r\n  color: #fff;\r\n  font-size: 11px;\r\n  padding: 3px 8px;\r\n  border-radius: 4px;\r\n  white-space: nowrap;\r\n  pointer-events: none;\r\n  opacity: 0;\r\n  transition: opacity 0.15s;\r\n}\r\n.wos-dock-item:hover .wos-dock-tooltip {\r\n  opacity: 1;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip,\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  bottom: unset;\r\n  top: 50%;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip {\r\n  left: calc(100% + 6px);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  left: unset;\r\n  right: calc(100% + 6px);\r\n}\r\n\r\n/* ── Dock window hover preview ───────────────────────── */\r\n.wos-dock-win-preview {\r\n  position: fixed;\r\n  z-index: 99998;\r\n  pointer-events: none;\r\n  border-radius: 8px;\r\n  overflow: hidden;\r\n  border: 1px solid rgba(255, 255, 255, 0.15);\r\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);\r\n  background: rgba(20, 20, 25, 0.95);\r\n  opacity: 0;\r\n  transform: translateY(6px);\r\n  transition: opacity 0.15s, transform 0.15s;\r\n}\r\n.wos-dock-win-preview.wos-dock-win-preview--visible {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n/* adjust slide direction for non-bottom docks */\r\n.wos-dock-win-preview.wos-dock-win-preview--top {\r\n  transform: translateY(-6px);\r\n}\r\n.wos-dock-win-preview.wos-dock-win-preview--top.wos-dock-win-preview--visible {\r\n  transform: translateY(0);\r\n}\r\n.wos-dock-win-preview.wos-dock-win-preview--left,\r\n.wos-dock-win-preview.wos-dock-win-preview--right {\r\n  transform: translateX(0);\r\n}\r\n";
+    var DESKTOP_CSS = "/* ============================================================\r\n * WebOS-Desktop — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-desktop.css\">\r\n *\r\n * When using injectStyles: false option in Desktop config,\r\n * these styles will NOT be injected automatically — this file\r\n * is your starting point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n/* ── Desktop container ───────────────────────────────── */\r\n.wos-desktop {\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: clip;\r\n  background: var(--wos-desktop-bg, linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%));\r\n  user-select: none;\r\n  font-family: var(--wos-font, system-ui, -apple-system, sans-serif);\r\n}\r\n\r\n/* ── Icon area ───────────────────────────────────────── */\r\n.wos-desktop-icon-area {\r\n  position: absolute;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: auto;\r\n  scrollbar-width: thin;\r\n  scrollbar-color: rgba(255,255,255,0.2) transparent;\r\n}\r\n\r\n/* ── Window area ─────────────────────────────────────── */\r\n.wos-desktop-window-area {\r\n  position: absolute !important;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: clip;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-window-area > * {\r\n  pointer-events: auto;\r\n}\r\n\r\n/* ── Icon snap guides ────────────────────────────────── */\r\n.wos-icon-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 9999;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-icon-snap-guide.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n\r\n/* ── Desktop icon ────────────────────────────────────── */\r\n.wos-desktop-icon {\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  width: 80px;\r\n  padding: 8px 4px 6px;\r\n  cursor: pointer;\r\n  border-radius: 8px;\r\n  transition: background 0.12s;\r\n}\r\n.wos-desktop-icon:hover {\r\n  background: var(--wos-desktop-icon-hover-bg, rgba(255,255,255,0.15));\r\n}\r\n.wos-desktop-icon.wos-icon-selected {\r\n  background: rgba(74,158,255,0.35);\r\n  outline: 1px solid rgba(74,158,255,0.6);\r\n}\r\n.wos-desktop-icon.wos-icon-dragging {\r\n  opacity: 0.45;\r\n  z-index: 9999;\r\n}\r\n.wos-desktop-icon-img {\r\n  width: 48px;\r\n  height: 48px;\r\n  font-size: 38px;\r\n  line-height: 1;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 10px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-desktop-icon-img img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-desktop-icon-label {\r\n  margin-top: 4px;\r\n  font-size: 11px;\r\n  color: var(--wos-desktop-icon-text, #fff);\r\n  text-align: center;\r\n  line-height: 1.3;\r\n  max-width: 76px;\r\n  word-break: break-word;\r\n  text-shadow: 0 1px 3px rgba(0,0,0,0.7);\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock ────────────────────────────────────────────── */\r\n.wos-dock {\r\n  position: absolute;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  gap: 4px;\r\n  background: var(--wos-dock-bg, rgba(20,30,50,0.75));\r\n  backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  -webkit-backdrop-filter: var(--wos-dock-backdrop-filter, blur(14px));\r\n  border: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  padding: 6px 10px;\r\n  z-index: 9999;\r\n  box-sizing: border-box;\r\n  scrollbar-width: none;\r\n  -ms-overflow-style: none;\r\n}\r\n.wos-dock::-webkit-scrollbar { display: none; }\r\n.wos-dock.wos-dock-bottom {\r\n  bottom: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-top: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-top {\r\n  top: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-bottom: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.wos-dock.wos-dock-left {\r\n  top: 0; left: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-right: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n.wos-dock.wos-dock-right {\r\n  top: 0; right: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-left: 1px solid var(--wos-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n\r\n/* ── Dock item ───────────────────────────────────────── */\r\n.wos-dock-item {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  justify-content: center;\r\n  cursor: pointer;\r\n  border-radius: 10px;\r\n  padding: 4px 6px;\r\n  position: relative;\r\n  transition: transform 0.15s, background 0.12s;\r\n  flex-shrink: 0;\r\n}\r\n.wos-dock-item:hover {\r\n  background: var(--wos-dock-item-hover-bg, rgba(255,255,255,0.12));\r\n  transform: scale(1.15) translateY(-3px);\r\n}\r\n.wos-dock-item.wos-dock-dragging {\r\n  opacity: 0.4;\r\n}\r\n.wos-dock-item.wos-dock-dragover {\r\n  background: rgba(74,158,255,0.25);\r\n  outline: 2px dashed rgba(74,158,255,0.7);\r\n  transform: scale(1.1);\r\n}\r\n.wos-dock-item.wos-dock-active {\r\n  background: rgba(74,158,255,0.2);\r\n}\r\n.wos-dock-item.wos-dock-active::after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: -5px;\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  width: 5px;\r\n  height: 5px;\r\n  border-radius: 50%;\r\n  background: rgba(74,158,255,0.9);\r\n}\r\n.wos-dock.wos-dock-top .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: -5px;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-item.wos-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: unset;\r\n  right: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n\r\n/* ── Dock icon & label ───────────────────────────────── */\r\n.wos-dock-icon {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 8px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.wos-dock-icon img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.wos-dock-label {\r\n  font-size: 10px;\r\n  color: var(--wos-desktop-icon-text, rgba(255,255,255,0.85));\r\n  margin-top: 2px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 60px;\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock tooltip ────────────────────────────────────── */\r\n.wos-dock-tooltip {\r\n  position: absolute;\r\n  bottom: calc(100% + 6px);\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  background: rgba(0,0,0,0.8);\r\n  color: #fff;\r\n  font-size: 11px;\r\n  padding: 3px 8px;\r\n  border-radius: 4px;\r\n  white-space: nowrap;\r\n  pointer-events: none;\r\n  opacity: 0;\r\n  transition: opacity 0.15s;\r\n}\r\n.wos-dock-item:hover .wos-dock-tooltip {\r\n  opacity: 1;\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip,\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  bottom: unset;\r\n  top: 50%;\r\n  transform: translateY(-50%);\r\n}\r\n.wos-dock.wos-dock-left .wos-dock-tooltip {\r\n  left: calc(100% + 6px);\r\n}\r\n.wos-dock.wos-dock-right .wos-dock-tooltip {\r\n  left: unset;\r\n  right: calc(100% + 6px);\r\n}\r\n\r\n/* ── Dock group preview (Windows-style thumbnails) ───── */\r\n.wos-dock-group-preview {\r\n  position: fixed;\r\n  z-index: 99998;\r\n  display: flex;\r\n  flex-direction: row;\r\n  gap: 6px;\r\n  padding: 8px;\r\n  border-radius: 10px;\r\n  background: rgba(18, 20, 26, 0.92);\r\n  border: 1px solid rgba(255, 255, 255, 0.12);\r\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);\r\n  backdrop-filter: blur(14px);\r\n  pointer-events: auto;\r\n  opacity: 0;\r\n  transform: translateY(8px);\r\n  transition: opacity 0.15s ease, transform 0.15s ease;\r\n}\r\n.wos-dock-group-preview--visible {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.wos-dock-group-preview--top {\r\n  transform: translateY(-8px);\r\n}\r\n.wos-dock-group-preview--top.wos-dock-group-preview--visible {\r\n  transform: translateY(0);\r\n}\r\n.wos-dock-group-preview--left,\r\n.wos-dock-group-preview--right {\r\n  flex-direction: column;\r\n  transform: translateX(0);\r\n}\r\n\r\n/* ── Group card ──────────────────────────────────────── */\r\n.wos-dock-group-card {\r\n  display: flex;\r\n  flex-direction: column;\r\n  cursor: pointer;\r\n  border-radius: 6px;\r\n  border: 1px solid transparent;\r\n  overflow: hidden;\r\n  transition: border-color 0.12s, background 0.12s;\r\n}\r\n.wos-dock-group-card:hover {\r\n  border-color: rgba(255, 255, 255, 0.25);\r\n  background: rgba(255, 255, 255, 0.07);\r\n}\r\n\r\n/* ── Card header ─────────────────────────────────────── */\r\n.wos-dock-group-card-header {\r\n  display: flex;\r\n  align-items: center;\r\n  gap: 4px;\r\n  padding: 4px 4px 4px 7px;\r\n  height: 26px;\r\n  flex-shrink: 0;\r\n}\r\n.wos-dock-group-card-title {\r\n  flex: 1;\r\n  font-size: 11px;\r\n  color: rgba(255, 255, 255, 0.82);\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.wos-dock-group-card-close {\r\n  flex-shrink: 0;\r\n  width: 18px;\r\n  height: 18px;\r\n  border: none;\r\n  border-radius: 50%;\r\n  background: transparent;\r\n  color: rgba(255, 255, 255, 0.45);\r\n  font-size: 9px;\r\n  cursor: pointer;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  opacity: 0;\r\n  transition: background 0.1s, opacity 0.1s, color 0.1s;\r\n  padding: 0;\r\n  line-height: 1;\r\n}\r\n.wos-dock-group-card:hover .wos-dock-group-card-close {\r\n  opacity: 1;\r\n}\r\n.wos-dock-group-card-close:hover {\r\n  background: rgba(210, 40, 40, 0.85);\r\n  color: #fff;\r\n}\r\n\r\n/* ── Card thumbnail ──────────────────────────────────── */\r\n.wos-dock-group-card-thumb {\r\n  position: relative;\r\n  overflow: hidden;\r\n  flex-shrink: 0;\r\n  background: rgba(0, 0, 0, 0.35);\r\n}\r\n\r\n/* ── Modal-blocked card shake ────────────────────────── */\r\n@keyframes wos-group-card-shake {\r\n  0%, 100% { transform: translateX(0); }\r\n  20%       { transform: translateX(-5px); }\r\n  40%       { transform: translateX(5px); }\r\n  60%       { transform: translateX(-4px); }\r\n  80%       { transform: translateX(3px); }\r\n}\r\n.wos-group-card--shake {\r\n  animation: wos-group-card-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\r\n}\r\n\r\n";
 
     // ============================================================
     // WebOS-Desktop — CSS 注入（僅注入一次）
@@ -403,50 +403,94 @@
     // WebOS-Desktop — Desktop
     // 桌面主容器：管理圖示區域 + Dock 工具列
     // ============================================================
-    const PREVIEW_MAX_W = 240;
-    const PREVIEW_MAX_H = 150;
-    function buildDockPreview(winEl, anchorEl, dockPos, winState, maxW = PREVIEW_MAX_W, maxH = PREVIEW_MAX_H) {
-        const winW = winState?.width || winEl.offsetWidth || 640;
-        const winH = winState?.height || winEl.offsetHeight || 480;
-        const scale = Math.min(maxW / winW, maxH / winH, 1);
-        const previewW = Math.round(winW * scale);
-        const previewH = Math.round(winH * scale);
+    /** 群組預覽：每張卡片的預設寬高（px） */
+    const PREVIEW_CARD_W = 160;
+    const PREVIEW_CARD_H = 100;
+    /**
+     * 建立 Windows 風格群組縮略圖 popup。
+     * 每個視窗（父 + 子）對應一張卡片，卡片含標題列與縮略圖。
+     */
+    function buildGroupPreview(opts) {
+        const { anchorEl, dockPos, windowIds, getWindowEl, getWinState, cardW, cardH, onCardClick, onCardClose } = opts;
+        const HEADER_H = 26;
+        const CARD_GAP = 6;
+        const PADDING = 8;
         const popup = document.createElement('div');
-        popup.className = `wos-dock-win-preview wos-dock-win-preview--${dockPos}`;
-        popup.style.width = `${previewW}px`;
-        popup.style.height = `${previewH}px`;
-        const wrapper = document.createElement('div');
-        wrapper.style.cssText =
-            `position:absolute;top:0;left:0;width:${winW}px;height:${winH}px;` +
-                `transform:scale(${scale});transform-origin:top left;pointer-events:none;overflow:hidden;`;
-        const clone = winEl.cloneNode(true);
-        clone.classList.remove('wos-minimized', 'wos-maximized');
-        clone.style.cssText =
-            'position:absolute;left:0;top:0;width:100%;height:100%;' +
-                'transform:none;transition:none;pointer-events:none;';
-        wrapper.appendChild(clone);
-        popup.appendChild(wrapper);
+        popup.className = `wos-dock-group-preview wos-dock-group-preview--${dockPos}`;
+        for (const winId of windowIds) {
+            const state = getWinState(winId);
+            const winEl = getWindowEl(winId);
+            const card = document.createElement('div');
+            card.className = 'wos-dock-group-card';
+            card.dataset.windowId = winId;
+            // ── Header（標題 + 關閉鈕）──
+            const header = document.createElement('div');
+            header.className = 'wos-dock-group-card-header';
+            const titleEl = document.createElement('span');
+            titleEl.className = 'wos-dock-group-card-title';
+            titleEl.textContent = state?.title ?? winId;
+            titleEl.title = state?.title ?? winId;
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'wos-dock-group-card-close';
+            closeBtn.setAttribute('aria-label', '關閉');
+            closeBtn.textContent = '✕';
+            closeBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                onCardClose(winId);
+            });
+            header.append(titleEl, closeBtn);
+            // ── Thumbnail ──
+            const thumb = document.createElement('div');
+            thumb.className = 'wos-dock-group-card-thumb';
+            thumb.style.width = `${cardW}px`;
+            thumb.style.height = `${cardH}px`;
+            if (winEl) {
+                const winW = state?.width || winEl.offsetWidth || 640;
+                const winH = state?.height || winEl.offsetHeight || 480;
+                const scale = Math.min(cardW / winW, cardH / winH, 1);
+                const scaleWrap = document.createElement('div');
+                scaleWrap.style.cssText =
+                    `position:absolute;top:0;left:0;width:${winW}px;height:${winH}px;` +
+                        `transform:scale(${scale});transform-origin:top left;pointer-events:none;overflow:hidden;`;
+                const clone = winEl.cloneNode(true);
+                clone.classList.remove('wos-minimized', 'wos-maximized');
+                clone.style.cssText =
+                    'position:absolute;left:0;top:0;width:100%;height:100%;' +
+                        'transform:none;transition:none;pointer-events:none;';
+                scaleWrap.appendChild(clone);
+                thumb.appendChild(scaleWrap);
+            }
+            card.append(header, thumb);
+            card.addEventListener('click', () => onCardClick(winId));
+            popup.appendChild(card);
+        }
+        // ── 定位 popup ──
+        const cols = dockPos === 'left' || dockPos === 'right' ? 1 : windowIds.length;
+        const rows = dockPos === 'left' || dockPos === 'right' ? windowIds.length : 1;
+        const totalW = cols * cardW + (cols - 1) * CARD_GAP + PADDING * 2;
+        const totalH = rows * (cardH + HEADER_H) + (rows - 1) * CARD_GAP + PADDING * 2;
         const rect = anchorEl.getBoundingClientRect();
-        const MARGIN = 10;
+        const MARGIN = 8;
         let x, y;
         if (dockPos === 'bottom') {
-            x = rect.left + rect.width / 2 - previewW / 2;
-            y = rect.top - previewH - MARGIN;
+            x = rect.left + rect.width / 2 - totalW / 2;
+            y = rect.top - totalH - MARGIN;
         }
         else if (dockPos === 'top') {
-            x = rect.left + rect.width / 2 - previewW / 2;
+            x = rect.left + rect.width / 2 - totalW / 2;
             y = rect.bottom + MARGIN;
         }
         else if (dockPos === 'left') {
             x = rect.right + MARGIN;
-            y = rect.top + rect.height / 2 - previewH / 2;
+            y = rect.top + rect.height / 2 - totalH / 2;
         }
         else {
-            x = rect.left - previewW - MARGIN;
-            y = rect.top + rect.height / 2 - previewH / 2;
+            x = rect.left - totalW - MARGIN;
+            y = rect.top + rect.height / 2 - totalH / 2;
         }
-        x = Math.max(8, Math.min(window.innerWidth - previewW - 8, x));
-        y = Math.max(8, Math.min(window.innerHeight - previewH - 8, y));
+        x = Math.max(8, Math.min(window.innerWidth - totalW - 8, x));
+        y = Math.max(8, Math.min(window.innerHeight - totalH - 8, y));
         popup.style.left = `${x}px`;
         popup.style.top = `${y}px`;
         return popup;
@@ -723,38 +767,90 @@
             const runningDockIds = new Set();
             const dockIdToWindowId = new Map();
             let activeDockId = null;
-            const enablePreview = options.showWindowPreview !== false && !!manager.getWindowElement;
-            const previewMaxW = options.previewSize?.width ?? PREVIEW_MAX_W;
-            const previewMaxH = options.previewSize?.height ?? PREVIEW_MAX_H;
+            const enablePreview = options.showWindowPreview !== false;
+            const previewCardW = options.previewSize?.width ?? PREVIEW_CARD_W;
+            const previewCardH = options.previewSize?.height ?? PREVIEW_CARD_H;
             let previewEl = null;
-            let previewTimer;
+            let previewShowTimer;
+            let previewHideTimer;
             const hoverCleanups = [];
-            const hidePreview = () => {
-                clearTimeout(previewTimer);
+            const hideGroupPreview = () => {
+                clearTimeout(previewShowTimer);
+                clearTimeout(previewHideTimer);
                 previewEl?.remove();
                 previewEl = null;
             };
-            const showPreview = (anchorEl, windowId) => {
-                clearTimeout(previewTimer);
-                previewTimer = setTimeout(() => {
-                    hidePreview();
-                    const winEl = manager.getWindowElement(windowId);
-                    if (!winEl)
-                        return;
-                    const state = manager.getState?.(windowId);
-                    previewEl = buildDockPreview(winEl, anchorEl, this._dock.getPosition(), state, previewMaxW, previewMaxH);
-                    document.body.appendChild(previewEl);
-                    requestAnimationFrame(() => previewEl?.classList.add('wos-dock-win-preview--visible'));
-                }, 300);
+            const scheduleHide = () => {
+                clearTimeout(previewHideTimer);
+                previewHideTimer = setTimeout(hideGroupPreview, 120);
             };
-            const attachPreviewHover = (dockId, windowId) => {
+            const showGroupPreview = (anchorEl, parentWindowId) => {
+                clearTimeout(previewShowTimer);
+                clearTimeout(previewHideTimer);
+                previewShowTimer = setTimeout(() => {
+                    hideGroupPreview();
+                    // 收集父視窗 + 所有子視窗
+                    const childIds = manager.getChildIds?.(parentWindowId) ?? [];
+                    const windowIds = [parentWindowId, ...childIds];
+                    const onCardClick = (winId) => {
+                        manager.focus?.(winId);
+                        hideGroupPreview();
+                    };
+                    const onCardClose = (winId) => {
+                        // 若要關閉的視窗有 modal 子視窗，阻止並提示
+                        if (manager.getChildIds) {
+                            const children = manager.getChildIds(winId);
+                            const modalChildId = children.find(cid => {
+                                const cs = manager.getState?.(cid);
+                                return cs?.modal === true;
+                            });
+                            if (modalChildId) {
+                                // 搖晃 modal 子視窗本體
+                                manager.shake?.(modalChildId);
+                                // 搖晃群組預覽中對應的卡片
+                                const card = previewEl?.querySelector(`[data-window-id="${modalChildId}"]`);
+                                if (card) {
+                                    card.classList.add('wos-group-card--shake');
+                                    setTimeout(() => card.classList.remove('wos-group-card--shake'), 400);
+                                }
+                                return;
+                            }
+                        }
+                        manager.close?.(winId);
+                        // 移除已關閉的卡片
+                        const card = previewEl?.querySelector(`[data-window-id="${winId}"]`);
+                        card?.remove();
+                        // 無卡片則關閉 popup
+                        if (previewEl && previewEl.querySelectorAll('.wos-dock-group-card').length === 0) {
+                            hideGroupPreview();
+                        }
+                    };
+                    previewEl = buildGroupPreview({
+                        anchorEl,
+                        dockPos: this._dock.getPosition(),
+                        windowIds,
+                        getWindowEl: (id) => manager.getWindowElement?.(id),
+                        getWinState: (id) => manager.getState?.(id),
+                        cardW: previewCardW,
+                        cardH: previewCardH,
+                        onCardClick,
+                        onCardClose,
+                    });
+                    // Sticky hover：滑鼠移入 popup 時取消隱藏計時器
+                    previewEl.addEventListener('mouseenter', () => clearTimeout(previewHideTimer));
+                    previewEl.addEventListener('mouseleave', scheduleHide);
+                    document.body.appendChild(previewEl);
+                    requestAnimationFrame(() => previewEl?.classList.add('wos-dock-group-preview--visible'));
+                }, 280);
+            };
+            const attachGroupHover = (dockId, windowId) => {
                 if (!enablePreview)
                     return;
                 const itemEl = this._dock.getItemElement(dockId);
                 if (!itemEl)
                     return;
-                const enter = () => showPreview(itemEl, windowId);
-                const leave = () => hidePreview();
+                const enter = () => showGroupPreview(itemEl, windowId);
+                const leave = () => scheduleHide();
                 itemEl.addEventListener('mouseenter', enter);
                 itemEl.addEventListener('mouseleave', leave);
                 hoverCleanups.push(() => {
@@ -769,7 +865,7 @@
                 runningDockIds.forEach(id => {
                     const wid = dockIdToWindowId.get(id);
                     if (wid)
-                        attachPreviewHover(id, wid);
+                        attachGroupHover(id, wid);
                 });
             };
             const toDockId = (appId, windowId) => {
@@ -778,6 +874,9 @@
             };
             const addDockItemForWindow = (event) => {
                 if (!event?.id)
+                    return;
+                // 子視窗（有 parentId）不在 Dock 獨立顯示
+                if (event.parentId)
                     return;
                 const appId = getAppIdFromWindowId(event.id);
                 if (!appId)
@@ -800,7 +899,19 @@
                             onDockItemClick(appId, liveWindowId);
                             return;
                         }
+                        // 首先 focus 父視窗
                         manager.focus?.(liveWindowId);
+                        // 同時确保所有子視窗也 restore + 置頂
+                        if (manager.getChildIds) {
+                            const childIds = manager.getChildIds(liveWindowId);
+                            childIds.forEach(childId => {
+                                manager.focus?.(childId);
+                            });
+                            // 最後再肁焦父視窗（讓子視窗繼續高於父）
+                            if (childIds.length > 0) {
+                                manager.focus?.(liveWindowId);
+                            }
+                        }
                     },
                 });
                 // 新視窗開啟後即為 active（WindowManager 不另外 emit window:focused）
@@ -849,6 +960,7 @@
                         title: state?.title,
                         label: state?.label,
                         icon: state?.icon,
+                        parentId: state?.parentId, // 正確過濾已存在的子視窗
                     });
                 });
             }
@@ -857,7 +969,7 @@
                 offClosed();
                 offFocused();
                 offRender();
-                hidePreview();
+                hideGroupPreview();
                 hoverCleanups.forEach(fn => fn());
                 hoverCleanups.length = 0;
                 runningDockIds.forEach((dockId) => this._dock.removeItem(dockId));

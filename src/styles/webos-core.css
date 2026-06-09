@@ -139,3 +139,53 @@
   left: 0;
   right: 0;
 }
+
+/* ── Child Window ─────────────────────────────────────── */
+/* 子視窗標題列加左側色條，與父視窗做視覺區隔 */
+.wos-child-window > .wos-header {
+  padding-left: 10px;
+}
+.wos-child-window > .wos-header::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--wos-window-border-active, #b0b8c8);
+  margin-right: 6px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ── Modal Overlay ────────────────────────────────────── */
+/* 覆蓋整個父視窗，阻止互動；pointer-events:all 攔截所有點擊 */
+.wos-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.30);
+  z-index: 9000;
+  cursor: not-allowed;
+  border-radius: 0 0 2px 2px; /* 對齊 body，不蓋到標題列圓角 */
+  pointer-events: all;
+  /* 淡入效果 */
+  animation: wos-overlay-in 0.15s ease;
+}
+@keyframes wos-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Shake Animation ──────────────────────────────────── */
+/* 點擊遮罩時對應的 modal 子視窗抖動，提示使用者需先處理 */
+@keyframes wos-shake {
+  0%,  100% { transform: translateX(0); }
+  15%       { transform: translateX(-7px); }
+  30%       { transform: translateX(7px); }
+  45%       { transform: translateX(-5px); }
+  60%       { transform: translateX(5px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
+}
+.wos-shake {
+  animation: wos-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}

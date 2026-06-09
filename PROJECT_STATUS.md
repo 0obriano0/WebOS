@@ -1,6 +1,6 @@
 # WebOS-Core — 專案狀態（AI 快查版）
 
-> 最後更新：2026-05-27 16:44 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
+> 最後更新：2026-06-09 10:26 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
 > 此文件為 AI 輔助開發設計，優先說明「現在是什麼」，歷史細節見備份。
 
 ---
@@ -47,6 +47,8 @@
 | **拖曳邊界保留（dragEdgeMargin）** — 視窗拖曳到容器邊緣時至少保留 60px（可設定）在容器內，確保使用者可抓回；Desktop 模式自動讀取 `--wos-dock-inset-*` CSS 變數，底部邊界加計 Dock 高度，視窗無法沉入 Dock 遮蔽區 | ✅ | `src/core/DragResizeHandler.ts` |
 | **縮放邊界保留** — 所有 4 個縮放方向（N/S/E/W）皆套用邊界限制：向外延伸（S/E）無限制，向內縮小不超過對側拖曳邊界；N/W 移動端加計上/左邊界，防止把手消失在容器外 | ✅ | `src/core/DragResizeHandler.ts` |
 | **最小化 restore 修正** — 修正 `minimize()` 未清除 `isActive`，導致單一視窗最小化後 `focus()` 提前返回、無法 restore 的 bug | ✅ | `src/core/WindowManager.ts` |
+| **子視窗管理（parentId / modal）** — `WindowConfig.parentId` 指定父視窗，子視窗 z-index 永遠高於父；`modal:true` = 父視窗加半透明遮罩，點遮罩時子視窗 shake 提示；子視窗隨父最小化/restore；關閉父視窗時 cascade 關閉子視窗；子視窗不在 Dock 獨立顯示；新增 `shake(id)` / `getChildIds(id)` / `getRootWindowId(id)` API；新增事件 `window:child-opened` / `window:child-closed` | ✅ | `src/core/types.ts`, `WindowManager.ts`, `DOMRenderer.ts`, `webos-core.css` |
+| **Dock 群組縮略圖預覽（Windows 風格）** — 父視窗 Dock item hover 280ms 後顯示父+所有子視窗縮略圖卡片列；每張卡片有標題 + × 關閉鈕（hover 才顯示）；Sticky hover（滑鼠移入 popup 不消失）；modal 安全：關閉父視窗前若有 modal 子視窗，shake 子視窗本體並搖晃卡片提示；`syncExisting` 補傳 `parentId` 修正子視窗過濾 bug | ✅ | `src/desktop/Desktop.ts`, `src/desktop/types.ts`, `src/styles/webos-desktop.css` |
 
 **尚未實作：**
 - [ ] CDN 發佈（jsDelivr / unpkg）
@@ -270,10 +272,24 @@ taskView.events.on('taskview:close', () => { })
 taskView.destroy()
 
 // Dock hover 縮略圖預覽（syncDockWithWindows 選項）
+// 若有子視窗，hover 時顯示群組卡片列（父+所有子視窗，含 × 關閉鈕）
 desktop.syncDockWithWindows(wm, {
   showWindowPreview: true,                    // 預設 true；false = 關閉預覽
-  previewSize: { width: 240, height: 150 },   // 預設值；可自訂
+  previewSize: { width: 160, height: 100 },   // 每張卡片縮略圖尺寸
 })
+
+// 子視窗（parentId / modal）
+wm.open({
+  id:       'dialog',
+  title:    '確認對話框',
+  parentId: 'app-main',   // 附屬於父視窗，不在 Dock 獨立顯示
+  modal:    true,          // 父視窗加遮罩，點遮罩 → 子視窗 shake 提示
+  content:  el,
+})
+wm.shake(id)              // 讓視窗出現搖晃動畫
+wm.getChildIds(parentId)  // 取得父視窗的子視窗 ID 陣列
+wm.getRootWindowId(id)    // 取得視窗的最頂層根視窗 ID
+// 新增事件：window:child-opened / window:child-closed
 ```
 
 ---
@@ -339,6 +355,11 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 29 | TaskView Dock 按鈕固定位置 | `addItemAt(item, index)` 插入指定位置（0=最左）；TaskView 呼叫 `addItemAt(btn, 0)` 確保虛擬桌面按鈕永遠在最左側；`showButton: false` 可關閉自動插入但 `open()` 仍可呼叫 |
 | 30 | Dock hover 縮略圖多視窗/拖曳失效 | `Dock.addItem/addItemAt/removeItem` 及拖曳排序每次都觸發 `_render()` 重建所有 DOM，導致舊 hover 事件消失。修法：新增 `onRender(cb)` 回呼，`syncDockWithWindows` 訂閱後統一呼叫 `refreshAllPreviewHovers()` 重綁所有現有視窗；cleanup 時加入 `offRender()` 避免 memory leak |
 | 31 | `Dock.ts` / `DesktopIcon.ts` 重複 icon 判斷 | 兩者都需判斷 icon 字串是 URL/SVG/emoji，邏輯完全相同。提取至 `src/desktop/iconUtils.ts` 的 `appendIconContent(container, icon)` 共用函式，各自保留不同的包裝元素和 size 邏輯 |
+| 32 | 子視窗 z-index 設計 | `state.zIndex = Math.max(++_zCounter, parentWin.state.zIndex + 1)`；`focus()` 父視窗時同步置頂所有子視窗並設為高於父；子視窗聚焦時父視窗 z-index = childZ - 1（保留層級順序）|
+| 33 | Modal overlay 點擊處理 | overlay `mousedown` stopPropagation，不讓父視窗接到 focus 事件；觸發子視窗 `focus()` + `shake()`；overlay DOM 插入父視窗 root 內（`wos-modal-overlay`），不獨立管理 z-index |
+| 34 | Dock 群組預覽 Sticky hover | `showGroupPreview` 用兩個 timer（showTimer 280ms / hideTimer 120ms）；popup `mouseenter` 取消 hide timer；Dock item `mouseleave` 只 scheduleHide，不立刻關閉，讓使用者可滑入 popup |
+| 35 | Modal 關閉安全機制 | 點群組預覽父視窗 × 時，先掃所有子視窗找 `modal:true` 的；若存在則 shake 子視窗 + shake 對應卡片，不執行關閉；只有全部子視窗都是 non-modal 才 cascade 關閉 |
+| 36 | `syncExisting` parentId 遺漏 | 原本 `syncExisting` 路徑只傳 `id/title/label/icon`，漏傳 `parentId`，導致初始存在的子視窗未被過濾、會出現在 Dock。修法：讀 `state.parentId` 一併傳入 |
 
 ---
 

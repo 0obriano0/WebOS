@@ -11,6 +11,7 @@ A **framework-agnostic** web virtual desktop window management engine.
 - ✅ Open / close / minimize / maximize / restore windows
 - ✅ Drag & resize with throttling (60 fps default)
 - ✅ **`resizable: false`** — disable maximize button and border-drag resize per window (fixed-size dialog pattern)
+- ✅ **Child windows (`parentId` / `modal`)** — attach child windows to a parent; child z-index always above parent; `modal: true` adds a semi-transparent overlay on the parent — clicking it shakes the child to prompt focus; children minimize/restore with parent; cascade close; children excluded from Dock
 - ✅ **Snap alignment** — windows snap to edges and each other while **dragging and resizing**; configurable gap between windows
 - ✅ Focus / z-order management
 - ✅ Event bus — subscribe to any window lifecycle event
@@ -19,6 +20,7 @@ A **framework-agnostic** web virtual desktop window management engine.
 - ✅ **Theme system** — light/dark CSS themes with 22 CSS custom properties; `setTheme()` runtime switching
 - ✅ **BorderLayout** — N/S/E/W/Center docking layout; `data-region` HTML-first declaration; collapsible mini strip; draggable splitters; nested layouts
 - ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area, **frosted-glass backdrop-filter** on Dock
+- ✅ **Windows-style group thumbnail preview** — hover a Dock item to see a card strip of the parent window + all child windows; each card has a title + × close button; sticky hover; modal safety (blocks parent close when a modal child exists)
 - ✅ **WorkspaceManager** (`webos-workspace`) — multiple virtual desktops with slide animation and dot indicator
 - ✅ **TaskView** (`webos-workspace`) — workspace switcher overlay with real DOM-clone thumbnails, add/delete workspace, Escape key support
 - ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
@@ -154,6 +156,9 @@ export default function App() {
 | `wm.focus(id)` | Bring window to front |
 | `wm.setTitle(id, title)` | Update the window title bar |
 | `wm.setSnapGap(gap)` | Dynamically update the window-to-window snap gap (px) |
+| `wm.shake(id)` | Trigger shake animation on a window (used for modal blocking feedback) |
+| `wm.getChildIds(parentId)` | Get an array of child window IDs attached to a parent |
+| `wm.getRootWindowId(id)` | Walk up the parent chain to find the root window ID |
 | `wm.getState(id)` | Get current `WindowState` |
 | `wm.getBodyElement(id)` | Get the window's content `HTMLElement` |
 | `wm.getWindowIds()` | Get all open window IDs |
@@ -173,6 +178,8 @@ interface WindowConfig {
   width?:      number    // Initial width (px), default 640
   height?:     number    // Initial height (px), default 480
   resizable?:  boolean   // Default true. Set false to disable maximize + border-drag resize
+  parentId?:   string    // Attach as a child of this window ID; child stays above parent z-index
+  modal?:      boolean   // Requires parentId. true = parent gets an overlay; clicking it shakes child
   props?:      Record<string, unknown>
   slotType?:   'dom' | 'vue' | 'react'
 }
@@ -193,17 +200,46 @@ wm.open({
 })
 ```
 
+### Child Windows
+
+Use `parentId` to attach a window as a child. The child's z-index is always above its parent. Children minimize/restore together with their parent and are excluded from the Dock:
+
+```typescript
+// Non-modal child — both windows can be freely focused
+wm.open({
+  id:       'prop-panel',
+  title:    'Properties',
+  parentId: 'main-app',
+  modal:    false,
+  content:  panelEl,
+})
+
+// Modal child — parent gets a semi-transparent overlay while child is open
+wm.open({
+  id:       'confirm-dialog',
+  title:    'Confirm',
+  parentId: 'main-app',
+  modal:    true,       // clicking the overlay shakes the child
+  width:    360,
+  height:   200,
+  resizable: false,
+  content:  dialogEl,
+})
+```
+
 ### Events
 
 ```typescript
-wm.events.on('window:opened',    (state) => { })
-wm.events.on('window:closed',    (state) => { })
-wm.events.on('window:focused',   (state) => { })
-wm.events.on('window:minimized', (state) => { })
-wm.events.on('window:maximized', (state) => { })
-wm.events.on('window:restored',  (state) => { })
-wm.events.on('window:moved',     (state) => { })
-wm.events.on('window:resized',   (state) => { })
+wm.events.on('window:opened',       (state) => { })
+wm.events.on('window:closed',       (state) => { })
+wm.events.on('window:focused',      (state) => { })
+wm.events.on('window:minimized',    (state) => { })
+wm.events.on('window:maximized',    (state) => { })
+wm.events.on('window:restored',     (state) => { })
+wm.events.on('window:moved',        (state) => { })
+wm.events.on('window:resized',      (state) => { })
+wm.events.on('window:child-opened', ({ parentId, childId }) => { })
+wm.events.on('window:child-closed', ({ parentId, childId }) => { })
 ```
 
 ---
@@ -382,8 +418,8 @@ desktop.getDesktopElement()
 | `onDockItemClick` | `(appId, windowId) => void` | focus window | Custom click handler |
 | `dedupeByAppId` | `boolean` | `true` | One Dock item per app ID |
 | `syncExisting` | `boolean` | `true` | Sync already-open windows at bind time |
-| `showWindowPreview` | `boolean` | `true` | Enable hover thumbnail preview on Dock items |
-| `previewSize` | `{ width: number; height: number }` | `{ width: 240, height: 150 }` | Max thumbnail size (aspect-ratio preserved) |
+| `showWindowPreview` | `boolean` | `true` | Enable Windows-style group thumbnail preview on hover |
+| `previewSize` | `{ width: number; height: number }` | `{ width: 160, height: 100 }` | Thumbnail card size per window (aspect-ratio preserved) |
 
 ### `Dock` Methods
 
@@ -396,9 +432,9 @@ desktop.getDesktopElement()
 
 ---
 
-> **Preview hover** — Hovering a Dock item for 300ms shows a DOM-clone thumbnail (default 240×150px, aspect-ratio preserved). Thumbnails are automatically re-bound after drag-reorder or new window opens via `Dock.onRender`.
+> **Group thumbnail preview** — Hovering a Dock item for 280ms shows a Windows-style card strip: one card per window (parent + all children). Each card has a title and a × close button (appears on hover). The popup is sticky — mouse can move into it without it disappearing. Modal safety: clicking × on a parent card while a `modal` child exists shakes the child instead of closing. Thumbnails are automatically re-bound after drag-reorder or new window opens via `Dock.onRender`.
 
-> **Demo** — `demo/desktop/index.html` ships a full virtual desktop experience with Dock, draggable icons, theme switching, snap-gap control, **live Dock position switching** (top/bottom/left/right), and a **📐 BorderLayout demo window** (Basic + Nested tabs).
+> **Demo** — `demo/desktop/index.html` ships a full virtual desktop experience with Dock, draggable icons, theme switching, snap-gap control, **live Dock position switching** (top/bottom/left/right), a **📐 BorderLayout demo window** (Basic + Nested tabs), and a **child window / modal dialog demo** (System Settings window).
 
 ---
 

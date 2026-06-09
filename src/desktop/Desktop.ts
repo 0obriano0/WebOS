@@ -16,67 +16,128 @@ import { DesktopIcon, IconSnapFn } from './DesktopIcon.js';
 import { injectDesktopStyles } from './styles.js';
 import { snapPosition } from '../core/SnapHelper.js';
 
-const PREVIEW_MAX_W = 240;
-const PREVIEW_MAX_H = 150;
+/** 群組預覽：每張卡片的預設寬高（px） */
+const PREVIEW_CARD_W = 160;
+const PREVIEW_CARD_H = 100;
 
-function buildDockPreview(
-  winEl: HTMLElement,
-  anchorEl: HTMLElement,
-  dockPos: DockPosition,
-  winState?: { width?: number; height?: number },
-  maxW = PREVIEW_MAX_W,
-  maxH = PREVIEW_MAX_H,
-): HTMLElement {
-  const winW = winState?.width  || winEl.offsetWidth  || 640;
-  const winH = winState?.height || winEl.offsetHeight || 480;
-  const scale = Math.min(maxW / winW, maxH / winH, 1);
-  const previewW = Math.round(winW * scale);
-  const previewH = Math.round(winH * scale);
+interface GroupPreviewOptions {
+  anchorEl: HTMLElement;
+  dockPos: DockPosition;
+  /** [parentId, ...childIds] */
+  windowIds: string[];
+  getWindowEl: (id: string) => HTMLElement | undefined;
+  getWinState: (id: string) => (DockSyncWindowEvent & { width?: number; height?: number }) | undefined;
+  cardW: number;
+  cardH: number;
+  onCardClick: (id: string) => void;
+  onCardClose: (id: string) => void;
+}
+
+/**
+ * 建立 Windows 風格群組縮略圖 popup。
+ * 每個視窗（父 + 子）對應一張卡片，卡片含標題列與縮略圖。
+ */
+function buildGroupPreview(opts: GroupPreviewOptions): HTMLElement {
+  const { anchorEl, dockPos, windowIds, getWindowEl, getWinState,
+          cardW, cardH, onCardClick, onCardClose } = opts;
+  const HEADER_H = 26;
+  const CARD_GAP = 6;
+  const PADDING  = 8;
 
   const popup = document.createElement('div');
-  popup.className = `wos-dock-win-preview wos-dock-win-preview--${dockPos}`;
-  popup.style.width  = `${previewW}px`;
-  popup.style.height = `${previewH}px`;
+  popup.className = `wos-dock-group-preview wos-dock-group-preview--${dockPos}`;
 
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText =
-    `position:absolute;top:0;left:0;width:${winW}px;height:${winH}px;` +
-    `transform:scale(${scale});transform-origin:top left;pointer-events:none;overflow:hidden;`;
+  for (const winId of windowIds) {
+    const state = getWinState(winId);
+    const winEl = getWindowEl(winId);
 
-  const clone = winEl.cloneNode(true) as HTMLElement;
-  clone.classList.remove('wos-minimized', 'wos-maximized');
-  clone.style.cssText =
-    'position:absolute;left:0;top:0;width:100%;height:100%;' +
-    'transform:none;transition:none;pointer-events:none;';
+    const card = document.createElement('div');
+    card.className = 'wos-dock-group-card';
+    card.dataset.windowId = winId;
 
-  wrapper.appendChild(clone);
-  popup.appendChild(wrapper);
+    // ── Header（標題 + 關閉鈕）──
+    const header = document.createElement('div');
+    header.className = 'wos-dock-group-card-header';
 
-  const rect = anchorEl.getBoundingClientRect();
-  const MARGIN = 10;
+    const titleEl = document.createElement('span');
+    titleEl.className = 'wos-dock-group-card-title';
+    titleEl.textContent = state?.title ?? winId;
+    titleEl.title = state?.title ?? winId;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'wos-dock-group-card-close';
+    closeBtn.setAttribute('aria-label', '關閉');
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      onCardClose(winId);
+    });
+
+    header.append(titleEl, closeBtn);
+
+    // ── Thumbnail ──
+    const thumb = document.createElement('div');
+    thumb.className = 'wos-dock-group-card-thumb';
+    thumb.style.width  = `${cardW}px`;
+    thumb.style.height = `${cardH}px`;
+
+    if (winEl) {
+      const winW = (state as any)?.width  || winEl.offsetWidth  || 640;
+      const winH = (state as any)?.height || winEl.offsetHeight || 480;
+      const scale = Math.min(cardW / winW, cardH / winH, 1);
+
+      const scaleWrap = document.createElement('div');
+      scaleWrap.style.cssText =
+        `position:absolute;top:0;left:0;width:${winW}px;height:${winH}px;` +
+        `transform:scale(${scale});transform-origin:top left;pointer-events:none;overflow:hidden;`;
+
+      const clone = winEl.cloneNode(true) as HTMLElement;
+      clone.classList.remove('wos-minimized', 'wos-maximized');
+      clone.style.cssText =
+        'position:absolute;left:0;top:0;width:100%;height:100%;' +
+        'transform:none;transition:none;pointer-events:none;';
+
+      scaleWrap.appendChild(clone);
+      thumb.appendChild(scaleWrap);
+    }
+
+    card.append(header, thumb);
+    card.addEventListener('click', () => onCardClick(winId));
+    popup.appendChild(card);
+  }
+
+  // ── 定位 popup ──
+  const cols      = dockPos === 'left' || dockPos === 'right' ? 1 : windowIds.length;
+  const rows      = dockPos === 'left' || dockPos === 'right' ? windowIds.length : 1;
+  const totalW    = cols * cardW + (cols - 1) * CARD_GAP + PADDING * 2;
+  const totalH    = rows * (cardH + HEADER_H) + (rows - 1) * CARD_GAP + PADDING * 2;
+  const rect      = anchorEl.getBoundingClientRect();
+  const MARGIN    = 8;
   let x: number, y: number;
 
   if (dockPos === 'bottom') {
-    x = rect.left + rect.width / 2 - previewW / 2;
-    y = rect.top - previewH - MARGIN;
+    x = rect.left + rect.width / 2 - totalW / 2;
+    y = rect.top - totalH - MARGIN;
   } else if (dockPos === 'top') {
-    x = rect.left + rect.width / 2 - previewW / 2;
+    x = rect.left + rect.width / 2 - totalW / 2;
     y = rect.bottom + MARGIN;
   } else if (dockPos === 'left') {
     x = rect.right + MARGIN;
-    y = rect.top + rect.height / 2 - previewH / 2;
+    y = rect.top + rect.height / 2 - totalH / 2;
   } else {
-    x = rect.left - previewW - MARGIN;
-    y = rect.top + rect.height / 2 - previewH / 2;
+    x = rect.left - totalW - MARGIN;
+    y = rect.top + rect.height / 2 - totalH / 2;
   }
 
-  x = Math.max(8, Math.min(window.innerWidth  - previewW - 8, x));
-  y = Math.max(8, Math.min(window.innerHeight - previewH - 8, y));
+  x = Math.max(8, Math.min(window.innerWidth  - totalW - 8, x));
+  y = Math.max(8, Math.min(window.innerHeight - totalH - 8, y));
 
   popup.style.left = `${x}px`;
   popup.style.top  = `${y}px`;
   return popup;
 }
+
 
 /** 圖示自動排列：每欄最多幾個 icon */
 const AUTO_ROWS = 6;
@@ -404,38 +465,98 @@ export class Desktop {
     const dockIdToWindowId = new Map<string, string>();
     let activeDockId: string | null = null;
 
-    const enablePreview = options.showWindowPreview !== false && !!manager.getWindowElement;
-    const previewMaxW = options.previewSize?.width  ?? PREVIEW_MAX_W;
-    const previewMaxH = options.previewSize?.height ?? PREVIEW_MAX_H;
+    const enablePreview = options.showWindowPreview !== false;
+    const previewCardW = options.previewSize?.width  ?? PREVIEW_CARD_W;
+    const previewCardH = options.previewSize?.height ?? PREVIEW_CARD_H;
     let previewEl: HTMLElement | null = null;
-    let previewTimer: ReturnType<typeof setTimeout> | undefined;
+    let previewShowTimer: ReturnType<typeof setTimeout> | undefined;
+    let previewHideTimer: ReturnType<typeof setTimeout> | undefined;
     const hoverCleanups: Array<() => void> = [];
 
-    const hidePreview = () => {
-      clearTimeout(previewTimer);
+    const hideGroupPreview = () => {
+      clearTimeout(previewShowTimer);
+      clearTimeout(previewHideTimer);
       previewEl?.remove();
       previewEl = null;
     };
 
-    const showPreview = (anchorEl: HTMLElement, windowId: string) => {
-      clearTimeout(previewTimer);
-      previewTimer = setTimeout(() => {
-        hidePreview();
-        const winEl = manager.getWindowElement!(windowId);
-        if (!winEl) return;
-        const state = manager.getState?.(windowId) as { width?: number; height?: number } | undefined;
-        previewEl = buildDockPreview(winEl, anchorEl, this._dock.getPosition(), state, previewMaxW, previewMaxH);
-        document.body.appendChild(previewEl);
-        requestAnimationFrame(() => previewEl?.classList.add('wos-dock-win-preview--visible'));
-      }, 300);
+    const scheduleHide = () => {
+      clearTimeout(previewHideTimer);
+      previewHideTimer = setTimeout(hideGroupPreview, 120);
     };
 
-    const attachPreviewHover = (dockId: string, windowId: string) => {
+    const showGroupPreview = (anchorEl: HTMLElement, parentWindowId: string) => {
+      clearTimeout(previewShowTimer);
+      clearTimeout(previewHideTimer);
+      previewShowTimer = setTimeout(() => {
+        hideGroupPreview();
+
+        // 收集父視窗 + 所有子視窗
+        const childIds = manager.getChildIds?.(parentWindowId) ?? [];
+        const windowIds = [parentWindowId, ...childIds];
+
+        const onCardClick = (winId: string) => {
+          manager.focus?.(winId);
+          hideGroupPreview();
+        };
+
+        const onCardClose = (winId: string) => {
+          // 若要關閉的視窗有 modal 子視窗，阻止並提示
+          if (manager.getChildIds) {
+            const children = manager.getChildIds(winId);
+            const modalChildId = children.find(cid => {
+              const cs = manager.getState?.(cid) as { modal?: boolean } | undefined;
+              return cs?.modal === true;
+            });
+            if (modalChildId) {
+              // 搖晃 modal 子視窗本體
+              manager.shake?.(modalChildId);
+              // 搖晃群組預覽中對應的卡片
+              const card = previewEl?.querySelector<HTMLElement>(`[data-window-id="${modalChildId}"]`);
+              if (card) {
+                card.classList.add('wos-group-card--shake');
+                setTimeout(() => card.classList.remove('wos-group-card--shake'), 400);
+              }
+              return;
+            }
+          }
+          manager.close?.(winId);
+          // 移除已關閉的卡片
+          const card = previewEl?.querySelector(`[data-window-id="${winId}"]`);
+          card?.remove();
+          // 無卡片則關閉 popup
+          if (previewEl && previewEl.querySelectorAll('.wos-dock-group-card').length === 0) {
+            hideGroupPreview();
+          }
+        };
+
+        previewEl = buildGroupPreview({
+          anchorEl,
+          dockPos: this._dock.getPosition(),
+          windowIds,
+          getWindowEl: (id) => manager.getWindowElement?.(id),
+          getWinState: (id) => manager.getState?.(id) as any,
+          cardW: previewCardW,
+          cardH: previewCardH,
+          onCardClick,
+          onCardClose,
+        });
+
+        // Sticky hover：滑鼠移入 popup 時取消隱藏計時器
+        previewEl.addEventListener('mouseenter', () => clearTimeout(previewHideTimer));
+        previewEl.addEventListener('mouseleave', scheduleHide);
+
+        document.body.appendChild(previewEl);
+        requestAnimationFrame(() => previewEl?.classList.add('wos-dock-group-preview--visible'));
+      }, 280);
+    };
+
+    const attachGroupHover = (dockId: string, windowId: string) => {
       if (!enablePreview) return;
       const itemEl = this._dock.getItemElement(dockId);
       if (!itemEl) return;
-      const enter = () => showPreview(itemEl, windowId);
-      const leave = () => hidePreview();
+      const enter = () => showGroupPreview(itemEl, windowId);
+      const leave = () => scheduleHide();
       itemEl.addEventListener('mouseenter', enter);
       itemEl.addEventListener('mouseleave', leave);
       hoverCleanups.push(() => {
@@ -450,9 +571,10 @@ export class Desktop {
       hoverCleanups.length = 0;
       runningDockIds.forEach(id => {
         const wid = dockIdToWindowId.get(id);
-        if (wid) attachPreviewHover(id, wid);
+        if (wid) attachGroupHover(id, wid);
       });
     };
+
 
     const toDockId = (appId: string, windowId: string): string => {
       const key = dedupeByAppId ? appId : windowId;
@@ -461,6 +583,9 @@ export class Desktop {
 
     const addDockItemForWindow = (event?: DockSyncWindowEvent): void => {
       if (!event?.id) return;
+      // 子視窗（有 parentId）不在 Dock 獨立顯示
+      if (event.parentId) return;
+
       const appId = getAppIdFromWindowId(event.id);
       if (!appId) return;
 
@@ -482,7 +607,19 @@ export class Desktop {
             onDockItemClick(appId, liveWindowId);
             return;
           }
+          // 首先 focus 父視窗
           manager.focus?.(liveWindowId);
+          // 同時确保所有子視窗也 restore + 置頂
+          if (manager.getChildIds) {
+            const childIds = manager.getChildIds(liveWindowId);
+            childIds.forEach(childId => {
+              manager.focus?.(childId);
+            });
+            // 最後再肁焦父視窗（讓子視窗繼續高於父）
+            if (childIds.length > 0) {
+              manager.focus?.(liveWindowId);
+            }
+          }
         },
       });
       // 新視窗開啟後即為 active（WindowManager 不另外 emit window:focused）
@@ -528,9 +665,10 @@ export class Desktop {
         const state = manager.getState?.(id);
         addDockItemForWindow({
           id,
-          title: state?.title,
-          label: state?.label,
-          icon:  state?.icon,
+          title:    state?.title,
+          label:    state?.label,
+          icon:     state?.icon,
+          parentId: state?.parentId,  // 正確過濾已存在的子視窗
         });
       });
     }
@@ -540,7 +678,7 @@ export class Desktop {
       offClosed();
       offFocused();
       offRender();
-      hidePreview();
+      hideGroupPreview();
       hoverCleanups.forEach(fn => fn());
       hoverCleanups.length = 0;
       runningDockIds.forEach((dockId) => this._dock.removeItem(dockId));

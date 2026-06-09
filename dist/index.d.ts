@@ -27,6 +27,17 @@ interface WindowState {
      * 預設 true。設為 false 時邊框不可拖曳、最大化按鈕 disabled。
      */
     resizable: boolean;
+    /**
+     * 父視窗 ID。設定後此視窗成為子視窗，不在 Dock 獨立顯示。
+     * 子視窗隨父視窗最小化 / restore，z-index 永遠高於父視窗。
+     */
+    parentId?: string;
+    /**
+     * 獨佔模式（Modal）。需同時設定 parentId。
+     * true = 父視窗加上半透明遮罩，必須先關閉此子視窗才能操作父視窗。
+     * 預設 false。
+     */
+    modal: boolean;
     /** 傳遞給內部組件的初始參數 */
     props?: Record<string, unknown>;
     /** 最大化 / 最小化前的幾何快照，用於 restore */
@@ -60,6 +71,17 @@ interface WindowConfig {
      * 預設 true。設為 false 時邊框不可拖曳、最大化按鈕 disabled。
      */
     resizable?: boolean;
+    /**
+     * 父視窗 ID。設定後此視窗成為子視窗，不在 Dock 獨立顯示。
+     * 子視窗隨父視窗最小化 / restore，z-index 永遠高於父視窗。
+     */
+    parentId?: string;
+    /**
+     * 獨佔模式（Modal）。需同時設定 parentId。
+     * true = 父視窗加上半透明遮罩，必須先關閉此子視窗才能操作父視窗。
+     * 預設 false。
+     */
+    modal?: boolean;
 }
 /** 事件巴士回呼型別 */
 type EventCallback<T = unknown> = (data: T) => void;
@@ -84,7 +106,7 @@ declare class EventBus {
 declare const eventBus: EventBus;
 
 /** WindowManager 事件清單 */
-type WinEvent = 'window:opened' | 'window:closed' | 'window:focused' | 'window:minimized' | 'window:maximized' | 'window:restored' | 'window:moved' | 'window:resized';
+type WinEvent = 'window:opened' | 'window:closed' | 'window:focused' | 'window:minimized' | 'window:maximized' | 'window:restored' | 'window:moved' | 'window:resized' | 'window:child-opened' | 'window:child-closed';
 interface WindowManagerOptions {
     /** 視窗容器，預設為 document.body */
     container?: HTMLElement;
@@ -132,6 +154,10 @@ declare class WindowManager {
     private _guideH;
     /** 追蹤自動建立的 BorderLayout / Panel 實例，視窗關閉時 destroy */
     private readonly _layouts;
+    /** 父視窗 → 子視窗 ID Set（一對多） */
+    private readonly _children;
+    /** Modal 子視窗 → 它在父視窗上的遮罩 DOM 元素 */
+    private readonly _modalOverlays;
     private _resizeObserver;
     readonly events: EventBus;
     constructor(opts?: WindowManagerOptions);
@@ -184,6 +210,12 @@ declare class WindowManager {
     setSnapGap(gap: number): void;
     /** 取得所有視窗狀態的快照陣列（供序列化使用） */
     getAllStates(): WindowState[];
+    /** 取得特定視窗的子視窗 ID 清單 */
+    getChildIds(parentId: string): string[];
+    /** 取得某個視窗所屬的最頂層根視窗 ID */
+    getRootWindowId(id: string): string;
+    /** 讓視窗出現「搖晃」動畫，提示使用者需先關閉子視窗 */
+    shake(id: string): void;
     /** 銷毀所有視窗，清除事件 */
     destroy(): void;
     /** 延遲建立 snap guide 元素（僅需要時才建立） */
@@ -198,6 +230,15 @@ declare class WindowManager {
      * - content 本身有 data-panel 屬性 → Panel（body 作為容器）
      */
     private _tryAutoLayout;
+    /**
+     * 在父視窗插入 Modal 遮罩層。
+     * overlay 附同子視窗 ID 記錄，點擊時觸發對應子視窗的 shake 動畫。
+     */
+    private _attachModalOverlay;
+    /**
+     * 移除 parentId 上由 childId 產生的 modal 遮罩。
+     */
+    private _detachModalOverlay;
     private _deactivateOthers;
     private _focusTopWindow;
     /** 監聽容器尺寸變化，自動將視窗夾回可視範圍 */
@@ -369,4 +410,4 @@ declare class Panel {
 declare function getLayoutCSS(): string;
 
 export { BorderLayout, EventBus, Panel, WindowManager, eventBus, getCoreCSS, getLayoutCSS, setTheme, snapPosition };
-export type { BorderLayoutOptions, EventCallback, LayoutRegion, PanelOptions, RegionConfig, SetThemeOptions, SlotType, SnapGuide, SnapRect, SnapResult, WinEvent, WindowConfig, WindowState, WosThemePreset };
+export type { BorderLayoutOptions, EventCallback, LayoutRegion, PanelOptions, RegionConfig, SetThemeOptions, SlotType, SnapGuide, SnapRect, SnapResult, WinEvent, WindowConfig, WindowManagerOptions, WindowState, WosThemePreset };

@@ -33,6 +33,15 @@ interface DockSyncWindowEvent {
     icon?: string;
     /** Dock 顯示標籤（來自 WindowConfig.label）；有值時優先於 title */
     label?: string;
+    /**
+     * 父視窗 ID。有此欄位表示此視窗是子視窗，
+     * syncDockWithWindows 會自動跳過不加入 Dock。
+     */
+    parentId?: string;
+    /**
+     * 獨佔模式。群組預覽關閉按鈕安全判斷用。
+     */
+    modal?: boolean;
 }
 /** WindowManager 最小介面（duck typing，避免直接依賴 core bundle） */
 interface WindowManagerLike {
@@ -40,10 +49,16 @@ interface WindowManagerLike {
         on<T = unknown>(event: string, cb: (data?: T) => void): () => void;
     };
     focus?: (id: string) => void;
+    /** 關閉視窗（子視窗關閉時會自動移除 modal overlay） */
+    close?: (id: string) => void;
+    /** 讓視窗出現搖晃動畫（提示 modal 阻擋） */
+    shake?: (id: string) => void;
     getWindowIds?: () => string[];
     getState?: (id: string) => DockSyncWindowEvent | undefined;
     /** 取得視窗的完整 DOM 元素（含標題列），供 hover 預覽使用 */
     getWindowElement?: (id: string) => HTMLElement | undefined;
+    /** 取得父視窗的所有子視窗 ID（供 Dock click 群組 restore 使用） */
+    getChildIds?: (parentId: string) => string[];
 }
 /** Dock 與 WindowManager 同步設定 */
 interface DockSyncOptions {

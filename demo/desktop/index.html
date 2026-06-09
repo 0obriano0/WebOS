@@ -77,6 +77,158 @@
     }
 
     // ── App 定義 ─────────────────────────────────────────
+    function makeSettingsContent() {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'padding:20px;font-family:system-ui;height:100%;overflow:auto;box-sizing:border-box;';
+
+      const bgs = ['linear-gradient(135deg,#1a2a4a,#0d1b2a)','linear-gradient(135deg,#2d1b4e,#1a0a2e)','linear-gradient(135deg,#0d3b2a,#051a14)','linear-gradient(135deg,#3b1a0d,#1a0805)'];
+
+      wrap.innerHTML = `
+        <h3 style="margin-bottom:16px;font-size:16px">⚙️ 系統設定</h3>
+
+        <div style="margin-bottom:14px">
+          <label style="display:block;margin-bottom:6px;font-weight:500">主題</label>
+          <select id="theme-select" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px">
+            <option value="dark">Dark 深色</option>
+            <option value="light">Light 淺色</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="display:block;margin-bottom:6px;font-weight:500">工具列位置</label>
+          <select id="dock-pos-select" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px">
+            <option value="bottom">下方（Bottom）</option>
+            <option value="top">上方（Top）</option>
+            <option value="left">左側（Left）</option>
+            <option value="right">右側（Right）</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="display:block;margin-bottom:6px;font-weight:500">桌面背景</label>
+          <div id="bg-swatches" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
+
+        <div style="margin-bottom:20px">
+          <label style="display:block;margin-bottom:6px;font-weight:500">視窗吸附間距（px）</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input id="snap-gap-input" type="number" min="0" max="50" value="0"
+              style="width:80px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px" />
+            <span style="font-size:13px;color:#888">0 = 緊貼，設定後立即生效</span>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(128,128,128,0.25);margin-bottom:16px" />
+
+        <div style="margin-bottom:10px">
+          <h4 style="font-size:13px;margin-bottom:10px;color:#888;letter-spacing:.5px;text-transform:uppercase">子視窗功能示範</h4>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="btn-modal-dialog" style="padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+              background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;font-size:13px;font-weight:600;
+              box-shadow:0 2px 8px rgba(231,76,60,0.4);transition:opacity .15s">
+              🔴 Modal 確認對話框
+            </button>
+            <button id="btn-child-panel" style="padding:8px 16px;border-radius:8px;border:none;cursor:pointer;
+              background:linear-gradient(135deg,#2980b9,#1a5276);color:#fff;font-size:13px;font-weight:600;
+              box-shadow:0 2px 8px rgba(41,128,185,0.4);transition:opacity .15s">
+              🔵 開啟屬性面板（非獨佔）
+            </button>
+          </div>
+          <p style="margin-top:10px;font-size:12px;color:#888;line-height:1.6">
+            🔴 <b>Modal</b>：子視窗開啟後，父視窗加遮罩不可操作；點擊遮罩子視窗會抖動。<br>
+            🔵 <b>非獨佔</b>：子視窗與父視窗可自由切換，Dock 只顯示父視窗項目。
+          </p>
+        </div>
+      `;
+
+      // 背景色塊
+      const swatches = wrap.querySelector('#bg-swatches');
+      bgs.forEach(bg => {
+        const d = document.createElement('div');
+        d.style.cssText = `width:48px;height:32px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.2);background:${bg}`;
+        d.onclick = () => document.querySelector('.wos-desktop').style.background = bg;
+        swatches.appendChild(d);
+      });
+
+      // 事件綁定
+      wrap.querySelector('#theme-select').onchange = e =>
+        (document.querySelector('link[rel=stylesheet]').href = `../../dist/themes/${e.target.value}.css`);
+      wrap.querySelector('#dock-pos-select').onchange = e =>
+        desktop.setDockPosition(e.target.value);
+      wrap.querySelector('#snap-gap-input').oninput = e =>
+        currentWm().setSnapGap(parseInt(e.target.value) || 0);
+
+      // Modal 確認對話框
+      wrap.querySelector('#btn-modal-dialog').onclick = () => {
+        const wm = currentWm();
+        // 建立對話框內容
+        const dlg = document.createElement('div');
+        dlg.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:24px;gap:16px;font-family:system-ui;text-align:center';
+        dlg.innerHTML = `
+          <div style="font-size:40px">⚠️</div>
+          <div style="font-size:15px;font-weight:600">確認儲存設定？</div>
+          <div style="font-size:13px;color:#888;line-height:1.5">此操作將覆蓋現有設定。<br>確定要繼續嗎？</div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <button id="dlg-cancel" style="padding:8px 24px;border-radius:8px;border:1px solid #ccc;cursor:pointer;font-size:13px;background:transparent;color:inherit">取消</button>
+            <button id="dlg-ok" style="padding:8px 24px;border-radius:8px;border:none;cursor:pointer;font-size:13px;background:#e74c3c;color:#fff;font-weight:600">確認儲存</button>
+          </div>
+        `;
+
+        wm.open({
+          id: 'settings-confirm',
+          title: '確認操作',
+          content: dlg,
+          parentId: 'app-settings',   // 附屬於系統設定
+          modal: true,                 // 獨佔模式
+          width: 340,
+          height: 220,
+          resizable: false,
+        });
+
+        // 按鈕事件（需等 DOM 掛載）
+        setTimeout(() => {
+          dlg.querySelector('#dlg-cancel')?.addEventListener('click', () => wm.close('settings-confirm'));
+          dlg.querySelector('#dlg-ok')?.addEventListener('click', () => {
+            wm.close('settings-confirm');
+          });
+        }, 50);
+      };
+
+      // 非獨佔子視窗
+      wrap.querySelector('#btn-child-panel').onclick = () => {
+        const wm = currentWm();
+        const panel = document.createElement('div');
+        panel.style.cssText = 'padding:16px;font-family:system-ui;height:100%;overflow:auto;box-sizing:border-box';
+        panel.innerHTML = `
+          <h4 style="margin-bottom:12px;font-size:14px">📋 進階屬性面板</h4>
+          <p style="font-size:13px;color:#888;margin-bottom:12px;line-height:1.6">
+            這是一個非獨佔子視窗。<br>
+            你仍可點擊父視窗（系統設定）進行操作。<br>
+            Dock 不會新增此視窗的項目。
+          </p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:13px">選項 A：<input type="checkbox" style="margin-left:6px"/></label>
+            <label style="font-size:13px">選項 B：<input type="checkbox" style="margin-left:6px"/></label>
+            <label style="font-size:13px">數值：<input type="number" value="100" style="width:80px;margin-left:6px;padding:4px 8px;border-radius:4px;border:1px solid #ccc"/></label>
+          </div>
+        `;
+
+        wm.open({
+          id: 'settings-properties',
+          title: '進階屬性',
+          content: panel,
+          parentId: 'app-settings',   // 附屬但不獨佔
+          modal: false,
+          width: 300,
+          height: 260,
+          resizable: true,
+        });
+      };
+
+      return wrap;
+    }
+
     function makeContent(html) {
       const div = document.createElement('div');
       div.style.cssText = 'width:100%;height:100%;overflow:auto';
@@ -241,11 +393,8 @@
         make: () => makeCalc(),
       },
       settings: {
-        title: '⚙️ 系統設定', label: '系統設定', icon: '⚙️', width: 480, height: 460,
-        html: '<div style="padding:20px;font-family:system-ui"><h3 style="margin-bottom:16px;font-size:16px">系統設定</h3><div style="margin-bottom:16px"><label style="display:block;margin-bottom:6px;font-weight:500">主題</label><select onchange="document.querySelector(\'link[rel=stylesheet]\').href=\'../../dist/themes/\'+this.value+\'.css\'" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px"><option value="dark">Dark 深色</option><option value="light">Light 淺色</option></select></div><div style="margin-bottom:16px"><label style="display:block;margin-bottom:6px;font-weight:500">工具列位置</label><select onchange="desktop.setDockPosition(this.value)" style="padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px"><option value="bottom">下方（Bottom）</option><option value="top">上方（Top）</option><option value="left">左側（Left）</option><option value="right">右側（Right）</option></select></div><div style="margin-bottom:16px"><label style="display:block;margin-bottom:6px;font-weight:500">桌面背景</label><div style="display:flex;gap:8px;flex-wrap:wrap">' +
-        ['linear-gradient(135deg,#1a2a4a,#0d1b2a)','linear-gradient(135deg,#2d1b4e,#1a0a2e)','linear-gradient(135deg,#0d3b2a,#051a14)','linear-gradient(135deg,#3b1a0d,#1a0805)'].map((bg,i)=>
-          '<div onclick="document.querySelector(\'.wos-desktop\').style.background=\''+bg+'\'" style="width:48px;height:32px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.2);background:'+bg+'"></div>'
-        ).join('') + '</div></div><div style="margin-bottom:16px"><label style="display:block;margin-bottom:6px;font-weight:500">視窗吸附間距（px）</label><div style="display:flex;align-items:center;gap:10px"><input id="snap-gap-input" type="number" min="0" max="50" value="0" style="width:80px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;font-size:14px" oninput="currentWm().setSnapGap(parseInt(this.value)||0)" /><span style="font-size:13px;color:#888">0 = 緊貼，設定後立即生效</span></div></div></div>'
+        title: '⚙️ 系統設定', label: '系統設定', icon: '⚙️', width: 520, height: 540,
+        make: () => makeSettingsContent(),
       },
       terminal: {
         title: '💻 終端機', label: '終端機', icon: '💻', width: 560, height: 360,

@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.WebOS = {}));
 })(this, (function (exports) { 'use strict';
 
-  var BASE_CSS = "/* ============================================================\r\n * WebOS-Core — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-core.css\">\r\n *\r\n * When using injectStyles: false option, these styles will\r\n * NOT be injected automatically — this file is your starting\r\n * point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n.wos-window {\r\n  position: fixed;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-direction: column;\r\n  border: 4px solid var(--wos-window-border, #d0d0d0);\r\n  border-radius: 6px;\r\n  box-shadow: var(--wos-window-shadow, 0 4px 24px rgba(0,0,0,0.18));\r\n  background: transparent;\r\n  overflow: hidden;\r\n  min-width: 200px;\r\n  min-height: 120px;\r\n  transition: box-shadow 0.15s, border-color 0.15s;\r\n  pointer-events: auto;\r\n}\r\n.wos-window.wos-active {\r\n  border-color: var(--wos-window-border-active, #b0b8c8);\r\n  box-shadow: var(--wos-window-shadow-active, 0 8px 36px rgba(0,0,0,0.28));\r\n}\r\n.wos-window.wos-minimized {\r\n  display: none !important;\r\n}\r\n.wos-window.wos-maximized {\r\n  left: 72px !important;\r\n  top: 0 !important;\r\n  width: calc(100vw - 72px) !important;\r\n  height: calc(100vh - 48px) !important;\r\n  border-radius: 0;\r\n  border-width: 0;\r\n}\r\n\r\n/* ── Isolated container mode ──────────────────────────── */\r\n.wos-isolated {\r\n  position: relative;\r\n  overflow: clip;\r\n}\r\n.wos-isolated .wos-window {\r\n  position: absolute;\r\n}\r\n.wos-isolated .wos-window.wos-maximized {\r\n  left:   var(--wos-dock-inset-left,   0px) !important;\r\n  top:    var(--wos-dock-inset-top,    0px) !important;\r\n  width:  calc(100% - var(--wos-dock-inset-left, 0px) - var(--wos-dock-inset-right,  0px)) !important;\r\n  height: calc(100% - var(--wos-dock-inset-top,  0px) - var(--wos-dock-inset-bottom, 0px)) !important;\r\n  border-radius: 0;\r\n}\r\n\r\n/* ── Header ───────────────────────────────────────────── */\r\n.wos-header {\r\n  display: flex;\r\n  align-items: center;\r\n  padding: 0 8px;\r\n  height: 36px;\r\n  background: var(--wos-window-header-bg, #f5f5f5);\r\n  border-bottom: 1px solid var(--wos-window-header-border, #e0e0e0);\r\n  cursor: move;\r\n  user-select: none;\r\n  flex-shrink: 0;\r\n}\r\n.wos-title {\r\n  flex: 1;\r\n  font-size: 13px;\r\n  font-weight: 600;\r\n  color: var(--wos-window-title-color, #333333);\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n}\r\n\r\n/* ── Control buttons ──────────────────────────────────── */\r\n.wos-btn {\r\n  width: 24px;\r\n  height: 24px;\r\n  border: none;\r\n  border-radius: 4px;\r\n  background: transparent;\r\n  cursor: pointer;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 14px;\r\n  color: var(--wos-window-btn-color, #555555);\r\n  margin-left: 2px;\r\n  transition: background 0.1s;\r\n}\r\n.wos-btn:hover { background: var(--wos-window-btn-hover-bg, #e0e0e0); }\r\n.wos-btn.wos-btn-close:hover {\r\n  background: var(--wos-window-btn-close-hover-bg, #ff5f57);\r\n  color: var(--wos-window-btn-close-hover-color, #ffffff);\r\n}\r\n.wos-btn:disabled {\r\n  opacity: 0.3;\r\n  cursor: not-allowed;\r\n}\r\n.wos-btn:disabled:hover { background: transparent; }\r\n\r\n/* ── Body ─────────────────────────────────────────────── */\r\n.wos-body {\r\n  flex: 1;\r\n  overflow: auto;\r\n  position: relative;\r\n  background: var(--wos-window-body-bg, #ffffff);\r\n  color: var(--wos-window-body-color, #222222);\r\n}\r\n.wos-body.wos-has-layout {\r\n  overflow: hidden;\r\n}\r\n\r\n/* ── Snap guide lines ─────────────────────────────────── */\r\n.wos-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 2147483647;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n";
+  var BASE_CSS = "/* ============================================================\r\n * WebOS-Core — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"webos-core.css\">\r\n *\r\n * When using injectStyles: false option, these styles will\r\n * NOT be injected automatically — this file is your starting\r\n * point for customization.\r\n *\r\n * All values use CSS custom properties (--wos-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n.wos-window {\r\n  position: fixed;\r\n  box-sizing: border-box;\r\n  display: flex;\r\n  flex-direction: column;\r\n  border: 4px solid var(--wos-window-border, #d0d0d0);\r\n  border-radius: 6px;\r\n  box-shadow: var(--wos-window-shadow, 0 4px 24px rgba(0,0,0,0.18));\r\n  background: transparent;\r\n  overflow: hidden;\r\n  min-width: 200px;\r\n  min-height: 120px;\r\n  transition: box-shadow 0.15s, border-color 0.15s;\r\n  pointer-events: auto;\r\n}\r\n.wos-window.wos-active {\r\n  border-color: var(--wos-window-border-active, #b0b8c8);\r\n  box-shadow: var(--wos-window-shadow-active, 0 8px 36px rgba(0,0,0,0.28));\r\n}\r\n.wos-window.wos-minimized {\r\n  display: none !important;\r\n}\r\n.wos-window.wos-maximized {\r\n  left: 72px !important;\r\n  top: 0 !important;\r\n  width: calc(100vw - 72px) !important;\r\n  height: calc(100vh - 48px) !important;\r\n  border-radius: 0;\r\n  border-width: 0;\r\n}\r\n\r\n/* ── Isolated container mode ──────────────────────────── */\r\n.wos-isolated {\r\n  position: relative;\r\n  overflow: clip;\r\n}\r\n.wos-isolated .wos-window {\r\n  position: absolute;\r\n}\r\n.wos-isolated .wos-window.wos-maximized {\r\n  left:   var(--wos-dock-inset-left,   0px) !important;\r\n  top:    var(--wos-dock-inset-top,    0px) !important;\r\n  width:  calc(100% - var(--wos-dock-inset-left, 0px) - var(--wos-dock-inset-right,  0px)) !important;\r\n  height: calc(100% - var(--wos-dock-inset-top,  0px) - var(--wos-dock-inset-bottom, 0px)) !important;\r\n  border-radius: 0;\r\n}\r\n\r\n/* ── Header ───────────────────────────────────────────── */\r\n.wos-header {\r\n  display: flex;\r\n  align-items: center;\r\n  padding: 0 8px;\r\n  height: 36px;\r\n  background: var(--wos-window-header-bg, #f5f5f5);\r\n  border-bottom: 1px solid var(--wos-window-header-border, #e0e0e0);\r\n  cursor: move;\r\n  user-select: none;\r\n  flex-shrink: 0;\r\n}\r\n.wos-title {\r\n  flex: 1;\r\n  font-size: 13px;\r\n  font-weight: 600;\r\n  color: var(--wos-window-title-color, #333333);\r\n  overflow: hidden;\r\n  white-space: nowrap;\r\n  text-overflow: ellipsis;\r\n}\r\n\r\n/* ── Control buttons ──────────────────────────────────── */\r\n.wos-btn {\r\n  width: 24px;\r\n  height: 24px;\r\n  border: none;\r\n  border-radius: 4px;\r\n  background: transparent;\r\n  cursor: pointer;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 14px;\r\n  color: var(--wos-window-btn-color, #555555);\r\n  margin-left: 2px;\r\n  transition: background 0.1s;\r\n}\r\n.wos-btn:hover { background: var(--wos-window-btn-hover-bg, #e0e0e0); }\r\n.wos-btn.wos-btn-close:hover {\r\n  background: var(--wos-window-btn-close-hover-bg, #ff5f57);\r\n  color: var(--wos-window-btn-close-hover-color, #ffffff);\r\n}\r\n.wos-btn:disabled {\r\n  opacity: 0.3;\r\n  cursor: not-allowed;\r\n}\r\n.wos-btn:disabled:hover { background: transparent; }\r\n\r\n/* ── Body ─────────────────────────────────────────────── */\r\n.wos-body {\r\n  flex: 1;\r\n  overflow: auto;\r\n  position: relative;\r\n  background: var(--wos-window-body-bg, #ffffff);\r\n  color: var(--wos-window-body-color, #222222);\r\n}\r\n.wos-body.wos-has-layout {\r\n  overflow: hidden;\r\n}\r\n\r\n/* ── Snap guide lines ─────────────────────────────────── */\r\n.wos-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 2147483647;\r\n  display: none;\r\n  background: var(--wos-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.wos-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.wos-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n\r\n/* ── Child Window ─────────────────────────────────────── */\r\n/* 子視窗標題列加左側色條，與父視窗做視覺區隔 */\r\n.wos-child-window > .wos-header {\r\n  padding-left: 10px;\r\n}\r\n.wos-child-window > .wos-header::before {\r\n  content: '';\r\n  display: inline-block;\r\n  width: 3px;\r\n  height: 16px;\r\n  border-radius: 2px;\r\n  background: var(--wos-window-border-active, #b0b8c8);\r\n  margin-right: 6px;\r\n  flex-shrink: 0;\r\n  opacity: 0.7;\r\n}\r\n\r\n/* ── Modal Overlay ────────────────────────────────────── */\r\n/* 覆蓋整個父視窗，阻止互動；pointer-events:all 攔截所有點擊 */\r\n.wos-modal-overlay {\r\n  position: absolute;\r\n  inset: 0;\r\n  background: rgba(0, 0, 0, 0.30);\r\n  z-index: 9000;\r\n  cursor: not-allowed;\r\n  border-radius: 0 0 2px 2px; /* 對齊 body，不蓋到標題列圓角 */\r\n  pointer-events: all;\r\n  /* 淡入效果 */\r\n  animation: wos-overlay-in 0.15s ease;\r\n}\r\n@keyframes wos-overlay-in {\r\n  from { opacity: 0; }\r\n  to   { opacity: 1; }\r\n}\r\n\r\n/* ── Shake Animation ──────────────────────────────────── */\r\n/* 點擊遮罩時對應的 modal 子視窗抖動，提示使用者需先處理 */\r\n@keyframes wos-shake {\r\n  0%,  100% { transform: translateX(0); }\r\n  15%       { transform: translateX(-7px); }\r\n  30%       { transform: translateX(7px); }\r\n  45%       { transform: translateX(-5px); }\r\n  60%       { transform: translateX(5px); }\r\n  75%       { transform: translateX(-3px); }\r\n  90%       { transform: translateX(3px); }\r\n}\r\n.wos-shake {\r\n  animation: wos-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\r\n}\r\n";
 
   // ============================================================
   // WebOS-Core — DOM Window Renderer
@@ -27,7 +27,11 @@
   function createWindowDOM(state) {
       const root = document.createElement('div');
       root.className = 'wos-window';
+      if (state.parentId)
+          root.classList.add('wos-child-window');
       root.dataset.wosId = state.id;
+      if (state.parentId)
+          root.dataset.wosParentId = state.parentId;
       applyGeometry(root, state);
       root.style.zIndex = String(state.zIndex);
       // ── Header ──
@@ -43,6 +47,11 @@
           btnMax.disabled = true;
           btnMax.title = '此視窗不可調整大小';
       }
+      // 子視窗：隱藏最小化按鈕（符合 Windows 對話框習慣）
+      if (state.parentId) {
+          btnMin.style.display = 'none';
+          btnMin.setAttribute('aria-hidden', 'true');
+      }
       header.append(title, btnMin, btnMax, btnClose);
       // ── Body ──
       const body = document.createElement('div');
@@ -53,6 +62,16 @@
           body.appendChild(state.content);
       }
       return { root, header, title, body, btnMin, btnMax, btnClose };
+  }
+  /**
+   * 建立 Modal 遮罩層（覆蓋父視窗內容，不可操作）。
+   * 需插入父視窗的 root 元素內。
+   */
+  function createModalOverlay() {
+      const el = document.createElement('div');
+      el.className = 'wos-modal-overlay';
+      el.setAttribute('aria-hidden', 'true');
+      return el;
   }
   function createButton(text, cls, ariaLabel) {
       const btn = document.createElement('button');
@@ -1052,6 +1071,10 @@
           this._guideH = null;
           /** 追蹤自動建立的 BorderLayout / Panel 實例，視窗關閉時 destroy */
           this._layouts = new Map();
+          /** 父視窗 → 子視窗 ID Set（一對多） */
+          this._children = new Map();
+          /** Modal 子視窗 → 它在父視窗上的遮罩 DOM 元素 */
+          this._modalOverlays = new Map();
           this._resizeObserver = null;
           this._container = opts.container ?? document.body;
           this._throttleMs = opts.throttleMs ?? 16;
@@ -1104,7 +1127,17 @@
               isActive: true,
               resizable: config.resizable ?? true,
               props: config.props,
+              parentId: config.parentId,
+              modal: config.modal ?? false,
           };
+          // 子視窗：z-index 必須高於父視窗
+          if (state.parentId) {
+              const parentWin = this._wins.get(state.parentId);
+              if (parentWin) {
+                  state.zIndex = Math.max(state.zIndex, parentWin.state.zIndex + 1);
+                  this._zCounter = Math.max(this._zCounter, state.zIndex);
+              }
+          }
           const elements = createWindowDOM(state);
           this._container.appendChild(elements.root);
           // ── Auto-detect BorderLayout / Panel in content ──────────
@@ -1151,6 +1184,18 @@
           elements.root.addEventListener('mousedown', () => this.focus(state.id), true);
           const managed = { state, elements, dragResize };
           this._wins.set(state.id, managed);
+          // 建立父子關係
+          if (state.parentId) {
+              if (!this._children.has(state.parentId)) {
+                  this._children.set(state.parentId, new Set());
+              }
+              this._children.get(state.parentId).add(state.id);
+              // Modal：在父視窗插入遮罩層
+              if (state.modal) {
+                  this._attachModalOverlay(state.parentId, state.id);
+              }
+              this.events.emit('window:child-opened', { parentId: state.parentId, childId: state.id });
+          }
           this._deactivateOthers(state.id);
           elements.root.classList.add('wos-active');
           this.events.emit('window:opened', { ...state });
@@ -1163,12 +1208,31 @@
           const win = this._wins.get(id);
           if (!win)
               return;
+          const parentId = win.state.parentId;
           win.dragResize.destroy();
           win.elements.root.remove();
           this._wins.delete(id);
           // 銷毀自動建立的 BorderLayout / Panel
           this._layouts.get(id)?.destroy();
           this._layouts.delete(id);
+          // 子視窗關閉：清除父子關係 + 移除遮罩
+          if (parentId) {
+              const siblings = this._children.get(parentId);
+              if (siblings) {
+                  siblings.delete(id);
+                  if (siblings.size === 0)
+                      this._children.delete(parentId);
+              }
+              // 移除此子視窗對應的 modal overlay
+              this._detachModalOverlay(parentId, id);
+              this.events.emit('window:child-closed', { parentId, childId: id });
+          }
+          // 如果這個視窗有子視窗，一并關閉（深度優先）
+          const children = this._children.get(id);
+          if (children && children.size > 0) {
+              [...children].forEach(childId => this.close(childId));
+          }
+          this._children.delete(id);
           this.events.emit('window:closed', { id });
           // 聚焦最後一個存活視窗
           this._focusTopWindow();
@@ -1204,6 +1268,32 @@
           win.elements.root.classList.add('wos-active');
           if (win.state.isMinimized)
               this.restore(id);
+          // 將此視窗的所有子視窗一起置頂（子視窗必須高於父視窗）
+          const children = this._children.get(id);
+          if (children && children.size > 0) {
+              [...children].forEach(childId => {
+                  const child = this._wins.get(childId);
+                  if (!child)
+                      return;
+                  child.state.zIndex = ++this._zCounter;
+                  child.elements.root.style.zIndex = String(child.state.zIndex);
+                  // 子視窗也要一起顯示（若已最小化）
+                  if (child.state.isMinimized) {
+                      child.state.isMinimized = false;
+                      child.elements.root.classList.remove('wos-minimized');
+                  }
+              });
+          }
+          // 如果此視窗是子視窗，同時經對間父視窗（父視窗 z-index 仍低於子）
+          if (win.state.parentId) {
+              const parent = this._wins.get(win.state.parentId);
+              if (parent && !parent.state.isActive) {
+                  const childZ = win.state.zIndex;
+                  // 父視窗置於子視窗之後提升，但不超過子視窗
+                  parent.state.zIndex = childZ - 1;
+                  parent.elements.root.style.zIndex = String(parent.state.zIndex);
+              }
+          }
           this.events.emit('window:focused', { ...win.state });
       }
       /**
@@ -1218,6 +1308,19 @@
           win.elements.root.classList.add('wos-minimized');
           win.elements.root.classList.remove('wos-active');
           this.events.emit('window:minimized', { ...win.state });
+          // 同時最小化所有子視窗
+          const children = this._children.get(id);
+          if (children) {
+              [...children].forEach(childId => {
+                  const child = this._wins.get(childId);
+                  if (child && !child.state.isMinimized) {
+                      child.state.isMinimized = true;
+                      child.state.isActive = false;
+                      child.elements.root.classList.add('wos-minimized');
+                      child.elements.root.classList.remove('wos-active');
+                  }
+              });
+          }
           this._focusTopWindow();
       }
       /**
@@ -1280,6 +1383,17 @@
               applyGeometry(win.elements.root, win.state);
               delete win.state._savedGeometry;
           }
+          // 同時 restore 所有子視窗
+          const children = this._children.get(id);
+          if (children) {
+              [...children].forEach(childId => {
+                  const child = this._wins.get(childId);
+                  if (child && child.state.isMinimized) {
+                      child.state.isMinimized = false;
+                      child.elements.root.classList.remove('wos-minimized');
+                  }
+              });
+          }
           this.events.emit('window:restored', { ...win.state });
       }
       /** 取得視窗目前狀態快照（唯讀副本） */
@@ -1317,11 +1431,35 @@
       getAllStates() {
           return [...this._wins.values()].map(w => ({ ...w.state }));
       }
+      /** 取得特定視窗的子視窗 ID 清單 */
+      getChildIds(parentId) {
+          const children = this._children.get(parentId);
+          return children ? Array.from(children) : [];
+      }
+      /** 取得某個視窗所屬的最頂層根視窗 ID */
+      getRootWindowId(id) {
+          const win = this._wins.get(id);
+          if (!win || !win.state.parentId)
+              return id;
+          return this.getRootWindowId(win.state.parentId);
+      }
+      /** 讓視窗出現「搖晃」動畫，提示使用者需先關閉子視窗 */
+      shake(id) {
+          const win = this._wins.get(id);
+          if (!win)
+              return;
+          win.elements.root.classList.add('wos-shake');
+          setTimeout(() => win.elements.root.classList.remove('wos-shake'), 400);
+      }
       /** 銷毀所有視窗，清除事件 */
       destroy() {
           [...this._wins.keys()].forEach(id => this.close(id));
           this._layouts.forEach(l => l.destroy());
           this._layouts.clear();
+          this._children.clear();
+          // 移除所有遮罩
+          this._modalOverlays.forEach(el => el.remove());
+          this._modalOverlays.clear();
           this.events.clearAll();
           this._guideV?.remove();
           this._guideH?.remove();
@@ -1414,6 +1552,44 @@
                   collapsed: panelCollapsed,
               });
               this._layouts.set(id, panel);
+          }
+      }
+      // ── Modal Overlay helpers ─────────────────────────────
+      /**
+       * 在父視窗插入 Modal 遮罩層。
+       * overlay 附同子視窗 ID 記錄，點擊時觸發對應子視窗的 shake 動畫。
+       */
+      _attachModalOverlay(parentId, childId) {
+          const parentWin = this._wins.get(parentId);
+          if (!parentWin)
+              return;
+          // 如果已經有遮罩，不重複插入
+          if (this._modalOverlays.has(childId))
+              return;
+          const overlay = createModalOverlay();
+          overlay.dataset.wosChildId = childId;
+          // 點擊遮罩 → 對應子視窗抓回前景 + shake
+          overlay.addEventListener('mousedown', (e) => {
+              e.stopPropagation();
+              const childWin = this._wins.get(childId);
+              if (childWin) {
+                  // 引導焦點回子視窗
+                  childWin.state.isActive = false;
+                  this.focus(childId);
+                  this.shake(childId);
+              }
+          });
+          parentWin.elements.root.appendChild(overlay);
+          this._modalOverlays.set(childId, overlay);
+      }
+      /**
+       * 移除 parentId 上由 childId 產生的 modal 遮罩。
+       */
+      _detachModalOverlay(parentId, childId) {
+          const overlay = this._modalOverlays.get(childId);
+          if (overlay) {
+              overlay.remove();
+              this._modalOverlays.delete(childId);
           }
       }
       _deactivateOthers(exceptId) {

@@ -32,6 +32,17 @@ export interface WindowState {
    * 預設 true。設為 false 時邊框不可拖曳、最大化按鈕 disabled。
    */
   resizable: boolean;
+  /**
+   * 父視窗 ID。設定後此視窗成為子視窗，不在 Dock 獨立顯示。
+   * 子視窗隨父視窗最小化 / restore，z-index 永遠高於父視窗。
+   */
+  parentId?: string;
+  /**
+   * 獨佔模式（Modal）。需同時設定 parentId。
+   * true = 父視窗加上半透明遮罩，必須先關閉此子視窗才能操作父視窗。
+   * 預設 false。
+   */
+  modal: boolean;
   /** 傳遞給內部組件的初始參數 */
   props?: Record<string, unknown>;
   /** 最大化 / 最小化前的幾何快照，用於 restore */
@@ -61,6 +72,17 @@ export interface WindowConfig {
    * 預設 true。設為 false 時邊框不可拖曳、最大化按鈕 disabled。
    */
   resizable?: boolean;
+  /**
+   * 父視窗 ID。設定後此視窗成為子視窗，不在 Dock 獨立顯示。
+   * 子視窗隨父視窗最小化 / restore，z-index 永遠高於父視窗。
+   */
+  parentId?: string;
+  /**
+   * 獨佔模式（Modal）。需同時設定 parentId。
+   * true = 父視窗加上半透明遮罩，必須先關閉此子視窗才能操作父視窗。
+   * 預設 false。
+   */
+  modal?: boolean;
 }
 
 /** 事件巴士回呼型別 */

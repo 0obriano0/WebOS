@@ -6,7 +6,7 @@
 import { WindowConfig, WindowState, EventCallback } from './types.js';
 import { EventBus } from './EventBus.js';
 import { DragResizeHandler, DragResizeOptions } from './DragResizeHandler.js';
-import { injectStyles, createWindowDOM, applyGeometry, WindowElements } from '../renderers/DOMRenderer.js';
+import { injectStyles, createWindowDOM, applyGeometry, createModalOverlay, WindowElements } from '../renderers/DOMRenderer.js';
 import { snapPosition, snapResize, SnapRect, SnapGuide } from './SnapHelper.js';
 import { BorderLayout } from '../layout/BorderLayout.js';
 import { Panel } from '../layout/Panel.js';
@@ -20,7 +20,9 @@ export type WinEvent =
   | 'window:maximized'
   | 'window:restored'
   | 'window:moved'
-  | 'window:resized';
+  | 'window:resized'
+  | 'window:child-opened'
+  | 'window:child-closed';
 
 const DEFAULT_WIDTH = 640;
 const DEFAULT_HEIGHT = 480;
@@ -83,6 +85,10 @@ export class WindowManager {
   private _guideH: HTMLElement | null = null;
   /** 追蹤自動建立的 BorderLayout / Panel 實例，視窗關閉時 destroy */
   private readonly _layouts = new Map<string, BorderLayout | Panel>();
+  /** 父視窗 → 子視窗 ID Set（一對多） */
+  private readonly _children = new Map<string, Set<string>>();
+  /** Modal 子視窗 → 它在父視窗上的遮罩 DOM 元素 */
+  private readonly _modalOverlays = new Map<string, HTMLElement>();
   private _resizeObserver: ResizeObserver | null = null;
   readonly events: EventBus;
 
@@ -140,7 +146,18 @@ export class WindowManager {
       isActive: true,
       resizable: config.resizable ?? true,
       props: config.props,
+      parentId: config.parentId,
+      modal: config.modal ?? false,
     };
+
+    // 子視窗：z-index 必須高於父視窗
+    if (state.parentId) {
+      const parentWin = this._wins.get(state.parentId);
+      if (parentWin) {
+        state.zIndex = Math.max(state.zIndex, parentWin.state.zIndex + 1);
+        this._zCounter = Math.max(this._zCounter, state.zIndex);
+      }
+    }
 
     const elements = createWindowDOM(state);
     this._container.appendChild(elements.root);
@@ -193,6 +210,21 @@ export class WindowManager {
     const managed: ManagedWindow = { state, elements, dragResize };
     this._wins.set(state.id, managed);
 
+    // 建立父子關係
+    if (state.parentId) {
+      if (!this._children.has(state.parentId)) {
+        this._children.set(state.parentId, new Set());
+      }
+      this._children.get(state.parentId)!.add(state.id);
+
+      // Modal：在父視窗插入遮罩層
+      if (state.modal) {
+        this._attachModalOverlay(state.parentId, state.id);
+      }
+
+      this.events.emit('window:child-opened', { parentId: state.parentId, childId: state.id });
+    }
+
     this._deactivateOthers(state.id);
     elements.root.classList.add('wos-active');
 
@@ -206,12 +238,35 @@ export class WindowManager {
   close(id: string): void {
     const win = this._wins.get(id);
     if (!win) return;
+
+    const parentId = win.state.parentId;
+
     win.dragResize.destroy();
     win.elements.root.remove();
     this._wins.delete(id);
     // 銷毀自動建立的 BorderLayout / Panel
     this._layouts.get(id)?.destroy();
     this._layouts.delete(id);
+
+    // 子視窗關閉：清除父子關係 + 移除遮罩
+    if (parentId) {
+      const siblings = this._children.get(parentId);
+      if (siblings) {
+        siblings.delete(id);
+        if (siblings.size === 0) this._children.delete(parentId);
+      }
+      // 移除此子視窗對應的 modal overlay
+      this._detachModalOverlay(parentId, id);
+      this.events.emit('window:child-closed', { parentId, childId: id });
+    }
+
+    // 如果這個視窗有子視窗，一并關閉（深度優先）
+    const children = this._children.get(id);
+    if (children && children.size > 0) {
+      [...children].forEach(childId => this.close(childId));
+    }
+    this._children.delete(id);
+
     this.events.emit('window:closed', { id });
     // 聚焦最後一個存活視窗
     this._focusTopWindow();
@@ -246,6 +301,34 @@ export class WindowManager {
     win.elements.root.style.zIndex = String(win.state.zIndex);
     win.elements.root.classList.add('wos-active');
     if (win.state.isMinimized) this.restore(id);
+
+    // 將此視窗的所有子視窗一起置頂（子視窗必須高於父視窗）
+    const children = this._children.get(id);
+    if (children && children.size > 0) {
+      [...children].forEach(childId => {
+        const child = this._wins.get(childId);
+        if (!child) return;
+        child.state.zIndex = ++this._zCounter;
+        child.elements.root.style.zIndex = String(child.state.zIndex);
+        // 子視窗也要一起顯示（若已最小化）
+        if (child.state.isMinimized) {
+          child.state.isMinimized = false;
+          child.elements.root.classList.remove('wos-minimized');
+        }
+      });
+    }
+
+    // 如果此視窗是子視窗，同時經對間父視窗（父視窗 z-index 仍低於子）
+    if (win.state.parentId) {
+      const parent = this._wins.get(win.state.parentId);
+      if (parent && !parent.state.isActive) {
+        const childZ = win.state.zIndex;
+        // 父視窗置於子視窗之後提升，但不超過子視窗
+        parent.state.zIndex = childZ - 1;
+        parent.elements.root.style.zIndex = String(parent.state.zIndex);
+      }
+    }
+
     this.events.emit<WindowState>('window:focused', { ...win.state });
   }
 
@@ -260,6 +343,19 @@ export class WindowManager {
     win.elements.root.classList.add('wos-minimized');
     win.elements.root.classList.remove('wos-active');
     this.events.emit<WindowState>('window:minimized', { ...win.state });
+    // 同時最小化所有子視窗
+    const children = this._children.get(id);
+    if (children) {
+      [...children].forEach(childId => {
+        const child = this._wins.get(childId);
+        if (child && !child.state.isMinimized) {
+          child.state.isMinimized = true;
+          child.state.isActive = false;
+          child.elements.root.classList.add('wos-minimized');
+          child.elements.root.classList.remove('wos-active');
+        }
+      });
+    }
     this._focusTopWindow();
   }
 
@@ -322,6 +418,19 @@ export class WindowManager {
       applyGeometry(win.elements.root, win.state);
       delete win.state._savedGeometry;
     }
+
+    // 同時 restore 所有子視窗
+    const children = this._children.get(id);
+    if (children) {
+      [...children].forEach(childId => {
+        const child = this._wins.get(childId);
+        if (child && child.state.isMinimized) {
+          child.state.isMinimized = false;
+          child.elements.root.classList.remove('wos-minimized');
+        }
+      });
+    }
+
     this.events.emit<WindowState>('window:restored', { ...win.state });
   }
 
@@ -366,11 +475,36 @@ export class WindowManager {
     return [...this._wins.values()].map(w => ({ ...w.state }));
   }
 
+  /** 取得特定視窗的子視窗 ID 清單 */
+  getChildIds(parentId: string): string[] {
+    const children = this._children.get(parentId);
+    return children ? Array.from(children) : [];
+  }
+
+  /** 取得某個視窗所屬的最頂層根視窗 ID */
+  getRootWindowId(id: string): string {
+    const win = this._wins.get(id);
+    if (!win || !win.state.parentId) return id;
+    return this.getRootWindowId(win.state.parentId);
+  }
+
+  /** 讓視窗出現「搖晃」動畫，提示使用者需先關閉子視窗 */
+  shake(id: string): void {
+    const win = this._wins.get(id);
+    if (!win) return;
+    win.elements.root.classList.add('wos-shake');
+    setTimeout(() => win.elements.root.classList.remove('wos-shake'), 400);
+  }
+
   /** 銷毀所有視窗，清除事件 */
   destroy(): void {
     [...this._wins.keys()].forEach(id => this.close(id));
     this._layouts.forEach(l => l.destroy());
     this._layouts.clear();
+    this._children.clear();
+    // 移除所有遮罩
+    this._modalOverlays.forEach(el => el.remove());
+    this._modalOverlays.clear();
     this.events.clearAll();
     this._guideV?.remove();
     this._guideH?.remove();
@@ -466,6 +600,48 @@ export class WindowManager {
         collapsed:   panelCollapsed,
       });
       this._layouts.set(id, panel);
+    }
+  }
+
+  // ── Modal Overlay helpers ─────────────────────────────
+
+  /**
+   * 在父視窗插入 Modal 遮罩層。
+   * overlay 附同子視窗 ID 記錄，點擊時觸發對應子視窗的 shake 動畫。
+   */
+  private _attachModalOverlay(parentId: string, childId: string): void {
+    const parentWin = this._wins.get(parentId);
+    if (!parentWin) return;
+    // 如果已經有遮罩，不重複插入
+    if (this._modalOverlays.has(childId)) return;
+
+    const overlay = createModalOverlay();
+    overlay.dataset.wosChildId = childId;
+
+    // 點擊遮罩 → 對應子視窗抓回前景 + shake
+    overlay.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      const childWin = this._wins.get(childId);
+      if (childWin) {
+        // 引導焦點回子視窗
+        childWin.state.isActive = false;
+        this.focus(childId);
+        this.shake(childId);
+      }
+    });
+
+    parentWin.elements.root.appendChild(overlay);
+    this._modalOverlays.set(childId, overlay);
+  }
+
+  /**
+   * 移除 parentId 上由 childId 產生的 modal 遮罩。
+   */
+  private _detachModalOverlay(parentId: string, childId: string): void {
+    const overlay = this._modalOverlays.get(childId);
+    if (overlay) {
+      overlay.remove();
+      this._modalOverlays.delete(childId);
     }
   }
 
