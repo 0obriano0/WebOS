@@ -8,6 +8,7 @@
 /**
  * WorkspaceManager 掛載的根容器。
  * position:relative + overflow:hidden 讓工作區在裡面滑動。
+ * pointer-events:none 讓空白處事件穿透到下方的 icon-area。
  */
 .dp-workspace-root {
   position: relative;
