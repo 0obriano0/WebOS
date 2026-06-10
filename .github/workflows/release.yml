@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm install
@@ -55,10 +56,6 @@ jobs:
           generate_release_notes: true
           files: deskpane-v${{ steps.ver.outputs.VERSION }}.zip
 
-      # 確保沒有任何 .npmrc 干擾 OIDC 流程
-      - name: Remove .npmrc
-        run: rm -f .npmrc ~/.npmrc
-
-      # 發佈到 npm（OIDC Trusted Publisher，不需要 NPM_TOKEN）
+      # 發佈到 npm（OIDC Trusted Publisher）
       - name: Publish to npm
         run: npm publish --provenance --access public
