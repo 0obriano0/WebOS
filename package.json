@@ -2,6 +2,10 @@
   "name": "deskpane",
   "version": "0.1.0",
   "description": "Framework-agnostic web desktop window management engine",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0obriano0/DeskPane.git"
+  },
   "main": "dist/deskpane.umd.js",
   "module": "dist/deskpane.es.js",
   "types": "dist/index.d.ts",
