@@ -20,8 +20,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # ⚠️ 不設定 registry-url，避免 setup-node 自動注入 github.token 作為 NODE_AUTH_TOKEN
-          # npm publish --provenance 會自行透過 OIDC 與 npm registry 交換
+          registry-url: 'https://registry.npmjs.org'
+          # 我們必須設定 registry-url，否則 npm 不會啟動 OIDC
+
 
       - name: Install dependencies
         run: npm install
@@ -56,6 +57,10 @@ jobs:
           name: v${{ steps.ver.outputs.VERSION }}
           generate_release_notes: true
           files: deskpane-v${{ steps.ver.outputs.VERSION }}.zip
+
+      # 修正 setup-node 產生的空 Token (避免 404 Not Found 錯誤)
+      - name: Fix npmrc
+        run: sed -i '/_authToken/d' ~/.npmrc
 
       # 發佈到 npm（OIDC Trusted Publisher）
       - name: Publish to npm
