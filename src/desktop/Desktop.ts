@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Desktop — Desktop
+﻿// ============================================================
+// DeskPane-Desktop — Desktop
 // 桌面主容器：管理圖示區域 + Dock 工具列
 // ============================================================
 
@@ -53,27 +53,27 @@ function buildGroupPreview(opts: GroupPreviewOptions): HTMLElement {
   const PADDING  = 8;
 
   const popup = document.createElement('div');
-  popup.className = `wos-dock-group-preview wos-dock-group-preview--${dockPos}`;
+  popup.className = `dp-dock-group-preview dp-dock-group-preview--${dockPos}`;
 
   for (const winId of windowIds) {
     const state = getWinState(winId);
     const winEl = getWindowEl(winId);
 
     const card = document.createElement('div');
-    card.className = 'wos-dock-group-card';
+    card.className = 'dp-dock-group-card';
     card.dataset.windowId = winId;
 
     // ── Header（標題 + 關閉鈕）──
     const header = document.createElement('div');
-    header.className = 'wos-dock-group-card-header';
+    header.className = 'dp-dock-group-card-header';
 
     const titleEl = document.createElement('span');
-    titleEl.className = 'wos-dock-group-card-title';
+    titleEl.className = 'dp-dock-group-card-title';
     titleEl.textContent = state?.title ?? winId;
     titleEl.title = state?.title ?? winId;
 
     const closeBtn = document.createElement('button');
-    closeBtn.className = 'wos-dock-group-card-close';
+    closeBtn.className = 'dp-dock-group-card-close';
     closeBtn.setAttribute('aria-label', '關閉');
     closeBtn.textContent = '✕';
     closeBtn.addEventListener('mousedown', (e) => e.stopPropagation());
@@ -86,7 +86,7 @@ function buildGroupPreview(opts: GroupPreviewOptions): HTMLElement {
 
     // ── Thumbnail ──
     const thumb = document.createElement('div');
-    thumb.className = 'wos-dock-group-card-thumb';
+    thumb.className = 'dp-dock-group-card-thumb';
     thumb.style.width  = `${cardW}px`;
     thumb.style.height = `${cardH}px`;
 
@@ -101,7 +101,7 @@ function buildGroupPreview(opts: GroupPreviewOptions): HTMLElement {
         `transform:scale(${scale});transform-origin:top left;pointer-events:none;overflow:hidden;`;
 
       const clone = winEl.cloneNode(true) as HTMLElement;
-      clone.classList.remove('wos-minimized', 'wos-maximized');
+      clone.classList.remove('dp-minimized', 'dp-maximized');
       clone.style.cssText =
         'position:absolute;left:0;top:0;width:100%;height:100%;' +
         'transform:none;transition:none;pointer-events:none;';
@@ -166,7 +166,7 @@ const ICON_COL_W = 92;
 const ICON_ROW_H = 100;
 /** 起始邊距（px） */
 const ICON_MARGIN = 12;
-/** Dock 停靠列高度 / 寬度（px）；對齊 CSS .wos-dock-* */
+/** Dock 停靠列高度 / 寬度（px）；對齊 CSS .dp-dock-* */
 const DOCK_SIZE = 68;
 
 /** 計算第 index 個自動排列 icon 的位置 */
@@ -210,35 +210,35 @@ export class Desktop {
     if (config.injectStyles !== false) injectDesktopStyles();
 
     this._container = config.container ?? document.body;
-    this._storageKey = config.storageKey ?? 'wos-desktop';
+    this._storageKey = config.storageKey ?? 'dp-desktop';
     this._dragThreshold = config.dragThreshold ?? 6;
     this._iconSnapEnabled = config.iconSnap ?? true;
     this._iconSnapThreshold = config.iconSnapThreshold ?? 20;
 
     // 桌面根元素
     this._desktopEl = document.createElement('div');
-    this._desktopEl.className = 'wos-desktop';
+    this._desktopEl.className = 'dp-desktop';
     if (config.background) {
       this._desktopEl.style.background = config.background;
     }
 
     // 圖示區域
     this._iconAreaEl = document.createElement('div');
-    this._iconAreaEl.className = 'wos-desktop-icon-area';
+    this._iconAreaEl.className = 'dp-desktop-icon-area';
     this._desktopEl.appendChild(this._iconAreaEl);
 
     // 視窗區域：大小與 iconArea 相同（排除 Dock 佔用空間），
     // 作為 WindowManager 的 container，確保最大化時不超過 Dock
     this._windowAreaEl = document.createElement('div');
-    this._windowAreaEl.className = 'wos-desktop-window-area';
+    this._windowAreaEl.className = 'dp-desktop-window-area';
     this._desktopEl.appendChild(this._windowAreaEl);
 
     // Snap guide 線（icon 拖曳吸附指示）
     if (this._iconSnapEnabled) {
       this._guideV = document.createElement('div');
-      this._guideV.className = 'wos-snap-guide wos-snap-guide--v wos-icon-snap-guide';
+      this._guideV.className = 'dp-snap-guide dp-snap-guide--v dp-icon-snap-guide';
       this._guideH = document.createElement('div');
-      this._guideH.className = 'wos-snap-guide wos-snap-guide--h wos-icon-snap-guide';
+      this._guideH.className = 'dp-snap-guide dp-snap-guide--h dp-icon-snap-guide';
       this._iconAreaEl.appendChild(this._guideV);
       this._iconAreaEl.appendChild(this._guideH);
     }
@@ -260,8 +260,8 @@ export class Desktop {
     // 點擊桌面空白處取消圖示選取
     this._desktopEl.addEventListener('mousedown', (e) => {
       if (e.target === this._desktopEl || e.target === this._iconAreaEl) {
-        this._iconAreaEl.querySelectorAll('.wos-icon-selected').forEach(el => {
-          el.classList.remove('wos-icon-selected');
+        this._iconAreaEl.querySelectorAll('.dp-icon-selected').forEach(el => {
+          el.classList.remove('dp-icon-selected');
         });
       }
     });
@@ -277,7 +277,7 @@ export class Desktop {
   /**
    * 更新 icon 區域的 inset（避免 icon 被 Dock 遮住）。
    * 視窗區域維持全尺寸（0,0,0,0），讓視窗可自由滑入 Dock 下方，
-   * 透過 CSS 變數 --wos-dock-inset-* 控制最大化時的邊界。
+   * 透過 CSS 變數 --dp-dock-inset-* 控制最大化時的邊界。
    */
   private _applyInset(inset: { top: number; bottom: number; left: number; right: number }): void {
     // icon 區域：跟著 dock 縮排
@@ -294,10 +294,10 @@ export class Desktop {
 
     // 告知 CSS 目前 Dock 的 inset，供最大化視窗使用
     const s = this._desktopEl.style;
-    s.setProperty('--wos-dock-inset-top',    `${inset.top}px`);
-    s.setProperty('--wos-dock-inset-bottom', `${inset.bottom}px`);
-    s.setProperty('--wos-dock-inset-left',   `${inset.left}px`);
-    s.setProperty('--wos-dock-inset-right',  `${inset.right}px`);
+    s.setProperty('--dp-dock-inset-top',    `${inset.top}px`);
+    s.setProperty('--dp-dock-inset-bottom', `${inset.bottom}px`);
+    s.setProperty('--dp-dock-inset-left',   `${inset.left}px`);
+    s.setProperty('--dp-dock-inset-right',  `${inset.right}px`);
   }
 
   private _loadPositions(): Record<string, { x: number; y: number }> {
@@ -534,8 +534,8 @@ export class Desktop {
               // 搖晃群組預覽中對應的卡片
               const card = previewEl?.querySelector<HTMLElement>(`[data-window-id="${modalChildId}"]`);
               if (card) {
-                card.classList.add('wos-group-card--shake');
-                setTimeout(() => card.classList.remove('wos-group-card--shake'), 400);
+                card.classList.add('dp-group-card--shake');
+                setTimeout(() => card.classList.remove('dp-group-card--shake'), 400);
               }
               return;
             }
@@ -545,7 +545,7 @@ export class Desktop {
           const card = previewEl?.querySelector(`[data-window-id="${winId}"]`);
           card?.remove();
           // 無卡片則關閉 popup
-          if (previewEl && previewEl.querySelectorAll('.wos-dock-group-card').length === 0) {
+          if (previewEl && previewEl.querySelectorAll('.dp-dock-group-card').length === 0) {
             hideGroupPreview();
           }
         };
@@ -570,7 +570,7 @@ export class Desktop {
         // 掛載到 _mountEl（.v-application 或 document.body），確保 CSS scope 繼承
         const mount: HTMLElement = (previewEl as any)._mountEl ?? document.body;
         mount.appendChild(previewEl);
-        requestAnimationFrame(() => previewEl?.classList.add('wos-dock-group-preview--visible'));
+        requestAnimationFrame(() => previewEl?.classList.add('dp-dock-group-preview--visible'));
       }, 280);
     };
 

@@ -108,7 +108,7 @@ interface WindowManagerOptions {
     /**
      * Isolated 模式：視窗改用 position:absolute，限制在容器範圍內。
      * 適合文件頁面的內嵌 demo 區塊，或頁面中的局部桌面。
-     * 啟用後容器會自動加上 wos-isolated CSS class。
+     * 啟用後容器會自動加上 dp-isolated CSS class。
      */
     isolated?: boolean;
     /**
@@ -329,7 +329,7 @@ interface TaskViewOptions {
      */
     buttonIcon?: string;
     /**
-     * Dock 按鈕的唯一 ID，預設「wos-tv-button」。
+     * Dock 按鈕的唯一 ID，預設「dp-tv-button」。
      */
     buttonId?: string;
 }

@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — Drag & Resize Handler
+﻿// ============================================================
+// DeskPane — Drag & Resize Handler
 // 支援滑鼠與觸控，內建 Throttle 確保巨量表格不卡頓
 // ============================================================
 
@@ -130,7 +130,7 @@ export class DragResizeHandler {
   }
 
   private _onHeaderMouseDown(e: MouseEvent): void {
-    if ((e.target as HTMLElement).closest('.wos-btn')) return; // 忽略按鈕點擊
+    if ((e.target as HTMLElement).closest('.dp-btn')) return; // 忽略按鈕點擊
     e.preventDefault();
     this._startDrag(e.clientX, e.clientY);
     document.addEventListener('mousemove', this._onMouseMoveBound);
@@ -198,10 +198,10 @@ export class DragResizeHandler {
 
         // 讀取容器繼承的 Dock inset CSS 變數（Desktop 模式自動設定，非 Desktop 模式為 0）
         const cs = getComputedStyle(this._opts.containerEl);
-        const dockTop    = parseFloat(cs.getPropertyValue('--wos-dock-inset-top'))    || 0;
-        const dockRight  = parseFloat(cs.getPropertyValue('--wos-dock-inset-right'))  || 0;
-        const dockBottom = parseFloat(cs.getPropertyValue('--wos-dock-inset-bottom')) || 0;
-        const dockLeft   = parseFloat(cs.getPropertyValue('--wos-dock-inset-left'))   || 0;
+        const dockTop    = parseFloat(cs.getPropertyValue('--dp-dock-inset-top'))    || 0;
+        const dockRight  = parseFloat(cs.getPropertyValue('--dp-dock-inset-right'))  || 0;
+        const dockBottom = parseFloat(cs.getPropertyValue('--dp-dock-inset-bottom')) || 0;
+        const dockLeft   = parseFloat(cs.getPropertyValue('--dp-dock-inset-left'))   || 0;
 
         // 各方向邊界 = 使用者設定的 margin + Dock 佔用空間
         const bTop    = dockTop;                   // 頂部：不允許標題列超出（含 top-dock）
@@ -260,10 +260,10 @@ export class DragResizeHandler {
       const cH = this._opts.containerEl.offsetHeight;
 
       const cs = getComputedStyle(this._opts.containerEl);
-      const dockTop    = parseFloat(cs.getPropertyValue('--wos-dock-inset-top'))    || 0;
-      const dockRight  = parseFloat(cs.getPropertyValue('--wos-dock-inset-right'))  || 0;
-      const dockBottom = parseFloat(cs.getPropertyValue('--wos-dock-inset-bottom')) || 0;
-      const dockLeft   = parseFloat(cs.getPropertyValue('--wos-dock-inset-left'))   || 0;
+      const dockTop    = parseFloat(cs.getPropertyValue('--dp-dock-inset-top'))    || 0;
+      const dockRight  = parseFloat(cs.getPropertyValue('--dp-dock-inset-right'))  || 0;
+      const dockBottom = parseFloat(cs.getPropertyValue('--dp-dock-inset-bottom')) || 0;
+      const dockLeft   = parseFloat(cs.getPropertyValue('--dp-dock-inset-left'))   || 0;
 
       const bTop    = dockTop;
       const bRight  = margin + dockRight;
@@ -336,7 +336,7 @@ export class DragResizeHandler {
     const bottom = rect.height - y;
 
     // 標題列內不啟動縮放
-    if ((e.target as HTMLElement).closest('.wos-header')) return null;
+    if ((e.target as HTMLElement).closest('.dp-header')) return null;
 
     const onN = y <= b;
     const onS = bottom <= b;

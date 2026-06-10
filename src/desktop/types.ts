@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Desktop — Type Definitions
+﻿// ============================================================
+// DeskPane-Desktop — Type Definitions
 // ============================================================
 
 /** 桌面圖示設定 */
@@ -128,9 +128,9 @@ export interface DesktopConfig {
   container?: HTMLElement;
   dock?: DockConfig;
   icons?: DesktopIconConfig[];
-  /** CSS background 值，預設使用 --wos-desktop-bg */
+  /** CSS background 值，預設使用 --dp-desktop-bg */
   background?: string;
-  /** localStorage key 前綴，用於記憶圖示位置，預設 'wos-desktop' */
+  /** localStorage key 前綴，用於記憶圖示位置，預設 'dp-desktop' */
   storageKey?: string;
   /**
    * 全域拖曳感應距離（px），可被個別 icon 的 dragThreshold 覆寫。

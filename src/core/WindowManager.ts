@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — WindowManager
+﻿// ============================================================
+// DeskPane — WindowManager
 // 核心大腦：管理所有視窗的生命週期與狀態
 // ============================================================
 
@@ -39,7 +39,7 @@ export interface WindowManagerOptions {
   /**
    * Isolated 模式：視窗改用 position:absolute，限制在容器範圍內。
    * 適合文件頁面的內嵌 demo 區塊，或頁面中的局部桌面。
-   * 啟用後容器會自動加上 wos-isolated CSS class。
+   * 啟用後容器會自動加上 dp-isolated CSS class。
    */
   isolated?: boolean;
   /**
@@ -102,7 +102,7 @@ export class WindowManager {
     this.events = new EventBus();
     if (opts.injectStyles !== false) injectStyles();
     if (this._isolated) {
-      this._container.classList.add('wos-isolated');
+      this._container.classList.add('dp-isolated');
     }
     this._setupResizeObserver();
   }
@@ -226,7 +226,7 @@ export class WindowManager {
     }
 
     this._deactivateOthers(state.id);
-    elements.root.classList.add('wos-active');
+    elements.root.classList.add('dp-active');
 
     this.events.emit<WindowState>('window:opened', { ...state });
     return state;
@@ -299,7 +299,7 @@ export class WindowManager {
     win.state.zIndex = ++this._zCounter;
     win.state.isActive = true;
     win.elements.root.style.zIndex = String(win.state.zIndex);
-    win.elements.root.classList.add('wos-active');
+    win.elements.root.classList.add('dp-active');
     if (win.state.isMinimized) this.restore(id);
 
     // 將此視窗的所有子視窗一起置頂（子視窗必須高於父視窗）
@@ -313,7 +313,7 @@ export class WindowManager {
         // 子視窗也要一起顯示（若已最小化）
         if (child.state.isMinimized) {
           child.state.isMinimized = false;
-          child.elements.root.classList.remove('wos-minimized');
+          child.elements.root.classList.remove('dp-minimized');
         }
       });
     }
@@ -340,8 +340,8 @@ export class WindowManager {
     if (!win || win.state.isMinimized) return;
     win.state.isMinimized = true;
     win.state.isActive = false;
-    win.elements.root.classList.add('wos-minimized');
-    win.elements.root.classList.remove('wos-active');
+    win.elements.root.classList.add('dp-minimized');
+    win.elements.root.classList.remove('dp-active');
     this.events.emit<WindowState>('window:minimized', { ...win.state });
     // 同時最小化所有子視窗
     const children = this._children.get(id);
@@ -351,8 +351,8 @@ export class WindowManager {
         if (child && !child.state.isMinimized) {
           child.state.isMinimized = true;
           child.state.isActive = false;
-          child.elements.root.classList.add('wos-minimized');
-          child.elements.root.classList.remove('wos-active');
+          child.elements.root.classList.add('dp-minimized');
+          child.elements.root.classList.remove('dp-active');
         }
       });
     }
@@ -377,8 +377,8 @@ export class WindowManager {
     };
     win.state.isMaximized = true;
     win.state.isMinimized = false;
-    win.elements.root.classList.remove('wos-minimized');
-    win.elements.root.classList.add('wos-maximized');
+    win.elements.root.classList.remove('dp-minimized');
+    win.elements.root.classList.add('dp-maximized');
     win.elements.btnMax.textContent = '❐';
     win.elements.btnMax.setAttribute('aria-label', '還原');
     this.focus(id);
@@ -397,18 +397,18 @@ export class WindowManager {
 
     const wasMaximized = win.state.isMaximized;
     win.state.isMinimized = false;
-    win.elements.root.classList.remove('wos-minimized');
+    win.elements.root.classList.remove('dp-minimized');
 
     if (wasMaximized) {
       // 最大化狀態：只解除最小化，維持最大化視覺
-      win.elements.root.classList.add('wos-maximized');
+      win.elements.root.classList.add('dp-maximized');
       this.events.emit<WindowState>('window:restored', { ...win.state });
       return;
     }
 
     // 完全還原（從最大化按鈕點還原，或單純取消最小化）
     win.state.isMaximized = false;
-    win.elements.root.classList.remove('wos-maximized');
+    win.elements.root.classList.remove('dp-maximized');
     win.elements.btnMax.textContent = '□';
     win.elements.btnMax.setAttribute('aria-label', '最大化');
     if (win.state._savedGeometry) {
@@ -426,7 +426,7 @@ export class WindowManager {
         const child = this._wins.get(childId);
         if (child && child.state.isMinimized) {
           child.state.isMinimized = false;
-          child.elements.root.classList.remove('wos-minimized');
+          child.elements.root.classList.remove('dp-minimized');
         }
       });
     }
@@ -492,8 +492,8 @@ export class WindowManager {
   shake(id: string): void {
     const win = this._wins.get(id);
     if (!win) return;
-    win.elements.root.classList.add('wos-shake');
-    setTimeout(() => win.elements.root.classList.remove('wos-shake'), 400);
+    win.elements.root.classList.add('dp-shake');
+    setTimeout(() => win.elements.root.classList.remove('dp-shake'), 400);
   }
 
   /** 銷毀所有視窗，清除事件 */
@@ -513,7 +513,7 @@ export class WindowManager {
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
     if (this._isolated) {
-      this._container.classList.remove('wos-isolated');
+      this._container.classList.remove('dp-isolated');
     }
   }
 
@@ -525,9 +525,9 @@ export class WindowManager {
   private _ensureGuides(): void {
     if (this._guideV) return;
     this._guideV = document.createElement('div');
-    this._guideV.className = 'wos-snap-guide wos-snap-guide--v';
+    this._guideV.className = 'dp-snap-guide dp-snap-guide--v';
     this._guideH = document.createElement('div');
-    this._guideH.className = 'wos-snap-guide wos-snap-guide--h';
+    this._guideH.className = 'dp-snap-guide dp-snap-guide--h';
     this._container.appendChild(this._guideV);
     this._container.appendChild(this._guideH);
   }
@@ -579,7 +579,7 @@ export class WindowManager {
       // Move [data-region] children from content into body, use body as layout container
       while (content.firstChild) body.appendChild(content.firstChild);
       content.remove();
-      body.classList.add('wos-has-layout');
+      body.classList.add('dp-has-layout');
       const layout = new BorderLayout({ container: body });
       this._layouts.set(id, layout);
       return;
@@ -592,7 +592,7 @@ export class WindowManager {
       const panelCollapsed    = 'collapsed'   in content.dataset;
       while (content.firstChild) body.appendChild(content.firstChild);
       content.remove();
-      body.classList.add('wos-has-layout');
+      body.classList.add('dp-has-layout');
       const panel = new Panel({
         container:   body,
         title:       panelTitle || undefined,
@@ -649,7 +649,7 @@ export class WindowManager {
     this._wins.forEach((win, id) => {
       if (id !== exceptId && win.state.isActive) {
         win.state.isActive = false;
-        win.elements.root.classList.remove('wos-active');
+        win.elements.root.classList.remove('dp-active');
       }
     });
   }

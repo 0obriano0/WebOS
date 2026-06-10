@@ -1,10 +1,10 @@
-// ============================================================
-// WebOS-Core — Layout CSS Injection
+﻿// ============================================================
+// DeskPane — Layout CSS Injection
 // ============================================================
 
-import LAYOUT_CSS from '../styles/webos-layout.css';
+import LAYOUT_CSS from '../styles/deskpane-layout.css';
 
-const STYLE_ID = 'wos-layout-styles';
+const STYLE_ID = 'dp-layout-styles';
 
 /** 回傳 Layout CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
 export function getLayoutCSS(): string {

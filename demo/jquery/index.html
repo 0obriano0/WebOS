@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebOS — jQuery</title>
+  <title>DeskPane — jQuery</title>
   <link rel="stylesheet" href="../shared/base.css" />
-  <link id="wos-theme" rel="stylesheet" href="../../dist/themes/dark.css" />
+  <link id="dp-theme" rel="stylesheet" href="../../dist/themes/dark.css" />
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="../../dist/webos-core.umd.js"></script>
+  <script src="../../dist/deskpane.umd.js"></script>
   <style>
     .d-sidebar { width: 220px; }
     .sidebar-log {
@@ -58,7 +58,7 @@
 
 <script>
 $(function () {
-  const { WindowManager, setTheme } = WebOS;
+  const { WindowManager, setTheme } = DeskPane;
   const canvas = document.getElementById('canvas');
   const wm = new WindowManager({ container: canvas, isolated: true, snap: true });
 
@@ -92,15 +92,15 @@ $(function () {
       title: '💙 jQuery 整合說明', width: 480, height: 360, x: 30, y: 20,
       content() {
         return $('<div>').css({padding:'20px',fontFamily:'system-ui',lineHeight:1.8}).html(`
-          <h3 style="margin:0 0 10px;color:#4fb3f7;font-size:16px">WebOS-Core + jQuery</h3>
-          <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">使用 UMD bundle，直接透過 <code>window.WebOS</code> 取得所有 API</p>
+          <h3 style="margin:0 0 10px;color:#4fb3f7;font-size:16px">DeskPane + jQuery</h3>
+          <p style="font-size:13px;color:#94a3b8;margin-bottom:12px">使用 UMD bundle，直接透過 <code>window.DeskPane</code> 取得所有 API</p>
           <pre style="background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;font-size:12px;color:#e2e8f0;overflow:auto"><code>&lt;!-- 1. 載入 jQuery --&gt;
 &lt;script src="jquery.min.js"&gt;&lt;/script&gt;
-&lt;!-- 2. 載入 WebOS UMD --&gt;
-&lt;script src="webos-core.umd.js"&gt;&lt;/script&gt;
+&lt;!-- 2. 載入 DeskPane UMD --&gt;
+&lt;script src="deskpane.umd.js"&gt;&lt;/script&gt;
 
 &lt;script&gt;
-const { WindowManager } = WebOS;
+const { WindowManager } = DeskPane;
 const wm = new WindowManager();
 
 // 用 jQuery 建立視窗內容

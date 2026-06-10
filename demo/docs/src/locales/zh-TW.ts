@@ -1,4 +1,4 @@
-export const zhTW: Record<string, string> = {
+﻿export const zhTW: Record<string, string> = {
   // Header
   'header.sub': '開發者文件',
   'header.demos': 'Demos',
@@ -47,7 +47,7 @@ export const zhTW: Record<string, string> = {
 
   // Overview
   'overview.badge': '入門指南',
-  'overview.h1': 'WebOS-Core 總覽',
+  'overview.h1': 'DeskPane 總覽',
   'overview.lead': '一套<strong>框架無關</strong>的網頁虛擬桌面視窗管理引擎。核心負責所有視窗生命週期、拖曳縮放、焦點與 Z 順序——UI 框架只負責渲染內容。',
   'overview.h2Features': '功能特色',
   'overview.feat1': '開窗、關窗、最小化、最大化、還原',
@@ -98,18 +98,18 @@ export const zhTW: Record<string, string> = {
   // Installation
   'install.badge': '入門指南',
   'install.h1': '安裝',
-  'install.intro': 'WebOS-Core 在 <code>dist/</code> 提供四種預建套件，選擇符合你專案的方式。',
+  'install.intro': 'DeskPane 在 <code>dist/</code> 提供四種預建套件，選擇符合你專案的方式。',
   'install.tabEsm': 'ES Module（ES6 / 建置工具）',
   'install.tabUmd': 'Script Tag（ES5 / CDN）',
   'install.esm.h2': 'ES Module——建置工具或原生 <code>type="module"</code>',
-  'install.esm.intro': '使用 <code>dist/webos-core.es.js</code>（開發）或 <code>webos-core.es.min.js</code>（生產）。支援 tree-shaking、完整 TypeScript 型別及 Vue 3 / React 18 Composable 適配器。',
+  'install.esm.intro': '使用 <code>dist/deskpane.es.js</code>（開發）或 <code>deskpane.es.min.js</code>（生產）。支援 tree-shaking、完整 TypeScript 型別及 Vue 3 / React 18 Composable 適配器。',
   'install.esm.h3Step1': '1 · 安裝 / 複製 dist 檔案',
   'install.esm.h3Step2': '2 · 引入並使用',
   'install.esm.h3Step3': '3 · 原生瀏覽器模組（不需建置工具）',
   'install.esm.h3Step4': '4 · Vue 3 / React 18 Composable（僅限 ESM）',
   'install.esm.h3Types': 'TypeScript 型別',
   'install.umd.h2': 'Script Tag——ES5 / CDN / 傳統頁面',
-  'install.umd.intro': '使用 <code>dist/webos-core.umd.js</code>（開發）或 <code>webos-core.umd.min.js</code>（生產）。不需建置工具。載入後所有功能皆可透過 <code>window.WebOS</code> 存取。',
+  'install.umd.intro': '使用 <code>dist/deskpane.umd.js</code>（開發）或 <code>deskpane.umd.min.js</code>（生產）。不需建置工具。載入後所有功能皆可透過 <code>window.DeskPane</code> 存取。',
   'install.umd.h3Basic': '基本 HTML 頁面',
   'install.umd.h3jQuery': 'jQuery 整合範例',
   'install.umd.h3Globals': '可用全域物件',
@@ -171,7 +171,7 @@ export const zhTW: Record<string, string> = {
   // min/max/restore
   'minmax.badge': '核心 API',
   'minmax.h1': '最小化 / 最大化 / 還原',
-  'minmax.intro': 'WebOS-Core 支援完整的視窗狀態機。<code>restore()</code> 方法具有<strong>智能</strong>判斷：若視窗在最大化狀態下被最小化，還原時會回到最大化——而非回到原始浮動大小。',
+  'minmax.intro': 'DeskPane 支援完整的視窗狀態機。<code>restore()</code> 方法具有<strong>智能</strong>判斷：若視窗在最大化狀態下被最小化，還原時會回到最大化——而非回到原始浮動大小。',
   'minmax.openWindow': '開啟視窗',
   'minmax.h2State': '狀態機',
   'minmax.h2Api': 'API',
@@ -201,7 +201,7 @@ export const zhTW: Record<string, string> = {
   // Hello World
   'hello.badge': 'Vanilla JS',
   'hello.h1': 'Hello World',
-  'hello.intro': '最簡單的 WebOS-Core 範例。無框架、無需建置步驟。建立 <code>WindowManager</code>、為內容建立 <code>HTMLElement</code>，然後呼叫 <code>open()</code>。',
+  'hello.intro': '最簡單的 DeskPane 範例。無框架、無需建置步驟。建立 <code>WindowManager</code>、為內容建立 <code>HTMLElement</code>，然後呼叫 <code>open()</code>。',
   'hello.openHello': '開啟 Hello 視窗',
   'hello.h2Notes': '備註',
   'hello.note1': '<code>content</code> 元素會附加到視窗 body——由你管理。',
@@ -212,13 +212,13 @@ export const zhTW: Record<string, string> = {
   // DOM Content
   'dom.badge': 'Vanilla JS',
   'dom.h1': 'DOM 內容',
-  'dom.intro': '任何 <code>HTMLElement</code> 都可作為視窗內容——表單、表格、<code>&lt;iframe&gt;</code>、Canvas 或複雜元件，元素會附加到視窗框架內的 <code>.wos-body</code> div。',
+  'dom.intro': '任何 <code>HTMLElement</code> 都可作為視窗內容——表單、表格、<code>&lt;iframe&gt;</code>、Canvas 或複雜元件，元素會附加到視窗框架內的 <code>.dp-body</code> div。',
   'dom.btnText': '文字',
   'dom.btnForm': '表單',
   'dom.btnTable': '表格',
   'dom.btnProgress': '進度條',
   'dom.h2GetBody': 'getBodyElement(id)',
-  'dom.getBodyDesc': '開窗後，使用 <code>wm.getBodyElement(id)</code> 取得 <code>.wos-body</code> DOM 元素，動態附加任何內容——適合整合 Wijmo、AG Grid 或 jQuery 外掛等第三方元件。',
+  'dom.getBodyDesc': '開窗後，使用 <code>wm.getBodyElement(id)</code> 取得 <code>.dp-body</code> DOM 元素，動態附加任何內容——適合整合 Wijmo、AG Grid 或 jQuery 外掛等第三方元件。',
   'dom.th.pattern': '模式',
   'dom.th.usage': '用途',
   'dom.pattern1': '在 config 傳入 <code>content</code>',
@@ -276,7 +276,7 @@ export const zhTW: Record<string, string> = {
   // jQuery page
   'jquery.badge': 'jQuery',
   'jquery.h1': 'jQuery 整合',
-  'jquery.intro': 'WebOS-Core 提供 UMD 套件（<code>dist/webos-core.umd.js</code>），可在任何 script tag 工作流程中使用，包括 jQuery。載入兩個腳本後，以 <code>$(\'...\')</code> 建立視窗內容，並將 <code>$el[0]</code> 作為 <code>content</code> 傳入。',
+  'jquery.intro': 'DeskPane 提供 UMD 套件（<code>dist/deskpane.umd.js</code>），可在任何 script tag 工作流程中使用，包括 jQuery。載入兩個腳本後，以 <code>$(\'...\')</code> 建立視窗內容，並將 <code>$el[0]</code> 作為 <code>content</code> 傳入。',
   'jquery.openForm': '📋 表單',
   'jquery.openSearch': '🔍 即時搜尋',
   'jquery.openAccordion': '🎨 摺疊面板',
@@ -390,10 +390,10 @@ export const zhTW: Record<string, string> = {
   // 主題系統
   'theme.badge':          '主題',
   'theme.h1':             '主題系統',
-  'theme.intro':          'WebOS-Core 內建兩個主題——<strong>light</strong>（亮色）和 <strong>dark</strong>（暗色），各自定義 <strong>22 個 CSS 自訂屬性</strong>（15 個 Core + 7 個 Desktop）。只需一個 <code>&lt;link&gt;</code> 標籤，或呼叫 <code>setTheme()</code> 在執行期切換。',
+  'theme.intro':          'DeskPane 內建兩個主題——<strong>light</strong>（亮色）和 <strong>dark</strong>（暗色），各自定義 <strong>22 個 CSS 自訂屬性</strong>（15 個 Core + 7 個 Desktop）。只需一個 <code>&lt;link&gt;</code> 標籤，或呼叫 <code>setTheme()</code> 在執行期切換。',
   'theme.h2Load':         '載入主題',
   'theme.h2SetTheme':     'setTheme(preset, options?)',
-  'theme.setThemeDesc':   '在執行期替換 <code>&lt;link id="wos-theme"&gt;</code> 的 <code>href</code>。若指定 id 的 link 元素不存在，會自動建立並插入 <code>&lt;head&gt;</code>。',
+  'theme.setThemeDesc':   '在執行期替換 <code>&lt;link id="dp-theme"&gt;</code> 的 <code>href</code>。若指定 id 的 link 元素不存在，會自動建立並插入 <code>&lt;head&gt;</code>。',
   'theme.col.option':     '選項',
   'theme.col.type':       '型別',
   'theme.col.default':    '預設值',
@@ -413,7 +413,7 @@ export const zhTW: Record<string, string> = {
   // 桌面模組
   'desktop.badge':                '桌面模組',
   'desktop.h1':                   '桌面與 Dock',
-  'desktop.intro':                '<code>webos-desktop</code> 模組新增完整的虛擬桌面體驗：可拖曳圖示、可設定的 Dock，以及執行中視窗與 Dock 項目的自動同步。',
+  'desktop.intro':                '<code>deskpane-desktop</code> 模組新增完整的虛擬桌面體驗：可拖曳圖示、可設定的 Dock，以及執行中視窗與 Dock 項目的自動同步。',
   'desktop.h2Setup':              '基本設定',
   'desktop.setupDesc':            '建立 <code>Desktop</code>，再將 <code>desktop.getElement()</code> 傳入 <code>WindowManager</code>（<code>isolated: true</code>）。雙擊圖示即可開啟視窗。',
   'desktop.h2Config':             'DesktopConfig',
@@ -592,5 +592,5 @@ export const zhTW: Record<string, string> = {
 
   // Installation — workspace bundle
   'install.h2WorkspaceBundle': 'Workspace Bundle',
-  'install.workspaceBundleDesc': '<code>webos-workspace</code> 是獨立套件，包含 <code>WorkspaceManager</code>、<code>TaskView</code> 與 <code>SessionManager</code>。請在 <code>webos-core</code> 之後載入。',
+  'install.workspaceBundleDesc': '<code>deskpane-workspace</code> 是獨立套件，包含 <code>WorkspaceManager</code>、<code>TaskView</code> 與 <code>SessionManager</code>。請在 <code>deskpane</code> 之後載入。',
 }

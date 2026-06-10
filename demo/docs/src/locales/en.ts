@@ -1,4 +1,4 @@
-export const en: Record<string, string> = {
+﻿export const en: Record<string, string> = {
   // Header
   'header.sub': 'Developer Docs',
   'header.demos': 'Demos',
@@ -47,7 +47,7 @@ export const en: Record<string, string> = {
 
   // Overview
   'overview.badge': 'Getting Started',
-  'overview.h1': 'WebOS-Core Overview',
+  'overview.h1': 'DeskPane Overview',
   'overview.lead': 'A <strong>framework-agnostic</strong> virtual desktop window management engine for the web. The core handles all window lifecycle, drag/resize, focus, and z-order — your UI framework handles the content.',
   'overview.h2Features': 'Features',
   'overview.feat1': 'Open, close, minimize, maximize, restore windows',
@@ -98,18 +98,18 @@ export const en: Record<string, string> = {
   // Installation
   'install.badge': 'Getting Started',
   'install.h1': 'Installation',
-  'install.intro': 'WebOS-Core ships four pre-built bundles in <code>dist/</code>. Pick the style that matches your project setup.',
+  'install.intro': 'DeskPane ships four pre-built bundles in <code>dist/</code>. Pick the style that matches your project setup.',
   'install.tabEsm': 'ES Module (ES6 / bundler)',
   'install.tabUmd': 'Script Tag (ES5 / CDN)',
   'install.esm.h2': 'ES Module — bundler or native <code>type="module"</code>',
-  'install.esm.intro': 'Use <code>dist/webos-core.es.js</code> (dev) or <code>webos-core.es.min.js</code> (production). Supports tree-shaking, full TypeScript types, and the Vue 3 and React 18 composable adapters.',
+  'install.esm.intro': 'Use <code>dist/deskpane.es.js</code> (dev) or <code>deskpane.es.min.js</code> (production). Supports tree-shaking, full TypeScript types, and the Vue 3 and React 18 composable adapters.',
   'install.esm.h3Step1': '1 · Install / copy the dist file',
   'install.esm.h3Step2': '2 · Import &amp; use',
   'install.esm.h3Step3': '3 · Native browser module (no bundler)',
   'install.esm.h3Step4': '4 · Vue 3 / React 18 composable (ESM only)',
   'install.esm.h3Types': 'TypeScript types',
   'install.umd.h2': 'Script Tag — ES5 / CDN / legacy pages',
-  'install.umd.intro': 'Use <code>dist/webos-core.umd.js</code> (dev) or <code>webos-core.umd.min.js</code> (production). No build step needed. After the script loads, everything is available on <code>window.WebOS</code>.',
+  'install.umd.intro': 'Use <code>dist/deskpane.umd.js</code> (dev) or <code>deskpane.umd.min.js</code> (production). No build step needed. After the script loads, everything is available on <code>window.DeskPane</code>.',
   'install.umd.h3Basic': 'Basic HTML page',
   'install.umd.h3jQuery': 'jQuery integration example',
   'install.umd.h3Globals': 'Available globals',
@@ -171,7 +171,7 @@ export const en: Record<string, string> = {
   // min/max/restore
   'minmax.badge': 'Core API',
   'minmax.h1': 'minimize / maximize / restore',
-  'minmax.intro': 'WebOS-Core supports the full window state machine. The <code>restore()</code> method is <strong>smart</strong>: if a window was maximized before being minimized, restoring brings it back to maximized — not to the original floating size.',
+  'minmax.intro': 'DeskPane supports the full window state machine. The <code>restore()</code> method is <strong>smart</strong>: if a window was maximized before being minimized, restoring brings it back to maximized — not to the original floating size.',
   'minmax.openWindow': 'Open Window',
   'minmax.h2State': 'State Machine',
   'minmax.h2Api': 'API',
@@ -201,7 +201,7 @@ export const en: Record<string, string> = {
   // Hello World
   'hello.badge': 'Vanilla JS',
   'hello.h1': 'Hello World',
-  'hello.intro': 'The simplest possible WebOS-Core example. No frameworks, no build step required. Create a <code>WindowManager</code>, build an <code>HTMLElement</code> for the content, and call <code>open()</code>.',
+  'hello.intro': 'The simplest possible DeskPane example. No frameworks, no build step required. Create a <code>WindowManager</code>, build an <code>HTMLElement</code> for the content, and call <code>open()</code>.',
   'hello.openHello': 'Open Hello Window',
   'hello.h2Notes': 'Notes',
   'hello.note1': 'The <code>content</code> element is appended to the window body — you own it.',
@@ -212,13 +212,13 @@ export const en: Record<string, string> = {
   // DOM Content
   'dom.badge': 'Vanilla JS',
   'dom.h1': 'DOM Content',
-  'dom.intro': 'Any <code>HTMLElement</code> can be used as window content — a form, a table, an <code>&lt;iframe&gt;</code>, a canvas, or a complex widget. The element is appended to the <code>.wos-body</code> div inside the window frame.',
+  'dom.intro': 'Any <code>HTMLElement</code> can be used as window content — a form, a table, an <code>&lt;iframe&gt;</code>, a canvas, or a complex widget. The element is appended to the <code>.dp-body</code> div inside the window frame.',
   'dom.btnText': 'Text',
   'dom.btnForm': 'Form',
   'dom.btnTable': 'Table',
   'dom.btnProgress': 'Progress',
   'dom.h2GetBody': 'getBodyElement(id)',
-  'dom.getBodyDesc': 'After opening a window, use <code>wm.getBodyElement(id)</code> to get the <code>.wos-body</code> DOM element and attach any content dynamically — useful for integrating third-party widgets like Wijmo, AG Grid, or jQuery plugins.',
+  'dom.getBodyDesc': 'After opening a window, use <code>wm.getBodyElement(id)</code> to get the <code>.dp-body</code> DOM element and attach any content dynamically — useful for integrating third-party widgets like Wijmo, AG Grid, or jQuery plugins.',
   'dom.th.pattern': 'Pattern',
   'dom.th.usage': 'Usage',
   'dom.pattern1': 'Pass <code>content</code> in config',
@@ -276,7 +276,7 @@ export const en: Record<string, string> = {
   // jQuery page
   'jquery.badge': 'jQuery',
   'jquery.h1': 'jQuery Integration',
-  'jquery.intro': 'WebOS-Core ships a UMD bundle (<code>dist/webos-core.umd.js</code>) that works with any script-tag workflow — including jQuery. Load both scripts, create window content with <code>$(\'...\')</code>, and pass <code>$el[0]</code> as the window <code>content</code>.',
+  'jquery.intro': 'DeskPane ships a UMD bundle (<code>dist/deskpane.umd.js</code>) that works with any script-tag workflow — including jQuery. Load both scripts, create window content with <code>$(\'...\')</code>, and pass <code>$el[0]</code> as the window <code>content</code>.',
   'jquery.openForm': '📋 Form',
   'jquery.openSearch': '🔍 Live Search',
   'jquery.openAccordion': '🎨 Accordion',
@@ -390,10 +390,10 @@ export const en: Record<string, string> = {
   // Theme System
   'theme.badge':          'Theming',
   'theme.h1':             'Theme System',
-  'theme.intro':          'WebOS-Core ships two built-in themes — <strong>light</strong> and <strong>dark</strong> — each defining <strong>22 CSS custom properties</strong> (15 Core + 7 Desktop). Drop in a single <code>&lt;link&gt;</code> tag, or call <code>setTheme()</code> to switch at runtime.',
+  'theme.intro':          'DeskPane ships two built-in themes — <strong>light</strong> and <strong>dark</strong> — each defining <strong>22 CSS custom properties</strong> (15 Core + 7 Desktop). Drop in a single <code>&lt;link&gt;</code> tag, or call <code>setTheme()</code> to switch at runtime.',
   'theme.h2Load':         'Load a Theme',
   'theme.h2SetTheme':     'setTheme(preset, options?)',
-  'theme.setThemeDesc':   'Swaps the <code>&lt;link id="wos-theme"&gt;</code> <code>href</code> at runtime. If the link element does not exist it is created and appended to <code>&lt;head&gt;</code>.',
+  'theme.setThemeDesc':   'Swaps the <code>&lt;link id="dp-theme"&gt;</code> <code>href</code> at runtime. If the link element does not exist it is created and appended to <code>&lt;head&gt;</code>.',
   'theme.col.option':     'Option',
   'theme.col.type':       'Type',
   'theme.col.default':    'Default',
@@ -413,7 +413,7 @@ export const en: Record<string, string> = {
   // Desktop Module
   'desktop.badge':                'Desktop Module',
   'desktop.h1':                   'Desktop & Dock',
-  'desktop.intro':                'The <code>webos-desktop</code> module adds a full virtual desktop: draggable icons, a configurable Dock, and automatic sync between running windows and Dock items.',
+  'desktop.intro':                'The <code>deskpane-desktop</code> module adds a full virtual desktop: draggable icons, a configurable Dock, and automatic sync between running windows and Dock items.',
   'desktop.h2Setup':              'Basic Setup',
   'desktop.setupDesc':            'Create a <code>Desktop</code>, then pass <code>desktop.getElement()</code> to a <code>WindowManager</code> with <code>isolated: true</code>. Double-click an icon to open its window.',
   'desktop.h2Config':             'DesktopConfig',
@@ -592,5 +592,5 @@ export const en: Record<string, string> = {
 
   // Installation — workspace bundle
   'install.h2WorkspaceBundle': 'Workspace Bundle',
-  'install.workspaceBundleDesc': 'The <code>webos-workspace</code> bundle is a separate package containing <code>WorkspaceManager</code>, <code>TaskView</code>, and <code>SessionManager</code>. Load it after <code>webos-core</code>.',
+  'install.workspaceBundleDesc': 'The <code>deskpane-workspace</code> bundle is a separate package containing <code>WorkspaceManager</code>, <code>TaskView</code>, and <code>SessionManager</code>. Load it after <code>deskpane</code>.',
 }

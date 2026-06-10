@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Desktop — DesktopIcon
+﻿// ============================================================
+// DeskPane-Desktop — DesktopIcon
 // 桌面圖示：可拖曳自由定位，點擊觸發 action
 // ============================================================
 
@@ -12,7 +12,7 @@ export type IconSnapFn = (x: number, y: number, w: number, h: number) => { x: nu
 
 function resolveIconEl(icon: string): HTMLElement {
   const el = document.createElement('div');
-  el.className = 'wos-desktop-icon-img';
+  el.className = 'dp-desktop-icon-img';
   appendIconContent(el, icon);
   return el;
 }
@@ -57,13 +57,13 @@ export class DesktopIcon {
 
   private _createElement(): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'wos-desktop-icon';
+    el.className = 'dp-desktop-icon';
     el.dataset.id = this._config.id;
 
     el.appendChild(resolveIconEl(this._config.icon));
 
     const label = document.createElement('div');
-    label.className = 'wos-desktop-icon-label';
+    label.className = 'dp-desktop-icon-label';
     label.textContent = this._config.label;
     el.appendChild(label);
 
@@ -85,10 +85,10 @@ export class DesktopIcon {
     this._hasMoved = false;
 
     // 取消其他圖示的選取狀態
-    this._containerEl.querySelectorAll('.wos-icon-selected').forEach(el => {
-      el.classList.remove('wos-icon-selected');
+    this._containerEl.querySelectorAll('.dp-icon-selected').forEach(el => {
+      el.classList.remove('dp-icon-selected');
     });
-    this._el.classList.add('wos-icon-selected');
+    this._el.classList.add('dp-icon-selected');
 
     document.addEventListener('mousemove', this._onMouseMoveBound);
     document.addEventListener('mouseup', this._onMouseUpBound);
@@ -101,7 +101,7 @@ export class DesktopIcon {
       const dx = e.clientX - this._startX;
       const dy = e.clientY - this._startY;
       if (Math.sqrt(dx * dx + dy * dy) < this._dragThreshold) return;
-      this._el.classList.add('wos-icon-dragging');
+      this._el.classList.add('dp-icon-dragging');
       this._hasMoved = true;
     }
 
@@ -125,7 +125,7 @@ export class DesktopIcon {
     document.removeEventListener('mousemove', this._onMouseMoveBound);
     document.removeEventListener('mouseup', this._onMouseUpBound);
 
-    this._el.classList.remove('wos-icon-dragging');
+    this._el.classList.remove('dp-icon-dragging');
     this._onDragEnd?.();
 
     if (!this._hasMoved) {

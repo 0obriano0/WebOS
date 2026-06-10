@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — Border Layout Manager
+﻿// ============================================================
+// DeskPane — Border Layout Manager
 // EasyUI 風格東南西北+中間佈局，支援：
 //   • HTML data-region 宣告式初始化
 //   • 任意層巢狀（region 內再放 data-region）
@@ -103,7 +103,7 @@ export class BorderLayout {
 
       // Create outer region el
       const el = document.createElement('div');
-      el.className = `wos-layout-region wos-layout-region--${name}`;
+      el.className = `dp-layout-region dp-layout-region--${name}`;
       el.dataset.wosRegion = name;
 
       // Optional region header
@@ -111,26 +111,26 @@ export class BorderLayout {
       let headerEl: HTMLElement | null = null;
       if (hasHeader) {
         headerEl = document.createElement('div');
-        headerEl.className = 'wos-region-header';
+        headerEl.className = 'dp-region-header';
 
         // Optional icon
         if (merged.icon) {
           const iconSpan = document.createElement('span');
-          iconSpan.className = 'wos-region-icon';
+          iconSpan.className = 'dp-region-icon';
           iconSpan.textContent = merged.icon;
           headerEl.appendChild(iconSpan);
         }
 
         // Title
         const ttl = document.createElement('span');
-        ttl.className = 'wos-region-title';
+        ttl.className = 'dp-region-title';
         ttl.textContent = merged.title!;
         headerEl.appendChild(ttl);
 
         // Collapse button (right end of header)
         if (merged.collapsible) {
           const btn = document.createElement('button');
-          btn.className = 'wos-region-collapse-btn';
+          btn.className = 'dp-region-collapse-btn';
           btn.dataset.wosCollapseFor = name;
           btn.setAttribute('aria-label', `切換 ${name} 面板`);
           btn.textContent = this._collapseIcon(name as LayoutRegion, merged.collapsed ?? false);
@@ -142,7 +142,7 @@ export class BorderLayout {
 
       // Body (scrollable inner)
       const bodyEl = document.createElement('div');
-      bodyEl.className = 'wos-region-body';
+      bodyEl.className = 'dp-region-body';
 
       // Move content in
       if (html?.contentEl) {
@@ -163,7 +163,7 @@ export class BorderLayout {
       });
 
       // Apply initial collapsed class
-      if (merged.collapsed) el.classList.add('wos-layout-region--collapsed');
+      if (merged.collapsed) el.classList.add('dp-layout-region--collapsed');
     }
 
     this._buildDOM();
@@ -194,7 +194,7 @@ export class BorderLayout {
   // ── Build DOM ──────────────────────────────────────────────
   private _buildDOM(): void {
     this.container.innerHTML = '';
-    this.container.classList.add('wos-layout');
+    this.container.classList.add('dp-layout');
 
     // Append region elements
     for (const state of this.regions.values()) {
@@ -207,7 +207,7 @@ export class BorderLayout {
       if (!this.regions.has(name)) continue;
       const isV = name === 'east' || name === 'west';
       const sp = document.createElement('div');
-      sp.className = `wos-layout-splitter wos-layout-splitter--${isV ? 'v' : 'h'}`;
+      sp.className = `dp-layout-splitter dp-layout-splitter--${isV ? 'v' : 'h'}`;
       sp.dataset.wosSplitter = name;
 
       this.splitterEls.set(name, sp);
@@ -321,7 +321,7 @@ export class BorderLayout {
     // Splitter drag
     for (const [name, spEl] of this.splitterEls) {
       const onDown = (e: MouseEvent) => {
-        if ((e.target as HTMLElement).closest('.wos-region-collapse-btn')) return;
+        if ((e.target as HTMLElement).closest('.dp-region-collapse-btn')) return;
         this._startDrag(e, name);
       };
       spEl.addEventListener('mousedown', onDown);
@@ -330,7 +330,7 @@ export class BorderLayout {
 
     // Collapse buttons — delegated on container (button lives in region header)
     const onCollapseClick = (e: MouseEvent) => {
-      const btn = (e.target as HTMLElement).closest('[data-wos-collapse-for]') as HTMLElement | null;
+      const btn = (e.target as HTMLElement).closest('[data-dp-collapse-for]') as HTMLElement | null;
       if (!btn) return;
       this.toggleCollapse(btn.dataset.wosCollapseFor as SplitterKey);
     };
@@ -354,7 +354,7 @@ export class BorderLayout {
     const startSize = state.size;
     const totalSize = isV ? this.container.clientWidth : this.container.clientHeight;
 
-    spEl.classList.add('wos-splitter-dragging');
+    spEl.classList.add('dp-splitter-dragging');
 
     const onMove = (ev: MouseEvent) => {
       const delta = isV ? (ev.clientX - startPos) : (ev.clientY - startPos);
@@ -369,7 +369,7 @@ export class BorderLayout {
     };
 
     const onUp = () => {
-      spEl.classList.remove('wos-splitter-dragging');
+      spEl.classList.remove('dp-splitter-dragging');
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
     };
@@ -384,14 +384,14 @@ export class BorderLayout {
     if (!state?.collapsible) return;
 
     state.collapsed = !state.collapsed;
-    state.el.classList.toggle('wos-layout-region--collapsed', state.collapsed);
+    state.el.classList.toggle('dp-layout-region--collapsed', state.collapsed);
 
     if (!state.collapsed && state.size < state.minSize) {
       state.size = state.savedSize > 0 ? state.savedSize : REGION_DEFAULTS[name].size;
     }
 
     // Update button icon — button lives in headerEl
-    const btn = state.headerEl?.querySelector<HTMLElement>('[data-wos-collapse-for]');
+    const btn = state.headerEl?.querySelector<HTMLElement>('[data-dp-collapse-for]');
     if (btn) btn.textContent = this._collapseIcon(name, state.collapsed);
 
     this._applyLayout();
@@ -424,6 +424,6 @@ export class BorderLayout {
     this.cleanups = [];
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
-    this.container.classList.remove('wos-layout');
+    this.container.classList.remove('dp-layout');
   }
 }

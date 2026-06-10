@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — TaskView
+﻿// ============================================================
+// DeskPane — TaskView
 // 虛擬桌面切換 Task View 覆蓋層
 // 功能：
 //   • 顯示所有工作區的 DOM clone 縮略圖
@@ -12,9 +12,9 @@
 import { EventBus } from '../core/EventBus.js';
 import { WorkspaceManager } from './WorkspaceManager.js';
 import { WorkspaceConfig, TaskViewOptions, DockLike } from './types.js';
-import TASKVIEW_CSS from '../styles/webos-taskview.css';
+import TASKVIEW_CSS from '../styles/deskpane-taskview.css';
 
-const TASKVIEW_STYLE_ID = 'wos-taskview-styles';
+const TASKVIEW_STYLE_ID = 'dp-taskview-styles';
 
 function injectTaskViewStyles(): void {
   if (document.getElementById(TASKVIEW_STYLE_ID)) return;
@@ -61,7 +61,7 @@ export class TaskView {
       showButton:       options.showButton        ?? true,
       buttonLabel:      options.buttonLabel       ?? '虛擬桌面',
       buttonIcon:       options.buttonIcon        ?? '⧉',
-      buttonId:         options.buttonId          ?? 'wos-tv-button',
+      buttonId:         options.buttonId          ?? 'dp-tv-button',
       onCreateWorkspace: options.onCreateWorkspace,
       dock: options.dock,
     };
@@ -73,10 +73,10 @@ export class TaskView {
 
     // ── 建立覆蓋層 DOM ──────────────────────────────────────
     this._overlayEl = document.createElement('div');
-    this._overlayEl.className = 'wos-task-view';
+    this._overlayEl.className = 'dp-task-view';
 
     this._panelEl = document.createElement('div');
-    this._panelEl.className = 'wos-task-view-panel';
+    this._panelEl.className = 'dp-task-view-panel';
     this._overlayEl.appendChild(this._panelEl);
 
     this._opts.target.appendChild(this._overlayEl);
@@ -126,14 +126,14 @@ export class TaskView {
     if (this._isOpen) return;
     this._isOpen = true;
     this._render();
-    this._overlayEl.classList.add('wos-task-view--open');
+    this._overlayEl.classList.add('dp-task-view--open');
     this.events.emit<void>('taskview:open', undefined);
   }
 
   close(): void {
     if (!this._isOpen) return;
     this._isOpen = false;
-    this._overlayEl.classList.remove('wos-task-view--open');
+    this._overlayEl.classList.remove('dp-task-view--open');
     this.events.emit<void>('taskview:close', undefined);
   }
 
@@ -171,24 +171,24 @@ export class TaskView {
 
     workspaces.forEach(ws => {
       const card = document.createElement('div');
-      card.className = 'wos-tv-card' + (ws.id === currentId ? ' wos-tv-card--active' : '');
+      card.className = 'dp-tv-card' + (ws.id === currentId ? ' dp-tv-card--active' : '');
 
       // 縮略圖（DOM clone）
       const preview = document.createElement('div');
-      preview.className = 'wos-tv-preview';
+      preview.className = 'dp-tv-preview';
       this._buildPreview(preview, ws.container);
       card.appendChild(preview);
 
       // 工作區名稱
       const lbl = document.createElement('div');
-      lbl.className   = 'wos-tv-label';
+      lbl.className   = 'dp-tv-label';
       lbl.textContent = ws.label;
       card.appendChild(lbl);
 
       // 刪除按鈕（需 allowDelete，且 > 1 個工作區才顯示）
       if (this._opts.allowDelete && workspaces.length > 1) {
         const del = document.createElement('button');
-        del.className   = 'wos-tv-delete';
+        del.className   = 'dp-tv-delete';
         del.textContent = '✕';
         del.title       = '刪除此桌面';
         del.addEventListener('click', (e) => {
@@ -209,15 +209,15 @@ export class TaskView {
     // 新增桌面按鈕
     if (this._opts.allowAdd) {
       const addWrap = document.createElement('div');
-      addWrap.className = 'wos-tv-add-wrap';
+      addWrap.className = 'dp-tv-add-wrap';
       addWrap.title     = '新增虛擬桌面';
 
       const addBox = document.createElement('div');
-      addBox.className   = 'wos-tv-add';
+      addBox.className   = 'dp-tv-add';
       addBox.textContent = '+';
 
       const addLbl = document.createElement('div');
-      addLbl.className   = 'wos-tv-add-label';
+      addLbl.className   = 'dp-tv-add-label';
       addLbl.textContent = '新增桌面';
 
       addWrap.append(addBox, addLbl);
@@ -255,10 +255,10 @@ export class TaskView {
 
     const clone = container.cloneNode(true) as HTMLElement;
     clone.classList.remove(
-      'wos-workspace--enter-right', 'wos-workspace--enter-left',
-      'wos-workspace--leave-left',  'wos-workspace--leave-right',
+      'dp-workspace--enter-right', 'dp-workspace--enter-left',
+      'dp-workspace--leave-left',  'dp-workspace--leave-right',
     );
-    clone.classList.add('wos-workspace--active');
+    clone.classList.add('dp-workspace--active');
     clone.style.cssText =
       'position:absolute;inset:0;width:100%;height:100%;' +
       'transform:translateX(0);visibility:visible;transition:none;pointer-events:none;';

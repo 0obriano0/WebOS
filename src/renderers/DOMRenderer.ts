@@ -1,12 +1,12 @@
-// ============================================================
-// WebOS-Core — DOM Window Renderer
+﻿// ============================================================
+// DeskPane — DOM Window Renderer
 // 負責建立視窗外殼 DOM 節點、注入樣式
 // ============================================================
 
 import { WindowState } from '../core/types.js';
-import BASE_CSS from '../styles/webos-core.css';
+import BASE_CSS from '../styles/deskpane.css';
 
-const STYLE_ID = 'wos-core-styles';
+const STYLE_ID = 'dp-core-styles';
 
 /** 回傳 Core CSS 字串，供 injectStyles:false 的使用者自行管理樣式注入 */
 export function getCoreCSS(): string {
@@ -34,8 +34,8 @@ export interface WindowElements {
 /** 建立視窗外殼 DOM，回傳各主要元素參照 */
 export function createWindowDOM(state: WindowState): WindowElements {
   const root = document.createElement('div');
-  root.className = 'wos-window';
-  if (state.parentId) root.classList.add('wos-child-window');
+  root.className = 'dp-window';
+  if (state.parentId) root.classList.add('dp-child-window');
   root.dataset.wosId = state.id;
   if (state.parentId) root.dataset.wosParentId = state.parentId;
   applyGeometry(root, state);
@@ -43,15 +43,15 @@ export function createWindowDOM(state: WindowState): WindowElements {
 
   // ── Header ──
   const header = document.createElement('div');
-  header.className = 'wos-header';
+  header.className = 'dp-header';
 
   const title = document.createElement('span');
-  title.className = 'wos-title';
+  title.className = 'dp-title';
   title.textContent = state.title;
 
-  const btnMin = createButton('－', 'wos-btn-min', '最小化');
-  const btnMax = createButton('□', 'wos-btn-max', '最大化');
-  const btnClose = createButton('✕', 'wos-btn-close', '關閉');
+  const btnMin = createButton('－', 'dp-btn-min', '最小化');
+  const btnMax = createButton('□', 'dp-btn-max', '最大化');
+  const btnClose = createButton('✕', 'dp-btn-close', '關閉');
 
   if (!state.resizable) {
     btnMax.disabled = true;
@@ -68,7 +68,7 @@ export function createWindowDOM(state: WindowState): WindowElements {
 
   // ── Body ──
   const body = document.createElement('div');
-  body.className = 'wos-body';
+  body.className = 'dp-body';
 
   root.append(header, body);
 
@@ -86,14 +86,14 @@ export function createWindowDOM(state: WindowState): WindowElements {
  */
 export function createModalOverlay(): HTMLElement {
   const el = document.createElement('div');
-  el.className = 'wos-modal-overlay';
+  el.className = 'dp-modal-overlay';
   el.setAttribute('aria-hidden', 'true');
   return el;
 }
 
 function createButton(text: string, cls: string, ariaLabel: string): HTMLButtonElement {
   const btn = document.createElement('button');
-  btn.className = `wos-btn ${cls}`;
+  btn.className = `dp-btn ${cls}`;
   btn.textContent = text;
   btn.setAttribute('aria-label', ariaLabel);
   return btn;

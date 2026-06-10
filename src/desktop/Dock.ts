@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Desktop — Dock
+﻿// ============================================================
+// DeskPane-Desktop — Dock
 // 工具列：支援圖示新增/移除 + 拖曳排序
 // ============================================================
 
@@ -8,7 +8,7 @@ import { appendIconContent } from './iconUtils.js';
 
 function resolveIconEl(icon: string, size: number): HTMLElement {
   const el = document.createElement('div');
-  el.className = 'wos-dock-icon';
+  el.className = 'dp-dock-icon';
   el.style.width = `${size}px`;
   el.style.height = `${size}px`;
   el.style.fontSize = `${Math.floor(size * 0.72)}px`;
@@ -34,7 +34,7 @@ export class Dock {
     this._showLabels = config.showLabels ?? true;
 
     this._el = document.createElement('div');
-    this._el.className = `wos-dock wos-dock-${this._position}`;
+    this._el.className = `dp-dock dp-dock-${this._position}`;
     this._render();
   }
 
@@ -50,7 +50,7 @@ export class Dock {
 
   private _createItemEl(item: DockItemConfig, index: number): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'wos-dock-item';
+    el.className = 'dp-dock-item';
     el.draggable = true;
     el.dataset.index = String(index);
     el.dataset.id = item.id;
@@ -60,12 +60,12 @@ export class Dock {
 
     if (this._showLabels) {
       const label = document.createElement('div');
-      label.className = 'wos-dock-label';
+      label.className = 'dp-dock-label';
       label.textContent = item.label;
       el.appendChild(label);
     } else {
       const tooltip = document.createElement('div');
-      tooltip.className = 'wos-dock-tooltip';
+      tooltip.className = 'dp-dock-tooltip';
       tooltip.textContent = item.label;
       el.appendChild(tooltip);
     }
@@ -76,7 +76,7 @@ export class Dock {
     // ── HTML5 Drag-to-reorder ─────────────────────────────
     el.addEventListener('dragstart', (e) => {
       this._dragSrcIndex = index;
-      el.classList.add('wos-dock-dragging');
+      el.classList.add('dp-dock-dragging');
       if (e.dataTransfer) {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', String(index));
@@ -84,7 +84,7 @@ export class Dock {
     });
 
     el.addEventListener('dragend', () => {
-      el.classList.remove('wos-dock-dragging');
+      el.classList.remove('dp-dock-dragging');
       this._clearDragover();
     });
 
@@ -94,17 +94,17 @@ export class Dock {
       const targetIndex = parseInt(el.dataset.index ?? '0', 10);
       if (targetIndex !== this._dragSrcIndex) {
         this._clearDragover();
-        el.classList.add('wos-dock-dragover');
+        el.classList.add('dp-dock-dragover');
       }
     });
 
     el.addEventListener('dragleave', () => {
-      el.classList.remove('wos-dock-dragover');
+      el.classList.remove('dp-dock-dragover');
     });
 
     el.addEventListener('drop', (e) => {
       e.preventDefault();
-      el.classList.remove('wos-dock-dragover');
+      el.classList.remove('dp-dock-dragover');
       const targetIndex = parseInt(el.dataset.index ?? '0', 10);
       if (this._dragSrcIndex >= 0 && this._dragSrcIndex !== targetIndex) {
         const [moved] = this._items.splice(this._dragSrcIndex, 1);
@@ -118,8 +118,8 @@ export class Dock {
   }
 
   private _clearDragover(): void {
-    this._el.querySelectorAll('.wos-dock-dragover').forEach(el => {
-      el.classList.remove('wos-dock-dragover');
+    this._el.querySelectorAll('.dp-dock-dragover').forEach(el => {
+      el.classList.remove('dp-dock-dragover');
     });
   }
 
@@ -149,8 +149,8 @@ export class Dock {
   }
 
   private _applyActive(id: string | null): void {
-    this._el.querySelectorAll<HTMLElement>('.wos-dock-item').forEach(el => {
-      el.classList.toggle('wos-dock-active', !!id && el.dataset.id === id);
+    this._el.querySelectorAll<HTMLElement>('.dp-dock-item').forEach(el => {
+      el.classList.toggle('dp-dock-active', !!id && el.dataset.id === id);
     });
   }
 
@@ -169,14 +169,14 @@ export class Dock {
 
   /** 動態變更 Dock 停靠位置 */
   setPosition(position: DockPosition): void {
-    this._el.classList.remove(`wos-dock-${this._position}`);
+    this._el.classList.remove(`dp-dock-${this._position}`);
     this._position = position;
-    this._el.classList.add(`wos-dock-${this._position}`);
+    this._el.classList.add(`dp-dock-${this._position}`);
   }
 
   /** 取得特定 item 的 DOM 元素 */
   getItemElement(id: string): HTMLElement | null {
-    return this._el.querySelector<HTMLElement>(`.wos-dock-item[data-id="${CSS.escape(id)}"]`);
+    return this._el.querySelector<HTMLElement>(`.dp-dock-item[data-id="${CSS.escape(id)}"]`);
   }
 
   /** 取得目前 Dock 停靠位置 */

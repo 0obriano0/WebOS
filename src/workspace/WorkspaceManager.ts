@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — WorkspaceManager
+﻿// ============================================================
+// DeskPane — WorkspaceManager
 // 管理多個虛擬工作區（每個工作區有獨立的 WindowManager + 容器）
 // 支援：
 //   • addWorkspace / removeWorkspace / switchTo
@@ -11,9 +11,9 @@
 import { WindowManager, WindowManagerOptions } from '../core/WindowManager.js';
 import { EventBus } from '../core/EventBus.js';
 import { WorkspaceConfig, WorkspaceManagerOptions, WorkspaceState } from './types.js';
-import WORKSPACE_CSS from '../styles/webos-workspace.css';
+import WORKSPACE_CSS from '../styles/deskpane-workspace.css';
 
-const WORKSPACE_STYLE_ID = 'wos-workspace-styles';
+const WORKSPACE_STYLE_ID = 'dp-workspace-styles';
 
 function injectWorkspaceStyles(): void {
   if (document.getElementById(WORKSPACE_STYLE_ID)) return;
@@ -62,9 +62,9 @@ export class WorkspaceManager {
 
     // Wrap the container
     this._root = document.createElement('div');
-    this._root.className = 'wos-workspace-root';
+    this._root.className = 'dp-workspace-root';
     // Pass animation duration as CSS variable
-    this._root.style.setProperty('--wos-workspace-animation-ms', `${this._animationMs}ms`);
+    this._root.style.setProperty('--dp-workspace-animation-ms', `${this._animationMs}ms`);
     el.appendChild(this._root);
   }
 
@@ -91,10 +91,10 @@ export class WorkspaceManager {
 
     // Create workspace container div
     const wsEl = document.createElement('div');
-    wsEl.className = 'wos-workspace';
+    wsEl.className = 'dp-workspace';
     wsEl.dataset.workspaceId = config.id;
     // Initially off-screen to the right
-    wsEl.classList.add('wos-workspace--enter-right');
+    wsEl.classList.add('dp-workspace--enter-right');
     this._root.appendChild(wsEl);
 
     // Create dedicated WindowManager
@@ -179,8 +179,8 @@ export class WorkspaceManager {
     this._isAnimating = true;
 
     // Position next workspace off-screen
-    nextEl.classList.remove('wos-workspace--enter-left', 'wos-workspace--enter-right');
-    nextEl.classList.add(goingRight ? 'wos-workspace--enter-right' : 'wos-workspace--enter-left');
+    nextEl.classList.remove('dp-workspace--enter-left', 'dp-workspace--enter-right');
+    nextEl.classList.add(goingRight ? 'dp-workspace--enter-right' : 'dp-workspace--enter-left');
     // Make it visible but off-screen so transition can play
     nextEl.style.visibility = 'visible';
 
@@ -189,13 +189,13 @@ export class WorkspaceManager {
 
     // Slide current out
     if (currentEl) {
-      currentEl.classList.add(goingRight ? 'wos-workspace--leave-left' : 'wos-workspace--leave-right');
-      currentEl.classList.remove('wos-workspace--active');
+      currentEl.classList.add(goingRight ? 'dp-workspace--leave-left' : 'dp-workspace--leave-right');
+      currentEl.classList.remove('dp-workspace--active');
     }
 
     // Slide next in
-    nextEl.classList.remove('wos-workspace--enter-left', 'wos-workspace--enter-right');
-    nextEl.classList.add('wos-workspace--active');
+    nextEl.classList.remove('dp-workspace--enter-left', 'dp-workspace--enter-right');
+    nextEl.classList.add('dp-workspace--active');
 
     const prevId = this._currentId;
     this._currentId = id;
@@ -204,7 +204,7 @@ export class WorkspaceManager {
     const cleanup = () => {
       this._isAnimating = false;
       if (currentEl) {
-        currentEl.classList.remove('wos-workspace--leave-left', 'wos-workspace--leave-right');
+        currentEl.classList.remove('dp-workspace--leave-left', 'dp-workspace--leave-right');
         currentEl.style.visibility = '';
       }
       this.events.emit<{ from: string | null; to: string }>('workspace:switched', {
@@ -246,7 +246,7 @@ export class WorkspaceManager {
   enableIndicator(): void {
     if (this._indicatorEl) return;
     const bar = document.createElement('div');
-    bar.className = 'wos-workspace-indicator';
+    bar.className = 'dp-workspace-indicator';
     this._root.appendChild(bar);
     this._indicatorEl = bar;
     this._updateIndicator();
@@ -277,13 +277,13 @@ export class WorkspaceManager {
     if (this._currentId && this._currentId !== id) {
       const prev = this._workspaces.get(this._currentId);
       if (prev) {
-        prev.container.classList.remove('wos-workspace--active');
+        prev.container.classList.remove('dp-workspace--active');
         prev.container.style.visibility = '';
       }
     }
 
-    state.container.classList.remove('wos-workspace--enter-left', 'wos-workspace--enter-right');
-    state.container.classList.add('wos-workspace--active');
+    state.container.classList.remove('dp-workspace--enter-left', 'dp-workspace--enter-right');
+    state.container.classList.add('dp-workspace--active');
     this._currentId = id;
     this._updateIndicator();
   }
@@ -294,7 +294,7 @@ export class WorkspaceManager {
     this._indicatorEl.innerHTML = '';
     this._workspaces.forEach((_, id) => {
       const dot = document.createElement('div');
-      dot.className = 'wos-workspace-dot' + (id === this._currentId ? ' wos-workspace-dot--active' : '');
+      dot.className = 'dp-workspace-dot' + (id === this._currentId ? ' dp-workspace-dot--active' : '');
       this._indicatorEl!.appendChild(dot);
     });
   }

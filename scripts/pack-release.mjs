@@ -1,5 +1,5 @@
-// scripts/pack-release.mjs
-// 將 dist/ 複製到 release/webos-core-vX.X.X/
+﻿// scripts/pack-release.mjs
+// 將 dist/ 複製到 release/deskpane-vX.X.X/
 // 執行後把整個 release/ 資料夾給同事即可
 
 import fs from 'fs'
@@ -9,7 +9,7 @@ import { pipeline } from 'stream/promises'
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
 const version = pkg.version
-const releaseName = `webos-core-v${version}`
+const releaseName = `deskpane-v${version}`
 const releaseDir = path.join('release', releaseName)
 
 // ── 清除舊的同版本 release ──────────────────────────

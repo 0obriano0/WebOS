@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Workspace — Public Entry Point
+﻿// ============================================================
+// DeskPane-Workspace — Public Entry Point
 // ============================================================
 
 export { WorkspaceManager, getWorkspaceCSS } from './WorkspaceManager.js';

@@ -1,24 +1,24 @@
-// rollup.lib.config.mjs — Library build
+﻿// rollup.lib.config.mjs — Library build
 // Outputs:
-//   dist/webos-core.es.js        ES Module  (import { WindowManager } from '...')
-//   dist/webos-core.es.min.js    ES Module  (minified)
-//   dist/webos-core.umd.js       UMD bundle (<script src="..."> → window.WebOS)
-//   dist/webos-core.umd.min.js   UMD bundle (minified)
+//   dist/deskpane.es.js        ES Module  (import { WindowManager } from '...')
+//   dist/deskpane.es.min.js    ES Module  (minified)
+//   dist/deskpane.umd.js       UMD bundle (<script src="..."> → window.DeskPane)
+//   dist/deskpane.umd.min.js   UMD bundle (minified)
 //   dist/index.d.ts              TypeScript declaration (core)
 //
-//   dist/webos-desktop.es.js     ES Module  (import { Desktop } from '...')
-//   dist/webos-desktop.es.min.js ES Module  (minified)
-//   dist/webos-desktop.umd.js    UMD bundle (<script src="..."> → window.WebOSDesktop)
-//   dist/webos-desktop.umd.min.js UMD bundle (minified)
+//   dist/deskpane-desktop.es.js     ES Module  (import { Desktop } from '...')
+//   dist/deskpane-desktop.es.min.js ES Module  (minified)
+//   dist/deskpane-desktop.umd.js    UMD bundle (<script src="..."> → window.DeskPaneDesktop)
+//   dist/deskpane-desktop.umd.min.js UMD bundle (minified)
 //   dist/desktop.d.ts            TypeScript declaration (desktop)
 //
-//   dist/webos-workspace.es.js   ES Module  (import { WorkspaceManager } from '...')
-//   dist/webos-workspace.es.min.js ES Module (minified)
-//   dist/webos-workspace.umd.js  UMD bundle (<script src="..."> → window.WebOSWorkspace)
-//   dist/webos-workspace.umd.min.js UMD bundle (minified)
+//   dist/deskpane-workspace.es.js   ES Module  (import { WorkspaceManager } from '...')
+//   dist/deskpane-workspace.es.min.js ES Module (minified)
+//   dist/deskpane-workspace.umd.js  UMD bundle (<script src="..."> → window.DeskPaneWorkspace)
+//   dist/deskpane-workspace.umd.min.js UMD bundle (minified)
 //   dist/workspace.d.ts          TypeScript declaration (workspace)
 //
-// ⚠️  Desktop + Workspace bundles 不包含 core，使用時需先載入 webos-core.*
+// ⚠️  Desktop + Workspace bundles 不包含 core，使用時需先載入 deskpane.*
 
 import resolve from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
@@ -63,14 +63,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-core.es.js',
+        file: 'dist/deskpane.es.js',
         format: 'es',
         sourcemap: true,
       },
       {
-        file: 'dist/webos-core.umd.js',
+        file: 'dist/deskpane.umd.js',
         format: 'umd',
-        name: 'WebOS',
+        name: 'DeskPane',
         globals: { vue: 'Vue', react: 'React', 'react-dom': 'ReactDOM' },
         sourcemap: true,
       },
@@ -93,14 +93,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-core.es.min.js',
+        file: 'dist/deskpane.es.min.js',
         format: 'es',
         sourcemap: false,
       },
       {
-        file: 'dist/webos-core.umd.min.js',
+        file: 'dist/deskpane.umd.min.js',
         format: 'umd',
-        name: 'WebOS',
+        name: 'DeskPane',
         globals: { vue: 'Vue', react: 'React', 'react-dom': 'ReactDOM' },
         sourcemap: false,
       },
@@ -135,14 +135,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-desktop.es.js',
+        file: 'dist/deskpane-desktop.es.js',
         format: 'es',
         sourcemap: true,
       },
       {
-        file: 'dist/webos-desktop.umd.js',
+        file: 'dist/deskpane-desktop.umd.js',
         format: 'umd',
-        name: 'WebOSDesktop',   // → window.WebOSDesktop in browser
+        name: 'DeskPaneDesktop',   // → window.DeskPaneDesktop in browser
         sourcemap: true,
       },
     ],
@@ -164,14 +164,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-desktop.es.min.js',
+        file: 'dist/deskpane-desktop.es.min.js',
         format: 'es',
         sourcemap: false,
       },
       {
-        file: 'dist/webos-desktop.umd.min.js',
+        file: 'dist/deskpane-desktop.umd.min.js',
         format: 'umd',
-        name: 'WebOSDesktop',
+        name: 'DeskPaneDesktop',
         sourcemap: false,
       },
     ],
@@ -205,14 +205,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-workspace.es.js',
+        file: 'dist/deskpane-workspace.es.js',
         format: 'es',
         sourcemap: true,
       },
       {
-        file: 'dist/webos-workspace.umd.js',
+        file: 'dist/deskpane-workspace.umd.js',
         format: 'umd',
-        name: 'WebOSWorkspace',   // → window.WebOSWorkspace in browser
+        name: 'DeskPaneWorkspace',   // → window.DeskPaneWorkspace in browser
         sourcemap: true,
       },
     ],
@@ -234,14 +234,14 @@ export default [
     ],
     output: [
       {
-        file: 'dist/webos-workspace.es.min.js',
+        file: 'dist/deskpane-workspace.es.min.js',
         format: 'es',
         sourcemap: false,
       },
       {
-        file: 'dist/webos-workspace.umd.min.js',
+        file: 'dist/deskpane-workspace.umd.min.js',
         format: 'umd',
-        name: 'WebOSWorkspace',
+        name: 'DeskPaneWorkspace',
         sourcemap: false,
       },
     ],

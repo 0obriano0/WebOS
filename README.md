@@ -1,4 +1,4 @@
-# WebOS-Core
+﻿# DeskPane
 
 A **framework-agnostic** web virtual desktop window management engine.
 
@@ -19,13 +19,13 @@ A **framework-agnostic** web virtual desktop window management engine.
 - ✅ **RWD viewport clamping** — windows auto-clamp via `ResizeObserver`; never open off-screen
 - ✅ **Theme system** — light/dark CSS themes with 22 CSS custom properties; `setTheme()` runtime switching
 - ✅ **BorderLayout** — N/S/E/W/Center docking layout; `data-region` HTML-first declaration; collapsible mini strip; draggable splitters; nested layouts
-- ✅ **Desktop module** (`webos-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area, **frosted-glass backdrop-filter** on Dock
+- ✅ **Desktop module** (`deskpane-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area, **frosted-glass backdrop-filter** on Dock
 - ✅ **Windows-style group thumbnail preview** — hover a Dock item to see a card strip of the parent window + all child windows; each card has a title + × close button; sticky hover; modal safety (blocks parent close when a modal child exists)
-- ✅ **WorkspaceManager** (`webos-workspace`) — multiple virtual desktops with slide animation and dot indicator
-- ✅ **TaskView** (`webos-workspace`) — workspace switcher overlay with real DOM-clone thumbnails, add/delete workspace, Escape key support
+- ✅ **WorkspaceManager** (`deskpane-workspace`) — multiple virtual desktops with slide animation and dot indicator
+- ✅ **TaskView** (`deskpane-workspace`) — workspace switcher overlay with real DOM-clone thumbnails, add/delete workspace, Escape key support
 - ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
-- ✅ **CSS pre-built files** — `dist/styles/webos-core.css` and `dist/styles/webos-desktop.css` for direct `<link>` use (single source of truth at `src/styles/*.css`)
+- ✅ **CSS pre-built files** — `dist/styles/deskpane.css` and `dist/styles/deskpane-desktop.css` for direct `<link>` use (single source of truth at `src/styles/*.css`)
 
 ---
 
@@ -34,14 +34,14 @@ A **framework-agnostic** web virtual desktop window management engine.
 ### npm
 
 ```bash
-npm install webos-core
+npm install deskpane
 ```
 
 ### Script Tag (UMD, no build step)
 
 ```html
-<script src="dist/webos-core.umd.js"></script>
-<!-- window.WebOS is now available -->
+<script src="dist/deskpane.umd.js"></script>
+<!-- window.DeskPane is now available -->
 ```
 
 ---
@@ -51,7 +51,7 @@ npm install webos-core
 ### ES Module
 
 ```typescript
-import { WindowManager } from 'webos-core'
+import { WindowManager } from 'deskpane'
 
 const wm = new WindowManager({
   container: document.getElementById('desktop')!,
@@ -68,9 +68,9 @@ wm.open({ id: 'hello', title: 'My Window', content: el })
 
 ```html
 <div id="desktop" style="width:100vw; height:100vh; position:relative;"></div>
-<script src="dist/webos-core.umd.js"></script>
+<script src="dist/deskpane.umd.js"></script>
 <script>
-  var wm = new window.WebOS.WindowManager({
+  var wm = new window.DeskPane.WindowManager({
     container: document.getElementById('desktop'),
     isolated: true
   })
@@ -95,7 +95,7 @@ wm.open({ id: 'hello', title: 'My Window', content: el })
 </template>
 
 <script setup lang="ts">
-import { useWindowManager } from '@webos/adapters/vue/useWindowManager'
+import { useWindowManager } from '@deskpane/adapters/vue/useWindowManager'
 import MyComp from './MyComp.vue'
 
 const { windows, openVueWindow } = useWindowManager()
@@ -106,7 +106,7 @@ const { windows, openVueWindow } = useWindowManager()
 
 ```tsx
 import { createPortal } from 'react-dom'
-import { useWindowManager } from '@webos/adapters/react/useWindowManager'
+import { useWindowManager } from '@deskpane/adapters/react/useWindowManager'
 import MyComp from './MyComp'
 
 export default function App() {
@@ -248,40 +248,40 @@ wm.events.on('window:child-closed', ({ parentId, childId }) => { })
 
 Built-in `dist/themes/light.css` and `dist/themes/dark.css` each contain **23 CSS custom properties** (15 Core + 8 Desktop). A single `<link>` tag covers both the window manager and the Desktop module.
 
-Structural styles are provided separately as `dist/styles/webos-core.css` (window structure), `dist/styles/webos-desktop.css` (Desktop / Dock / Icon), `dist/styles/webos-workspace.css` (workspace slide animation), and `dist/styles/webos-taskview.css` (TaskView overlay). These are independent of theme variables and can be `<link>`ed directly:
+Structural styles are provided separately as `dist/styles/deskpane.css` (window structure), `dist/styles/deskpane-desktop.css` (Desktop / Dock / Icon), `dist/styles/deskpane-workspace.css` (workspace slide animation), and `dist/styles/deskpane-taskview.css` (TaskView overlay). These are independent of theme variables and can be `<link>`ed directly:
 
 ```html
-<link rel="stylesheet" href="dist/styles/webos-core.css">
-<link rel="stylesheet" href="dist/styles/webos-desktop.css">
+<link rel="stylesheet" href="dist/styles/deskpane.css">
+<link rel="stylesheet" href="dist/styles/deskpane-desktop.css">
 <!-- optional: only needed when using WorkspaceManager / TaskView -->
-<link rel="stylesheet" href="dist/styles/webos-workspace.css">
-<link rel="stylesheet" href="dist/styles/webos-taskview.css">
+<link rel="stylesheet" href="dist/styles/deskpane-workspace.css">
+<link rel="stylesheet" href="dist/styles/deskpane-taskview.css">
 ```
 
 Alternatively, use `getCoreCSS()` / `getDesktopCSS()` / `getWorkspaceCSS()` / `getTaskViewCSS()` for programmatic injection:
 
 ```typescript
-import { getCoreCSS } from 'webos-core'
-import { getDesktopCSS } from 'webos-core/desktop'
-import { getWorkspaceCSS, getTaskViewCSS } from 'webos-core/workspace'
+import { getCoreCSS } from 'deskpane'
+import { getDesktopCSS } from 'deskpane/desktop'
+import { getWorkspaceCSS, getTaskViewCSS } from 'deskpane/workspace'
 // inject into shadow root, iframe, or custom container
 ```
 
 ### Load a theme
 
 ```html
-<link id="wos-theme" rel="stylesheet" href="dist/themes/light.css">
+<link id="dp-theme" rel="stylesheet" href="dist/themes/light.css">
 ```
 
 ### `setTheme(preset, options?)`
 
 ```typescript
-import { setTheme } from 'webos-core'
+import { setTheme } from 'deskpane'
 
 setTheme('dark')                               // default basePath: 'themes'
 setTheme('light', { basePath: '/themes' })     // Vite SPA
 setTheme('dark',  { basePath: 'dist/themes' }) // relative path
-// UMD: WebOS.setTheme('dark', { basePath: 'dist/themes' })
+// UMD: DeskPane.setTheme('dark', { basePath: 'dist/themes' })
 ```
 
 ### CSS Custom Properties — Core (14)
@@ -289,24 +289,24 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 ```css
 :root {
   /* Window chrome */
-  --wos-window-border:               #d0d0d0;
-  --wos-window-border-active:        #b0b8c8;
-  --wos-window-shadow:               0 4px 24px rgba(0,0,0,0.18);
-  --wos-window-shadow-active:        0 8px 36px rgba(0,0,0,0.28);
+  --dp-window-border:               #d0d0d0;
+  --dp-window-border-active:        #b0b8c8;
+  --dp-window-shadow:               0 4px 24px rgba(0,0,0,0.18);
+  --dp-window-shadow-active:        0 8px 36px rgba(0,0,0,0.28);
   /* Header */
-  --wos-window-header-bg:            #f5f5f5;
-  --wos-window-header-border:        #e0e0e0;
-  --wos-window-title-color:          #333333;
+  --dp-window-header-bg:            #f5f5f5;
+  --dp-window-header-border:        #e0e0e0;
+  --dp-window-title-color:          #333333;
   /* Buttons */
-  --wos-window-btn-color:            #555555;
-  --wos-window-btn-hover-bg:         #e0e0e0;
-  --wos-window-btn-close-hover-bg:   #ff5f57;
-  --wos-window-btn-close-hover-color:#ffffff;
+  --dp-window-btn-color:            #555555;
+  --dp-window-btn-hover-bg:         #e0e0e0;
+  --dp-window-btn-close-hover-bg:   #ff5f57;
+  --dp-window-btn-close-hover-color:#ffffff;
   /* Body */
-  --wos-window-body-bg:              #ffffff;
-  --wos-window-body-color:           #222222;
+  --dp-window-body-bg:              #ffffff;
+  --dp-window-body-color:           #222222;
   /* Snap guide */
-  --wos-snap-guide-color:            rgba(0,120,255,0.55);
+  --dp-snap-guide-color:            rgba(0,120,255,0.55);
 }
 ```
 
@@ -314,13 +314,13 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 
 ```css
 :root {
-  --wos-layout-header-bg:       #ebebeb;
-  --wos-layout-header-border:   #d8d8d8;
-  --wos-layout-title-color:     #444444;
-  --wos-layout-btn-color:       #666666;
-  --wos-layout-btn-hover-bg:    #d8e4f0;
-  --wos-layout-splitter-bg:     #d0d0d0;
-  --wos-layout-splitter-active: #b0b8c8;
+  --dp-layout-header-bg:       #ebebeb;
+  --dp-layout-header-border:   #d8d8d8;
+  --dp-layout-title-color:     #444444;
+  --dp-layout-btn-color:       #666666;
+  --dp-layout-btn-hover-bg:    #d8e4f0;
+  --dp-layout-splitter-bg:     #d0d0d0;
+  --dp-layout-splitter-active: #b0b8c8;
 }
 ```
 
@@ -328,26 +328,26 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 
 ```css
 :root {
-  --wos-desktop-bg:             linear-gradient(135deg,#e8eaf0 0%,#d0d4e0 100%);
-  --wos-desktop-icon-text:      #1a1a2e;
-  --wos-desktop-icon-hover-bg:  rgba(0,0,0,0.08);
-  --wos-dock-bg:                rgba(220,225,240,0.20);  /* semi-transparent for frosted glass */
-  --wos-dock-backdrop-filter:   blur(4px);               /* frosted-glass blur behind dock */
-  --wos-dock-border:            rgba(0,0,0,0.12);
-  --wos-dock-item-hover-bg:     rgba(0,0,0,0.08);
-  --wos-font:                   system-ui,-apple-system,sans-serif;
+  --dp-desktop-bg:             linear-gradient(135deg,#e8eaf0 0%,#d0d4e0 100%);
+  --dp-desktop-icon-text:      #1a1a2e;
+  --dp-desktop-icon-hover-bg:  rgba(0,0,0,0.08);
+  --dp-dock-bg:                rgba(220,225,240,0.20);  /* semi-transparent for frosted glass */
+  --dp-dock-backdrop-filter:   blur(4px);               /* frosted-glass blur behind dock */
+  --dp-dock-border:            rgba(0,0,0,0.12);
+  --dp-dock-item-hover-bg:     rgba(0,0,0,0.08);
+  --dp-font:                   system-ui,-apple-system,sans-serif;
 }
 ```
 
-> Set `--wos-dock-backdrop-filter: none` to disable the blur effect entirely.
+> Set `--dp-dock-backdrop-filter: none` to disable the blur effect entirely.
 
 ---
 
 ## Desktop Module
 
 ```typescript
-import { Desktop } from 'webos-core/desktop'
-import { WindowManager } from 'webos-core'
+import { Desktop } from 'deskpane/desktop'
+import { WindowManager } from 'deskpane'
 
 const desktop = new Desktop({
   container: document.getElementById('root')!,
@@ -391,7 +391,7 @@ desktop.getDesktopElement()
 | `dragThreshold` | `number` | `6` | Global drag start threshold (px) |
 | `iconSnap` | `boolean` | `true` | Enable icon snap alignment |
 | `iconSnapThreshold` | `number` | `20` | Icon snap trigger distance (px) |
-| `storageKey` | `string` | `'wos-desktop'` | localStorage key prefix for icon positions |
+| `storageKey` | `string` | `'dp-desktop'` | localStorage key prefix for icon positions |
 | `dock` | `DockConfig` | `{}` | Dock configuration |
 | `icons` | `DesktopIconConfig[]` | `[]` | Initial desktop icons |
 
@@ -446,7 +446,7 @@ desktop.getDesktopElement()
 ### `WorkspaceManager` — Multiple Virtual Desktops
 
 ```typescript
-import { WorkspaceManager } from 'webos-core/workspace'
+import { WorkspaceManager } from 'deskpane/workspace'
 
 const wsMgr = new WorkspaceManager(desktop.getElement(), {
   animationMs: 220,                            // slide animation duration (default 250ms)
@@ -497,7 +497,7 @@ wsMgr.enableIndicator()
 Shows a full-screen overlay with real DOM-clone thumbnails of every workspace. Clicking a card switches to that workspace.
 
 ```typescript
-import { TaskView } from 'webos-core/workspace'
+import { TaskView } from 'deskpane/workspace'
 
 const taskView = new TaskView(wsMgr, {
   dock:        desktop.getDock(),  // auto-insert toggle button at leftmost Dock position
@@ -626,24 +626,24 @@ When collapsed, a region shrinks to a **28px mini strip**: expand button → ico
 
 | File | Format | Size | Use when |
 |------|--------|------|----------|
-| `dist/webos-core.es.js` | ESM | ~23 KB | Vite / Webpack / `type="module"` (dev) |
-| `dist/webos-core.es.min.js` | ESM | ~12 KB | Production ESM |
-| `dist/webos-core.umd.js` | UMD | ~26 KB | Script tag / jQuery (dev) |
-| `dist/webos-core.umd.min.js` | UMD | ~12 KB | Production CDN |
-| `dist/webos-desktop.es.js / .min.js` | ESM | — | Desktop module (ESM) |
-| `dist/webos-desktop.umd.js / .min.js` | UMD | — | Desktop module (`window.WebOSDesktop`) |
-| `dist/webos-workspace.es.js / .min.js` | ESM | — | Workspace + TaskView + Session module (ESM) |
-| `dist/webos-workspace.umd.js / .min.js` | UMD | — | Workspace module (`window.WebOSWorkspace`) |
+| `dist/deskpane.es.js` | ESM | ~23 KB | Vite / Webpack / `type="module"` (dev) |
+| `dist/deskpane.es.min.js` | ESM | ~12 KB | Production ESM |
+| `dist/deskpane.umd.js` | UMD | ~26 KB | Script tag / jQuery (dev) |
+| `dist/deskpane.umd.min.js` | UMD | ~12 KB | Production CDN |
+| `dist/deskpane-desktop.es.js / .min.js` | ESM | — | Desktop module (ESM) |
+| `dist/deskpane-desktop.umd.js / .min.js` | UMD | — | Desktop module (`window.DeskPaneDesktop`) |
+| `dist/deskpane-workspace.es.js / .min.js` | ESM | — | Workspace + TaskView + Session module (ESM) |
+| `dist/deskpane-workspace.umd.js / .min.js` | UMD | — | Workspace module (`window.DeskPaneWorkspace`) |
 | `dist/index.d.ts` | TypeScript | — | Core type declarations |
 | `dist/desktop.d.ts` | TypeScript | — | Desktop type declarations |
 | `dist/workspace.d.ts` | TypeScript | — | Workspace + TaskView + Session type declarations |
 | `dist/themes/light.css` | CSS | ~2 KB | Light theme (Core + Desktop) |
 | `dist/themes/dark.css` | CSS | ~2 KB | Dark theme (Core + Desktop) |
-| `dist/styles/webos-core.css` | CSS | — | Core window structure styles (direct `<link>`) |
-| `dist/styles/webos-desktop.css` | CSS | — | Desktop / Dock / Icon styles (direct `<link>`) |
-| `dist/styles/webos-layout.css` | CSS | — | BorderLayout / Panel styles (direct `<link>`) |
-| `dist/styles/webos-workspace.css` | CSS | — | Workspace container / slide animation styles (direct `<link>`) |
-| `dist/styles/webos-taskview.css` | CSS | — | TaskView overlay / card / thumbnail styles (direct `<link>`) |
+| `dist/styles/deskpane.css` | CSS | — | Core window structure styles (direct `<link>`) |
+| `dist/styles/deskpane-desktop.css` | CSS | — | Desktop / Dock / Icon styles (direct `<link>`) |
+| `dist/styles/deskpane-layout.css` | CSS | — | BorderLayout / Panel styles (direct `<link>`) |
+| `dist/styles/deskpane-workspace.css` | CSS | — | Workspace container / slide animation styles (direct `<link>`) |
+| `dist/styles/deskpane-taskview.css` | CSS | — | TaskView overlay / card / thumbnail styles (direct `<link>`) |
 
 ---
 

@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — Panel Component
+﻿// ============================================================
+// DeskPane — Panel Component
 // 為任意元素加上可折疊的標題列（EasyUI panel 風格）
 // 支援：
 //   • data-panel 宣告式自動初始化
@@ -48,22 +48,22 @@ export class Panel {
 
     // Clear container
     this.container.innerHTML = '';
-    this.container.classList.add('wos-panel');
+    this.container.classList.add('dp-panel');
 
     // Header (always shown when title provided; or when collapsible)
     const hasHeader = !!options.title || this._collapsible;
     if (hasHeader) {
       const hdr = document.createElement('div');
-      hdr.className = 'wos-panel-header';
+      hdr.className = 'dp-panel-header';
 
       const ttl = document.createElement('span');
-      ttl.className = 'wos-panel-title';
+      ttl.className = 'dp-panel-title';
       ttl.textContent = options.title ?? '';
       hdr.appendChild(ttl);
 
       if (this._collapsible) {
         const btn = document.createElement('button');
-        btn.className = 'wos-panel-toggle';
+        btn.className = 'dp-panel-toggle';
         btn.setAttribute('aria-label', '切換面板');
         btn.textContent = this._collapsed ? '▶' : '▼';
         hdr.appendChild(btn);
@@ -74,7 +74,7 @@ export class Panel {
         // Also allow clicking title to toggle
         hdr.style.cursor = 'pointer';
         hdr.addEventListener('click', (e) => {
-          if ((e.target as HTMLElement).closest('.wos-panel-toggle')) return;
+          if ((e.target as HTMLElement).closest('.dp-panel-toggle')) return;
           this.toggle();
         });
         this.cleanups.push(() => btn.removeEventListener('click', onToggle));
@@ -86,13 +86,13 @@ export class Panel {
 
     // Body
     const body = document.createElement('div');
-    body.className = 'wos-panel-body';
+    body.className = 'dp-panel-body';
 
     // Restore original children
     children.forEach(c => body.appendChild(c));
 
     if (this._collapsed) {
-      body.classList.add('wos-panel-collapsed');
+      body.classList.add('dp-panel-collapsed');
     }
 
     this.container.appendChild(body);
@@ -104,7 +104,7 @@ export class Panel {
 
   toggle(): void {
     this._collapsed = !this._collapsed;
-    this.bodyEl.classList.toggle('wos-panel-collapsed', this._collapsed);
+    this.bodyEl.classList.toggle('dp-panel-collapsed', this._collapsed);
     if (this.toggleBtn) {
       this.toggleBtn.textContent = this._collapsed ? '▶' : '▼';
     }
@@ -119,7 +119,7 @@ export class Panel {
   }
 
   setTitle(title: string): void {
-    const ttl = this.headerEl?.querySelector<HTMLElement>('.wos-panel-title');
+    const ttl = this.headerEl?.querySelector<HTMLElement>('.dp-panel-title');
     if (ttl) ttl.textContent = title;
   }
 
@@ -131,7 +131,7 @@ export class Panel {
   destroy(): void {
     this.cleanups.forEach(fn => fn());
     this.cleanups = [];
-    this.container.classList.remove('wos-panel');
+    this.container.classList.remove('dp-panel');
   }
 }
 

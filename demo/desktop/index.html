@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebOS — Desktop Demo</title>
+  <title>DeskPane — Desktop Demo</title>
   <link rel="stylesheet" href="../../dist/themes/dark.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,16 +15,16 @@
   <div id="desktop-root"></div>
 
   <!-- 1. Core -->
-  <script src="../../dist/webos-core.umd.js"></script>
+  <script src="../../dist/deskpane.umd.js"></script>
   <!-- 2. Desktop -->
-  <script src="../../dist/webos-desktop.umd.js"></script>
+  <script src="../../dist/deskpane-desktop.umd.js"></script>
   <!-- 3. Workspace -->
-  <script src="../../dist/webos-workspace.umd.js"></script>
+  <script src="../../dist/deskpane-workspace.umd.js"></script>
 
   <script>
-    const { WindowManager } = WebOS;
-    const { Desktop } = WebOSDesktop;
-    const { WorkspaceManager, TaskView } = WebOSWorkspace;
+    const { WindowManager } = DeskPane;
+    const { Desktop } = DeskPaneDesktop;
+    const { WorkspaceManager, TaskView } = DeskPaneWorkspace;
 
     // ── 建立桌面 ─────────────────────────────────────────
     const desktop = new Desktop({
@@ -147,7 +147,7 @@
       bgs.forEach(bg => {
         const d = document.createElement('div');
         d.style.cssText = `width:48px;height:32px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.2);background:${bg}`;
-        d.onclick = () => document.querySelector('.wos-desktop').style.background = bg;
+        d.onclick = () => document.querySelector('.dp-desktop').style.background = bg;
         swatches.appendChild(d);
       });
 
@@ -287,14 +287,14 @@
     }
 
     function makeLayoutDemo() {
-      const { BorderLayout } = WebOS;
+      const { BorderLayout } = DeskPane;
 
       const root = document.createElement('div');
       root.style.cssText = 'width:100%;height:100%;display:flex;flex-direction:column;font-family:system-ui;font-size:13px';
 
       // ── Tab bar ──────────────────────────────────────────────
       const tabs = document.createElement('div');
-      tabs.style.cssText = 'display:flex;gap:4px;padding:6px 8px;background:var(--wos-window-header-bg,#f0f0f0);border-bottom:1px solid var(--wos-window-header-border,#e0e0e0);flex-shrink:0';
+      tabs.style.cssText = 'display:flex;gap:4px;padding:6px 8px;background:var(--dp-window-header-bg,#f0f0f0);border-bottom:1px solid var(--dp-window-header-border,#e0e0e0);flex-shrink:0';
 
       const tabDefs = [
         { id: 'tab-border',  label: '📐 BorderLayout' },
@@ -307,7 +307,7 @@
       function switchTab(id) {
         Object.keys(paneEls).forEach(k => {
           paneEls[k].style.display    = k === id ? 'flex' : 'none';
-          tabBtns[k].style.background = k === id ? 'var(--wos-window-border-active,#4a90e2)' : 'transparent';
+          tabBtns[k].style.background = k === id ? 'var(--dp-window-border-active,#4a90e2)' : 'transparent';
           tabBtns[k].style.color      = k === id ? '#fff' : 'inherit';
         });
       }
@@ -315,7 +315,7 @@
       tabDefs.forEach(({ id, label }) => {
         const btn = document.createElement('button');
         btn.textContent = label;
-        btn.style.cssText = 'padding:4px 10px;border:1px solid var(--wos-window-border,#d0d0d0);border-radius:5px;cursor:pointer;background:transparent;font-size:12px;color:inherit;transition:background .15s';
+        btn.style.cssText = 'padding:4px 10px;border:1px solid var(--dp-window-border,#d0d0d0);border-radius:5px;cursor:pointer;background:transparent;font-size:12px;color:inherit;transition:background .15s';
         btn.onclick = () => switchTab(id);
         tabBtns[id] = btn;
         tabs.appendChild(btn);
@@ -382,7 +382,7 @@
       },
       editor: {
         title: '📝 文字編輯', label: '文字編輯', icon: '📝', width: 580, height: 400,
-        html: '<textarea style="width:100%;height:100%;padding:12px;font-size:14px;font-family:monospace;border:none;outline:none;resize:none" placeholder="開始輸入...">WebOS Desktop Demo\n===================\n\n功能特色：\n• 桌面圖示可自由拖曳定位\n• 圖示位置自動儲存（localStorage）\n• Dock 工具列圖示可拖曳排序\n• 點擊圖示開啟應用程式視窗\n• Core 與 Desktop 模組分離載入\n</textarea>'
+        html: '<textarea style="width:100%;height:100%;padding:12px;font-size:14px;font-family:monospace;border:none;outline:none;resize:none" placeholder="開始輸入...">DeskPane Desktop Demo\n===================\n\n功能特色：\n• 桌面圖示可自由拖曳定位\n• 圖示位置自動儲存（localStorage）\n• Dock 工具列圖示可拖曳排序\n• 點擊圖示開啟應用程式視窗\n• Core 與 Desktop 模組分離載入\n</textarea>'
       },
       browser: {
         title: '🌐 瀏覽器', label: '瀏覽器', icon: '🌐', width: 700, height: 480,
@@ -398,11 +398,11 @@
       },
       terminal: {
         title: '💻 終端機', label: '終端機', icon: '💻', width: 560, height: 360,
-        html: '<div id="term" style="background:#1a1a1a;color:#33ff33;font-family:monospace;font-size:13px;padding:12px;height:100%;overflow-y:auto;display:flex;flex-direction:column"><div id="term-out"><div>WebOS Terminal v1.0.0</div><div>輸入 help 查看指令</div><br></div><div style="display:flex;align-items:center"><span style="margin-right:6px">$</span><input id="term-in" style="flex:1;background:transparent;border:none;outline:none;color:#33ff33;font-family:monospace;font-size:13px" autofocus /></div></div><script>(function(){var cmds={help:"指令：help, date, clear, echo [文字]",date:function(){return new Date().toLocaleString("zh-TW")}};document.getElementById("term-in").addEventListener("keydown",function(e){if(e.key!=="Enter")return;var cmd=this.value.trim(),out=document.getElementById("term-out"),line=document.createElement("div");if(cmd==="clear"){out.innerHTML="";this.value="";return;}else if(cmd.startsWith("echo ")){line.textContent=cmd.slice(5);}else if(cmds[cmd]){line.textContent=typeof cmds[cmd]==="function"?cmds[cmd]():cmds[cmd];}else{line.textContent="找不到指令："+cmd;}out.appendChild(line);this.value="";out.parentElement.scrollTop=9999;});})()<\/script>'
+        html: '<div id="term" style="background:#1a1a1a;color:#33ff33;font-family:monospace;font-size:13px;padding:12px;height:100%;overflow-y:auto;display:flex;flex-direction:column"><div id="term-out"><div>DeskPane Terminal v1.0.0</div><div>輸入 help 查看指令</div><br></div><div style="display:flex;align-items:center"><span style="margin-right:6px">$</span><input id="term-in" style="flex:1;background:transparent;border:none;outline:none;color:#33ff33;font-family:monospace;font-size:13px" autofocus /></div></div><script>(function(){var cmds={help:"指令：help, date, clear, echo [文字]",date:function(){return new Date().toLocaleString("zh-TW")}};document.getElementById("term-in").addEventListener("keydown",function(e){if(e.key!=="Enter")return;var cmd=this.value.trim(),out=document.getElementById("term-out"),line=document.createElement("div");if(cmd==="clear"){out.innerHTML="";this.value="";return;}else if(cmd.startsWith("echo ")){line.textContent=cmd.slice(5);}else if(cmds[cmd]){line.textContent=typeof cmds[cmd]==="function"?cmds[cmd]():cmds[cmd];}else{line.textContent="找不到指令："+cmd;}out.appendChild(line);this.value="";out.parentElement.scrollTop=9999;});})()<\/script>'
       },
       music: {
         title: '🎵 音樂播放器', label: '音樂', icon: '🎵', width: 320, height: 280,
-        html: '<div style="padding:24px;text-align:center;font-family:system-ui"><div style="font-size:64px;margin-bottom:12px">🎵</div><div style="font-size:18px;font-weight:600;margin-bottom:4px">Lofi Beat #1</div><div style="font-size:13px;color:#888;margin-bottom:20px">WebOS Music</div><div style="display:flex;justify-content:center;gap:16px"><button style="background:none;border:none;cursor:pointer;font-size:24px">⏮</button><button id="play-btn" style="background:none;border:none;cursor:pointer;font-size:32px" onclick="this.textContent=this.textContent===\'▶\'?\'⏸\':\'▶\'">▶</button><button style="background:none;border:none;cursor:pointer;font-size:24px">⏭</button></div><div style="margin-top:16px"><input type="range" value="30" style="width:100%"/></div></div>'
+        html: '<div style="padding:24px;text-align:center;font-family:system-ui"><div style="font-size:64px;margin-bottom:12px">🎵</div><div style="font-size:18px;font-weight:600;margin-bottom:4px">Lofi Beat #1</div><div style="font-size:13px;color:#888;margin-bottom:20px">DeskPane Music</div><div style="display:flex;justify-content:center;gap:16px"><button style="background:none;border:none;cursor:pointer;font-size:24px">⏮</button><button id="play-btn" style="background:none;border:none;cursor:pointer;font-size:32px" onclick="this.textContent=this.textContent===\'▶\'?\'⏸\':\'▶\'">▶</button><button style="background:none;border:none;cursor:pointer;font-size:24px">⏭</button></div><div style="margin-top:16px"><input type="range" value="30" style="width:100%"/></div></div>'
       },
       photo: {
         title: '🖼️ 相簿', label: '相簿', icon: '🖼️', width: 500, height: 380,

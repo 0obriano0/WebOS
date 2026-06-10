@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebOS Theme Editor</title>
+  <title>DeskPane Theme Editor</title>
   <link rel="stylesheet" href="../shared/base.css" />
   <style>
     body {
@@ -163,7 +163,7 @@
                         linear-gradient(90deg, rgba(59,130,246,.07) 1px, transparent 1px);
       background-size: 32px 32px;
     }
-    #core-preview-area .wos-window { position: absolute !important; }
+    #core-preview-area .dp-window { position: absolute !important; }
 
     /* Desktop preview */
     #desktop-preview-area { width: 100%; height: 100%; position: relative; overflow: hidden; }
@@ -274,8 +274,8 @@
     <!-- Advanced: raw CSS editor -->
     <div class="te-panel" id="panel-advanced">
       <div class="cfe-file-bar">
-        <button class="cfe-file-btn active" id="cfe-btn-core" onclick="cfeLoad('core')">webos-core.css</button>
-        <button class="cfe-file-btn" id="cfe-btn-desktop" onclick="cfeLoad('desktop')">webos-desktop.css</button>
+        <button class="cfe-file-btn active" id="cfe-btn-core" onclick="cfeLoad('core')">deskpane.css</button>
+        <button class="cfe-file-btn" id="cfe-btn-desktop" onclick="cfeLoad('desktop')">deskpane-desktop.css</button>
         <div class="cfe-file-sep"></div>
         <span class="cfe-status" id="cfe-status">—</span>
       </div>
@@ -341,8 +341,8 @@
 
 </div>
 
-<script src="../../dist/webos-core.umd.js"></script>
-<script src="../../dist/webos-desktop.umd.js"></script>
+<script src="../../dist/deskpane.umd.js"></script>
+<script src="../../dist/deskpane-desktop.umd.js"></script>
 <script>
 'use strict';
 
@@ -351,37 +351,37 @@
 ═══════════════════════════════════════════════════════════ */
 const CORE_VAR_DEFS = [
   { group: '🖼 Window Frame', vars: [
-    { name: '--wos-window-border',          type: 'color', tip: '視窗邊框顏色（未聚焦）' },
-    { name: '--wos-window-border-active',   type: 'color', tip: '視窗邊框顏色（聚焦中）' },
-    { name: '--wos-window-shadow',          type: 'text',  tip: '視窗陰影（未聚焦）' },
-    { name: '--wos-window-shadow-active',   type: 'text',  tip: '視窗陰影（聚焦中）' },
+    { name: '--dp-window-border',          type: 'color', tip: '視窗邊框顏色（未聚焦）' },
+    { name: '--dp-window-border-active',   type: 'color', tip: '視窗邊框顏色（聚焦中）' },
+    { name: '--dp-window-shadow',          type: 'text',  tip: '視窗陰影（未聚焦）' },
+    { name: '--dp-window-shadow-active',   type: 'text',  tip: '視窗陰影（聚焦中）' },
   ]},
   { group: '📌 Header Bar', vars: [
-    { name: '--wos-window-header-bg',          type: 'color', tip: '視窗標題列背景色' },
-    { name: '--wos-window-header-border',      type: 'color', tip: '標題列底部分隔線色' },
-    { name: '--wos-window-title-color',        type: 'color', tip: '標題文字顏色' },
+    { name: '--dp-window-header-bg',          type: 'color', tip: '視窗標題列背景色' },
+    { name: '--dp-window-header-border',      type: 'color', tip: '標題列底部分隔線色' },
+    { name: '--dp-window-title-color',        type: 'color', tip: '標題文字顏色' },
   ]},
   { group: '📐 Layout Header', vars: [
-    { name: '--wos-layout-header-bg',     type: 'color', tip: 'BorderLayout / Panel 標頭背景色' },
-    { name: '--wos-layout-header-border', type: 'color', tip: 'Layout 標頭底線顏色' },
-    { name: '--wos-layout-title-color',   type: 'color', tip: 'Layout 標頭文字顏色' },
+    { name: '--dp-layout-header-bg',     type: 'color', tip: 'BorderLayout / Panel 標頭背景色' },
+    { name: '--dp-layout-header-border', type: 'color', tip: 'Layout 標頭底線顏色' },
+    { name: '--dp-layout-title-color',   type: 'color', tip: 'Layout 標頭文字顏色' },
   ]},
   { group: '📐 Layout Buttons & Splitter', vars: [
-    { name: '--wos-layout-btn-color',        type: 'color', tip: 'collapse/toggle 按鈕圖示顏色' },
-    { name: '--wos-layout-btn-hover-bg',     type: 'color', tip: 'collapse/toggle 按鈕 hover 背景' },
-    { name: '--wos-layout-splitter-bg',      type: 'color', tip: 'Splitter 軌道顏色' },
-    { name: '--wos-layout-splitter-active',  type: 'color', tip: 'Splitter hover / 拖曳中顏色' },
+    { name: '--dp-layout-btn-color',        type: 'color', tip: 'collapse/toggle 按鈕圖示顏色' },
+    { name: '--dp-layout-btn-hover-bg',     type: 'color', tip: 'collapse/toggle 按鈕 hover 背景' },
+    { name: '--dp-layout-splitter-bg',      type: 'color', tip: 'Splitter 軌道顏色' },
+    { name: '--dp-layout-splitter-active',  type: 'color', tip: 'Splitter hover / 拖曳中顏色' },
   ]},
   { group: '🔘 Buttons', vars: [
-    { name: '--wos-window-btn-color',              type: 'color', tip: '控制按鈕圖示顏色' },
-    { name: '--wos-window-btn-hover-bg',           type: 'color', tip: '控制按鈕 hover 背景' },
-    { name: '--wos-window-btn-close-hover-bg',     type: 'color', tip: '關閉按鈕 hover 背景' },
-    { name: '--wos-window-btn-close-hover-color',  type: 'color', tip: '關閉按鈕 hover 圖示色' },
+    { name: '--dp-window-btn-color',              type: 'color', tip: '控制按鈕圖示顏色' },
+    { name: '--dp-window-btn-hover-bg',           type: 'color', tip: '控制按鈕 hover 背景' },
+    { name: '--dp-window-btn-close-hover-bg',     type: 'color', tip: '關閉按鈕 hover 背景' },
+    { name: '--dp-window-btn-close-hover-color',  type: 'color', tip: '關閉按鈕 hover 圖示色' },
   ]},
   { group: '📄 Body & Snap', vars: [
-    { name: '--wos-window-body-bg',          type: 'color', tip: '視窗內容區背景色' },
-    { name: '--wos-window-body-color',       type: 'color', tip: '視窗內容區文字顏色' },
-    { name: '--wos-snap-guide-color', type: 'text',  tip: 'Snap 引導線顏色（rgba）' },
+    { name: '--dp-window-body-bg',          type: 'color', tip: '視窗內容區背景色' },
+    { name: '--dp-window-body-color',       type: 'color', tip: '視窗內容區文字顏色' },
+    { name: '--dp-snap-guide-color', type: 'text',  tip: 'Snap 引導線顏色（rgba）' },
   ]},
 ];
 
@@ -390,22 +390,22 @@ const CORE_VAR_DEFS = [
 ═══════════════════════════════════════════════════════════ */
 const DESKTOP_VAR_DEFS = [
   { group: '🖥 Desktop Background', vars: [
-    { name: '--wos-desktop-bg', type: 'text', tip: '桌面背景，支援 CSS 任意值（色碼、漸層）' },
+    { name: '--dp-desktop-bg', type: 'text', tip: '桌面背景，支援 CSS 任意值（色碼、漸層）' },
   ]},
   { group: '🏷 Icon Labels', vars: [
-    { name: '--wos-desktop-icon-text', type: 'color', tip: '桌面圖示文字顏色' },
+    { name: '--dp-desktop-icon-text', type: 'color', tip: '桌面圖示文字顏色' },
   ]},
   { group: '📦 Dock', vars: [
-    { name: '--wos-dock-bg',                type: 'text',  tip: 'Dock 背景，支援 rgba / 漸層（設 transparent 可完全透明）' },
-    { name: '--wos-dock-backdrop-filter',   type: 'text',  tip: 'Dock 毛玻璃模糊效果，例如 blur(14px) 或 none' },
-    { name: '--wos-dock-border',            type: 'text',  tip: 'Dock 邊框顏色，支援 rgba' },
+    { name: '--dp-dock-bg',                type: 'text',  tip: 'Dock 背景，支援 rgba / 漸層（設 transparent 可完全透明）' },
+    { name: '--dp-dock-backdrop-filter',   type: 'text',  tip: 'Dock 毛玻璃模糊效果，例如 blur(14px) 或 none' },
+    { name: '--dp-dock-border',            type: 'text',  tip: 'Dock 邊框顏色，支援 rgba' },
   ]},
   { group: '🔤 Font', vars: [
-    { name: '--wos-font', type: 'text', tip: '全域 font-family（Core + Desktop 共用）' },
+    { name: '--dp-font', type: 'text', tip: '全域 font-family（Core + Desktop 共用）' },
   ]},
   { group: '🎨 Hover & Interaction', vars: [
-    { name: '--wos-desktop-icon-hover-bg', type: 'text', tip: '桌面圖示 hover 背景（支援 rgba）' },
-    { name: '--wos-dock-item-hover-bg',    type: 'text', tip: 'Dock 項目 hover 背景（支援 rgba）' },
+    { name: '--dp-desktop-icon-hover-bg', type: 'text', tip: '桌面圖示 hover 背景（支援 rgba）' },
+    { name: '--dp-dock-item-hover-bg',    type: 'text', tip: 'Dock 項目 hover 背景（支援 rgba）' },
   ]},
 ];
 
@@ -418,204 +418,204 @@ const THEMES = {
   'preset-dark': {
     label: '預設 — 深色', icon: '🌙', group: '預設',
     vars: {
-      '--wos-window-border':               '#3a3a4a',
-      '--wos-window-border-active':        '#5b8dee',
-      '--wos-window-shadow':               '0 4px 24px rgba(0,0,0,0.50)',
-      '--wos-window-shadow-active':        '0 8px 36px rgba(0,0,0,0.70)',
-      '--wos-window-header-bg':            '#1e1e2e',
-      '--wos-layout-header-bg':     '#252535',
-      '--wos-layout-header-border': '#3a3a4a',
-      '--wos-layout-title-color':   '#c0c0d8',
-      '--wos-layout-btn-color':     '#8080a0',
-      '--wos-layout-btn-hover-bg':  '#3a3a4a',
-      '--wos-layout-splitter-bg':   '#2a2a3a',
-      '--wos-layout-splitter-active':'#5b8dee',
-      '--wos-window-header-border':        '#3a3a4a',
-      '--wos-window-title-color':          '#e0e0f0',
-      '--wos-window-btn-color':            '#a0a0b8',
-      '--wos-window-btn-hover-bg':         '#3a3a4a',
-      '--wos-window-btn-close-hover-bg':   '#ff5f57',
-      '--wos-window-btn-close-hover-color':'#ffffff',
-      '--wos-window-body-bg':              '#13131f',
-      '--wos-window-body-color':           '#e0e0f0',
-      '--wos-snap-guide-color':     'rgba(91,141,238,0.70)',
-      '--wos-desktop-bg':           'linear-gradient(135deg,#1a2a4a 0%,#0d1b2a 100%)',
-      '--wos-desktop-icon-text':    '#ffffff',
-      '--wos-dock-bg':              'rgba(20,30,50,0.75)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(255,255,255,0.10)',
-      '--wos-desktop-icon-hover-bg':'rgba(255,255,255,0.15)',
-      '--wos-dock-item-hover-bg':   'rgba(255,255,255,0.12)',
+      '--dp-window-border':               '#3a3a4a',
+      '--dp-window-border-active':        '#5b8dee',
+      '--dp-window-shadow':               '0 4px 24px rgba(0,0,0,0.50)',
+      '--dp-window-shadow-active':        '0 8px 36px rgba(0,0,0,0.70)',
+      '--dp-window-header-bg':            '#1e1e2e',
+      '--dp-layout-header-bg':     '#252535',
+      '--dp-layout-header-border': '#3a3a4a',
+      '--dp-layout-title-color':   '#c0c0d8',
+      '--dp-layout-btn-color':     '#8080a0',
+      '--dp-layout-btn-hover-bg':  '#3a3a4a',
+      '--dp-layout-splitter-bg':   '#2a2a3a',
+      '--dp-layout-splitter-active':'#5b8dee',
+      '--dp-window-header-border':        '#3a3a4a',
+      '--dp-window-title-color':          '#e0e0f0',
+      '--dp-window-btn-color':            '#a0a0b8',
+      '--dp-window-btn-hover-bg':         '#3a3a4a',
+      '--dp-window-btn-close-hover-bg':   '#ff5f57',
+      '--dp-window-btn-close-hover-color':'#ffffff',
+      '--dp-window-body-bg':              '#13131f',
+      '--dp-window-body-color':           '#e0e0f0',
+      '--dp-snap-guide-color':     'rgba(91,141,238,0.70)',
+      '--dp-desktop-bg':           'linear-gradient(135deg,#1a2a4a 0%,#0d1b2a 100%)',
+      '--dp-desktop-icon-text':    '#ffffff',
+      '--dp-dock-bg':              'rgba(20,30,50,0.75)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(255,255,255,0.10)',
+      '--dp-desktop-icon-hover-bg':'rgba(255,255,255,0.15)',
+      '--dp-dock-item-hover-bg':   'rgba(255,255,255,0.12)',
     },
   },
   'preset-light': {
     label: '預設 — 淺色', icon: '☀️', group: '預設',
     vars: {
-      '--wos-window-border':               '#d0d0d0',
-      '--wos-window-border-active':        '#b0b8c8',
-      '--wos-window-shadow':               '0 4px 24px rgba(0,0,0,0.18)',
-      '--wos-window-shadow-active':        '0 8px 36px rgba(0,0,0,0.28)',
-      '--wos-window-header-bg':            '#f5f5f5',
-      '--wos-layout-header-bg':     '#ebebeb',
-      '--wos-layout-header-border': '#d8d8d8',
-      '--wos-layout-title-color':   '#444444',
-      '--wos-layout-btn-color':     '#666666',
-      '--wos-layout-btn-hover-bg':  '#d8e4f0',
-      '--wos-layout-splitter-bg':   '#d0d0d0',
-      '--wos-layout-splitter-active':'#b0b8c8',
-      '--wos-window-header-border':        '#e0e0e0',
-      '--wos-window-title-color':          '#333333',
-      '--wos-window-btn-color':            '#555555',
-      '--wos-window-btn-hover-bg':         '#e0e0e0',
-      '--wos-window-btn-close-hover-bg':   '#ff5f57',
-      '--wos-window-btn-close-hover-color':'#ffffff',
-      '--wos-window-body-bg':              '#ffffff',
-      '--wos-window-body-color':           '#222222',
-      '--wos-snap-guide-color':     'rgba(0,120,255,0.55)',
-      '--wos-desktop-bg':           'linear-gradient(135deg,#e8eaf0 0%,#d0d4e0 100%)',
-      '--wos-desktop-icon-text':    '#1a1a2e',
-      '--wos-dock-bg':              'rgba(220,225,240,0.85)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(0,0,0,0.12)',
-      '--wos-font':                 'system-ui,-apple-system,sans-serif',
-      '--wos-desktop-icon-hover-bg':'rgba(0,0,0,0.08)',
-      '--wos-dock-item-hover-bg':   'rgba(0,0,0,0.08)',
+      '--dp-window-border':               '#d0d0d0',
+      '--dp-window-border-active':        '#b0b8c8',
+      '--dp-window-shadow':               '0 4px 24px rgba(0,0,0,0.18)',
+      '--dp-window-shadow-active':        '0 8px 36px rgba(0,0,0,0.28)',
+      '--dp-window-header-bg':            '#f5f5f5',
+      '--dp-layout-header-bg':     '#ebebeb',
+      '--dp-layout-header-border': '#d8d8d8',
+      '--dp-layout-title-color':   '#444444',
+      '--dp-layout-btn-color':     '#666666',
+      '--dp-layout-btn-hover-bg':  '#d8e4f0',
+      '--dp-layout-splitter-bg':   '#d0d0d0',
+      '--dp-layout-splitter-active':'#b0b8c8',
+      '--dp-window-header-border':        '#e0e0e0',
+      '--dp-window-title-color':          '#333333',
+      '--dp-window-btn-color':            '#555555',
+      '--dp-window-btn-hover-bg':         '#e0e0e0',
+      '--dp-window-btn-close-hover-bg':   '#ff5f57',
+      '--dp-window-btn-close-hover-color':'#ffffff',
+      '--dp-window-body-bg':              '#ffffff',
+      '--dp-window-body-color':           '#222222',
+      '--dp-snap-guide-color':     'rgba(0,120,255,0.55)',
+      '--dp-desktop-bg':           'linear-gradient(135deg,#e8eaf0 0%,#d0d4e0 100%)',
+      '--dp-desktop-icon-text':    '#1a1a2e',
+      '--dp-dock-bg':              'rgba(220,225,240,0.85)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(0,0,0,0.12)',
+      '--dp-font':                 'system-ui,-apple-system,sans-serif',
+      '--dp-desktop-icon-hover-bg':'rgba(0,0,0,0.08)',
+      '--dp-dock-item-hover-bg':   'rgba(0,0,0,0.08)',
     },
   },
   'preset-blue': {
     label: '預設 — 藍調', icon: '🔷', group: '預設',
     vars: {
-      '--wos-window-border':               '#1e3a5f',
-      '--wos-window-border-active':        '#3b82f6',
-      '--wos-window-shadow':               '0 4px 24px rgba(0,0,40,0.55)',
-      '--wos-window-shadow-active':        '0 8px 36px rgba(59,130,246,0.35)',
-      '--wos-window-header-bg':            '#0f2744',
-      '--wos-layout-header-bg':     '#162d50',
-      '--wos-layout-header-border': '#1e3a5f',
-      '--wos-layout-title-color':   '#93c5fd',
-      '--wos-layout-btn-color':     '#60a5fa',
-      '--wos-layout-btn-hover-bg':  '#1e3a5f',
-      '--wos-layout-splitter-bg':   '#1e3a5f',
-      '--wos-layout-splitter-active':'#3b82f6',
-      '--wos-window-header-border':        '#1e3a5f',
-      '--wos-window-title-color':          '#bfdbfe',
-      '--wos-window-btn-color':            '#93c5fd',
-      '--wos-window-btn-hover-bg':         '#1e3a5f',
-      '--wos-window-btn-close-hover-bg':   '#ef4444',
-      '--wos-window-btn-close-hover-color':'#ffffff',
-      '--wos-window-body-bg':              '#0a1929',
-      '--wos-window-body-color':           '#bfdbfe',
-      '--wos-snap-guide-color':     'rgba(59,130,246,0.75)',
-      '--wos-desktop-bg':           'linear-gradient(135deg,#0a1929 0%,#0f2744 100%)',
-      '--wos-desktop-icon-text':    '#bfdbfe',
-      '--wos-dock-bg':              'rgba(15,39,68,0.85)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(59,130,246,0.25)',
-      '--wos-font':                 'system-ui,-apple-system,sans-serif',
-      '--wos-desktop-icon-hover-bg':'rgba(59,130,246,0.18)',
-      '--wos-dock-item-hover-bg':   'rgba(59,130,246,0.15)',
+      '--dp-window-border':               '#1e3a5f',
+      '--dp-window-border-active':        '#3b82f6',
+      '--dp-window-shadow':               '0 4px 24px rgba(0,0,40,0.55)',
+      '--dp-window-shadow-active':        '0 8px 36px rgba(59,130,246,0.35)',
+      '--dp-window-header-bg':            '#0f2744',
+      '--dp-layout-header-bg':     '#162d50',
+      '--dp-layout-header-border': '#1e3a5f',
+      '--dp-layout-title-color':   '#93c5fd',
+      '--dp-layout-btn-color':     '#60a5fa',
+      '--dp-layout-btn-hover-bg':  '#1e3a5f',
+      '--dp-layout-splitter-bg':   '#1e3a5f',
+      '--dp-layout-splitter-active':'#3b82f6',
+      '--dp-window-header-border':        '#1e3a5f',
+      '--dp-window-title-color':          '#bfdbfe',
+      '--dp-window-btn-color':            '#93c5fd',
+      '--dp-window-btn-hover-bg':         '#1e3a5f',
+      '--dp-window-btn-close-hover-bg':   '#ef4444',
+      '--dp-window-btn-close-hover-color':'#ffffff',
+      '--dp-window-body-bg':              '#0a1929',
+      '--dp-window-body-color':           '#bfdbfe',
+      '--dp-snap-guide-color':     'rgba(59,130,246,0.75)',
+      '--dp-desktop-bg':           'linear-gradient(135deg,#0a1929 0%,#0f2744 100%)',
+      '--dp-desktop-icon-text':    '#bfdbfe',
+      '--dp-dock-bg':              'rgba(15,39,68,0.85)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(59,130,246,0.25)',
+      '--dp-font':                 'system-ui,-apple-system,sans-serif',
+      '--dp-desktop-icon-hover-bg':'rgba(59,130,246,0.18)',
+      '--dp-dock-item-hover-bg':   'rgba(59,130,246,0.15)',
     },
   },
   'preset-solarized': {
     label: 'Solarized', icon: '🌅', group: '預設',
     vars: {
-      '--wos-window-border':               '#073642',
-      '--wos-window-border-active':        '#268bd2',
-      '--wos-window-shadow':               '0 4px 24px rgba(0,0,0,0.40)',
-      '--wos-window-shadow-active':        '0 8px 36px rgba(38,139,210,0.35)',
-      '--wos-window-header-bg':            '#002b36',
-      '--wos-layout-header-bg':     '#073642',
-      '--wos-layout-header-border': '#0d4054',
-      '--wos-layout-title-color':   '#93a1a1',
-      '--wos-layout-btn-color':     '#657b83',
-      '--wos-layout-btn-hover-bg':  '#0d4054',
-      '--wos-layout-splitter-bg':   '#073642',
-      '--wos-layout-splitter-active':'#268bd2',
-      '--wos-window-header-border':        '#073642',
-      '--wos-window-title-color':          '#839496',
-      '--wos-window-btn-color':            '#657b83',
-      '--wos-window-btn-hover-bg':         '#073642',
-      '--wos-window-btn-close-hover-bg':   '#dc322f',
-      '--wos-window-btn-close-hover-color':'#fdf6e3',
-      '--wos-window-body-bg':              '#002b36',
-      '--wos-window-body-color':           '#839496',
-      '--wos-snap-guide-color':     'rgba(38,139,210,0.70)',
-      '--wos-desktop-bg':           'linear-gradient(135deg,#002b36 0%,#073642 100%)',
-      '--wos-desktop-icon-text':    '#839496',
-      '--wos-dock-bg':              'rgba(0,43,54,0.85)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(38,139,210,0.25)',
-      '--wos-font':                 'system-ui,-apple-system,sans-serif',
-      '--wos-desktop-icon-hover-bg':'rgba(38,139,210,0.15)',
-      '--wos-dock-item-hover-bg':   'rgba(38,139,210,0.12)',
+      '--dp-window-border':               '#073642',
+      '--dp-window-border-active':        '#268bd2',
+      '--dp-window-shadow':               '0 4px 24px rgba(0,0,0,0.40)',
+      '--dp-window-shadow-active':        '0 8px 36px rgba(38,139,210,0.35)',
+      '--dp-window-header-bg':            '#002b36',
+      '--dp-layout-header-bg':     '#073642',
+      '--dp-layout-header-border': '#0d4054',
+      '--dp-layout-title-color':   '#93a1a1',
+      '--dp-layout-btn-color':     '#657b83',
+      '--dp-layout-btn-hover-bg':  '#0d4054',
+      '--dp-layout-splitter-bg':   '#073642',
+      '--dp-layout-splitter-active':'#268bd2',
+      '--dp-window-header-border':        '#073642',
+      '--dp-window-title-color':          '#839496',
+      '--dp-window-btn-color':            '#657b83',
+      '--dp-window-btn-hover-bg':         '#073642',
+      '--dp-window-btn-close-hover-bg':   '#dc322f',
+      '--dp-window-btn-close-hover-color':'#fdf6e3',
+      '--dp-window-body-bg':              '#002b36',
+      '--dp-window-body-color':           '#839496',
+      '--dp-snap-guide-color':     'rgba(38,139,210,0.70)',
+      '--dp-desktop-bg':           'linear-gradient(135deg,#002b36 0%,#073642 100%)',
+      '--dp-desktop-icon-text':    '#839496',
+      '--dp-dock-bg':              'rgba(0,43,54,0.85)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(38,139,210,0.25)',
+      '--dp-font':                 'system-ui,-apple-system,sans-serif',
+      '--dp-desktop-icon-hover-bg':'rgba(38,139,210,0.15)',
+      '--dp-dock-item-hover-bg':   'rgba(38,139,210,0.12)',
     },
   },
   'win11-light': {
     label: 'Win11 — 淺色', icon: '🪟', group: 'Win11',
     vars: {
-      '--wos-window-border':               'rgba(0,0,0,0.14)',
-      '--wos-window-border-active':        'rgba(0,0,0,0.22)',
-      '--wos-window-shadow':               '0 2px 4px rgba(0,0,0,0.04),0 12px 40px rgba(0,0,0,0.12)',
-      '--wos-window-shadow-active':        '0 2px 4px rgba(0,0,0,0.06),0 20px 56px rgba(0,0,0,0.18)',
-      '--wos-window-header-bg':            '#f3f3f3',
-      '--wos-layout-header-bg':     '#e8e8e8',
-      '--wos-layout-header-border': 'rgba(0,0,0,0.10)',
-      '--wos-layout-title-color':   '#1a1a1a',
-      '--wos-layout-btn-color':     '#5a5a5a',
-      '--wos-layout-btn-hover-bg':  'rgba(0,0,0,0.07)',
-      '--wos-layout-splitter-bg':   'rgba(0,0,0,0.10)',
-      '--wos-layout-splitter-active':'rgba(0,120,212,0.60)',
-      '--wos-window-header-border':        'rgba(0,0,0,0.07)',
-      '--wos-window-title-color':          '#1a1a1a',
-      '--wos-window-btn-color':            '#5a5a5a',
-      '--wos-window-btn-hover-bg':         'rgba(0,0,0,0.07)',
-      '--wos-window-btn-close-hover-bg':   '#c42b1c',
-      '--wos-window-btn-close-hover-color':'#ffffff',
-      '--wos-window-body-bg':              '#ffffff',
-      '--wos-window-body-color':           '#1a1a1a',
-      '--wos-snap-guide-color':     'rgba(0,120,212,0.50)',
-      '--wos-desktop-bg':           'linear-gradient(180deg,#dce8f5 0%,#c8d8ef 100%)',
-      '--wos-desktop-icon-text':    '#1a1a1a',
-      '--wos-dock-bg':              'rgba(242,246,252,0.88)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(0,0,0,0.10)',
-      '--wos-font':                 "'Segoe UI Variable','Segoe UI',system-ui,sans-serif",
-      '--wos-desktop-icon-hover-bg':'rgba(0,0,0,0.07)',
-      '--wos-dock-item-hover-bg':   'rgba(0,0,0,0.07)',
+      '--dp-window-border':               'rgba(0,0,0,0.14)',
+      '--dp-window-border-active':        'rgba(0,0,0,0.22)',
+      '--dp-window-shadow':               '0 2px 4px rgba(0,0,0,0.04),0 12px 40px rgba(0,0,0,0.12)',
+      '--dp-window-shadow-active':        '0 2px 4px rgba(0,0,0,0.06),0 20px 56px rgba(0,0,0,0.18)',
+      '--dp-window-header-bg':            '#f3f3f3',
+      '--dp-layout-header-bg':     '#e8e8e8',
+      '--dp-layout-header-border': 'rgba(0,0,0,0.10)',
+      '--dp-layout-title-color':   '#1a1a1a',
+      '--dp-layout-btn-color':     '#5a5a5a',
+      '--dp-layout-btn-hover-bg':  'rgba(0,0,0,0.07)',
+      '--dp-layout-splitter-bg':   'rgba(0,0,0,0.10)',
+      '--dp-layout-splitter-active':'rgba(0,120,212,0.60)',
+      '--dp-window-header-border':        'rgba(0,0,0,0.07)',
+      '--dp-window-title-color':          '#1a1a1a',
+      '--dp-window-btn-color':            '#5a5a5a',
+      '--dp-window-btn-hover-bg':         'rgba(0,0,0,0.07)',
+      '--dp-window-btn-close-hover-bg':   '#c42b1c',
+      '--dp-window-btn-close-hover-color':'#ffffff',
+      '--dp-window-body-bg':              '#ffffff',
+      '--dp-window-body-color':           '#1a1a1a',
+      '--dp-snap-guide-color':     'rgba(0,120,212,0.50)',
+      '--dp-desktop-bg':           'linear-gradient(180deg,#dce8f5 0%,#c8d8ef 100%)',
+      '--dp-desktop-icon-text':    '#1a1a1a',
+      '--dp-dock-bg':              'rgba(242,246,252,0.88)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(0,0,0,0.10)',
+      '--dp-font':                 "'Segoe UI Variable','Segoe UI',system-ui,sans-serif",
+      '--dp-desktop-icon-hover-bg':'rgba(0,0,0,0.07)',
+      '--dp-dock-item-hover-bg':   'rgba(0,0,0,0.07)',
     },
   },
   'win11-dark': {
     label: 'Win11 — 深色', icon: '🪟', group: 'Win11',
     vars: {
-      '--wos-window-border':               'rgba(255,255,255,0.12)',
-      '--wos-window-border-active':        'rgba(255,255,255,0.20)',
-      '--wos-window-shadow':               '0 2px 4px rgba(0,0,0,0.14),0 12px 40px rgba(0,0,0,0.38)',
-      '--wos-window-shadow-active':        '0 2px 4px rgba(0,0,0,0.20),0 20px 56px rgba(0,0,0,0.48)',
-      '--wos-window-header-bg':            '#2c2c2c',
-      '--wos-layout-header-bg':     '#333333',
-      '--wos-layout-header-border': 'rgba(255,255,255,0.08)',
-      '--wos-layout-title-color':   '#ffffff',
-      '--wos-layout-btn-color':     '#c8c8c8',
-      '--wos-layout-btn-hover-bg':  'rgba(255,255,255,0.09)',
-      '--wos-layout-splitter-bg':   'rgba(255,255,255,0.08)',
-      '--wos-layout-splitter-active':'rgba(0,120,212,0.70)',
-      '--wos-window-header-border':        'rgba(255,255,255,0.06)',
-      '--wos-window-title-color':          '#ffffff',
-      '--wos-window-btn-color':            '#c8c8c8',
-      '--wos-window-btn-hover-bg':         'rgba(255,255,255,0.09)',
-      '--wos-window-btn-close-hover-bg':   '#c42b1c',
-      '--wos-window-btn-close-hover-color':'#ffffff',
-      '--wos-window-body-bg':              '#1c1c1c',
-      '--wos-window-body-color':           'rgba(255,255,255,0.87)',
-      '--wos-snap-guide-color':     'rgba(0,120,212,0.60)',
-      '--wos-desktop-bg':           'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)',
-      '--wos-desktop-icon-text':    '#ffffff',
-      '--wos-dock-bg':              'rgba(32,32,32,0.88)',
-      '--wos-dock-backdrop-filter': 'blur(14px)',
-      '--wos-dock-border':          'rgba(255,255,255,0.10)',
-      '--wos-font':                 "'Segoe UI Variable','Segoe UI',system-ui,sans-serif",
-      '--wos-desktop-icon-hover-bg':'rgba(255,255,255,0.09)',
-      '--wos-dock-item-hover-bg':   'rgba(255,255,255,0.09)',
+      '--dp-window-border':               'rgba(255,255,255,0.12)',
+      '--dp-window-border-active':        'rgba(255,255,255,0.20)',
+      '--dp-window-shadow':               '0 2px 4px rgba(0,0,0,0.14),0 12px 40px rgba(0,0,0,0.38)',
+      '--dp-window-shadow-active':        '0 2px 4px rgba(0,0,0,0.20),0 20px 56px rgba(0,0,0,0.48)',
+      '--dp-window-header-bg':            '#2c2c2c',
+      '--dp-layout-header-bg':     '#333333',
+      '--dp-layout-header-border': 'rgba(255,255,255,0.08)',
+      '--dp-layout-title-color':   '#ffffff',
+      '--dp-layout-btn-color':     '#c8c8c8',
+      '--dp-layout-btn-hover-bg':  'rgba(255,255,255,0.09)',
+      '--dp-layout-splitter-bg':   'rgba(255,255,255,0.08)',
+      '--dp-layout-splitter-active':'rgba(0,120,212,0.70)',
+      '--dp-window-header-border':        'rgba(255,255,255,0.06)',
+      '--dp-window-title-color':          '#ffffff',
+      '--dp-window-btn-color':            '#c8c8c8',
+      '--dp-window-btn-hover-bg':         'rgba(255,255,255,0.09)',
+      '--dp-window-btn-close-hover-bg':   '#c42b1c',
+      '--dp-window-btn-close-hover-color':'#ffffff',
+      '--dp-window-body-bg':              '#1c1c1c',
+      '--dp-window-body-color':           'rgba(255,255,255,0.87)',
+      '--dp-snap-guide-color':     'rgba(0,120,212,0.60)',
+      '--dp-desktop-bg':           'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)',
+      '--dp-desktop-icon-text':    '#ffffff',
+      '--dp-dock-bg':              'rgba(32,32,32,0.88)',
+      '--dp-dock-backdrop-filter': 'blur(14px)',
+      '--dp-dock-border':          'rgba(255,255,255,0.10)',
+      '--dp-font':                 "'Segoe UI Variable','Segoe UI',system-ui,sans-serif",
+      '--dp-desktop-icon-hover-bg':'rgba(255,255,255,0.09)',
+      '--dp-dock-item-hover-bg':   'rgba(255,255,255,0.09)',
     },
   },
 };
@@ -908,7 +908,7 @@ function syncEditorToValues(containerId, varDefs, values) {
 let corewm = null;
 function initCorePreview() {
   const container = document.getElementById('core-preview-area');
-  corewm = new WebOS.WindowManager({ container, isolated: true, snap: false });
+  corewm = new DeskPane.WindowManager({ container, isolated: true, snap: false });
 
   corewm.open({ id: 'prev-main', title: '📝 示範視窗 — 即時主題預覽', width: 460, height: 280, x: 40, y: 30,
     content: (() => {
@@ -916,9 +916,9 @@ function initCorePreview() {
       el.style.cssText = 'padding:16px;font-size:13px;line-height:1.8;color:inherit';
       el.innerHTML = `<p style="opacity:.8;margin-bottom:8px">視窗樣式由左側 CSS 變數即時控制。</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button onclick="corewm.minimize('prev-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-window-border);background:var(--wos-window-btn-hover-bg);color:var(--wos-window-title-color);cursor:pointer;font-size:12px">最小化</button>
-          <button onclick="corewm.maximize('prev-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-window-border);background:var(--wos-window-btn-hover-bg);color:var(--wos-window-title-color);cursor:pointer;font-size:12px">最大化</button>
-          <button onclick="corewm.restore('prev-main')"  style="padding:5px 12px;border-radius:5px;border:1px solid var(--wos-window-border);background:var(--wos-window-btn-hover-bg);color:var(--wos-window-title-color);cursor:pointer;font-size:12px">還原</button>
+          <button onclick="corewm.minimize('prev-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--dp-window-border);background:var(--dp-window-btn-hover-bg);color:var(--dp-window-title-color);cursor:pointer;font-size:12px">最小化</button>
+          <button onclick="corewm.maximize('prev-main')" style="padding:5px 12px;border-radius:5px;border:1px solid var(--dp-window-border);background:var(--dp-window-btn-hover-bg);color:var(--dp-window-title-color);cursor:pointer;font-size:12px">最大化</button>
+          <button onclick="corewm.restore('prev-main')"  style="padding:5px 12px;border-radius:5px;border:1px solid var(--dp-window-border);background:var(--dp-window-btn-hover-bg);color:var(--dp-window-title-color);cursor:pointer;font-size:12px">還原</button>
         </div>`;
       return el;
     })()
@@ -953,7 +953,7 @@ function buildRealDesktop() {
   const dockPos    = document.getElementById('dock-position-select').value;
   const showLabels = document.getElementById('dock-labels-toggle').checked;
 
-  realDesktop = new WebOSDesktop.Desktop({
+  realDesktop = new DeskPaneDesktop.Desktop({
     container: area,
     dock: { position: dockPos, showLabels: showLabels, iconSize: 36, items: [] },
     icons: Object.entries(CFE_APPS).map(([id, app]) => ({
@@ -961,7 +961,7 @@ function buildRealDesktop() {
     })),
   });
 
-  realWm = new WebOS.WindowManager({ container: realDesktop.getElement(), isolated: true, snap: true });
+  realWm = new DeskPane.WindowManager({ container: realDesktop.getElement(), isolated: true, snap: true });
   realDesktop.syncDockWithWindows(realWm);
 
   const statusEl = document.getElementById('desktop-preview-status');
@@ -994,7 +994,7 @@ document.querySelector('.preview-toggle').addEventListener('click', e => {
 
 /* ── Export helpers ──────────────────────────────────────── */
 function generateCSS(values, label) {
-  const lines = ['/* WebOS — ' + label + ' */', ':root {'];
+  const lines = ['/* DeskPane — ' + label + ' */', ':root {'];
   Object.entries(values).forEach(([n,v]) => lines.push('  ' + n.padEnd(32) + ': ' + v + ';'));
   lines.push('}');
   return lines.join('\n');
@@ -1088,24 +1088,24 @@ initCorePreview();
 
 /* CSS files available */
 const CFE_FILES = {
-  core:    { path: '../../dist/styles/webos-core.css',    filename: 'webos-core.css' },
-  desktop: { path: '../../dist/styles/webos-desktop.css', filename: 'webos-desktop.css' },
+  core:    { path: '../../dist/styles/deskpane.css',    filename: 'deskpane.css' },
+  desktop: { path: '../../dist/styles/deskpane-desktop.css', filename: 'deskpane-desktop.css' },
 };
 
 /* ── Windows 11 theme preset (embedded, no server fetch needed) ── */
 const CFE_WIN11_CSS = `/* ============================================================
- * WebOS-Core — Windows 11 Theme
+ * DeskPane — Windows 11 Theme
  * Mimics the Windows 11 Fluent Design window style.
- * Load this into webos-core.css to apply the Win11 look.
+ * Load this into deskpane.css to apply the Win11 look.
  * ============================================================ */
 
 /* ── Font (Segoe UI Variable / Segoe UI) ─────────────────── */
-.wos-window, .wos-window * {
+.dp-window, .dp-window * {
   font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 /* ── Window ───────────────────────────────────────────────── */
-.wos-window {
+.dp-window {
   position: fixed;
   box-sizing: border-box;
   display: flex;
@@ -1119,27 +1119,27 @@ const CFE_WIN11_CSS = `/* ======================================================
   min-height: 120px;
   transition: box-shadow 0.15s, border-color 0.15s;
 }
-.wos-window.wos-active {
+.dp-window.dp-active {
   border-color: rgba(0, 0, 0, 0.18);
   box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 20px 56px rgba(0,0,0,0.18);
 }
-.wos-window.wos-minimized {
+.dp-window.dp-minimized {
   display: none !important;
 }
-.wos-window.wos-maximized {
+.dp-window.dp-maximized {
   border-radius: 0;
   border-width: 0;
 }
 
 /* ── Isolated container mode ──────────────────────────────── */
-.wos-isolated {
+.dp-isolated {
   position: relative;
   overflow: hidden;
 }
-.wos-isolated .wos-window {
+.dp-isolated .dp-window {
   position: absolute;
 }
-.wos-isolated .wos-window.wos-maximized {
+.dp-isolated .dp-window.dp-maximized {
   left: 0 !important;
   top: 0 !important;
   width: 100% !important;
@@ -1148,7 +1148,7 @@ const CFE_WIN11_CSS = `/* ======================================================
 }
 
 /* ── Header ───────────────────────────────────────────────── */
-.wos-header {
+.dp-header {
   display: flex;
   align-items: center;
   padding: 0 0 0 12px;
@@ -1159,7 +1159,7 @@ const CFE_WIN11_CSS = `/* ======================================================
   user-select: none;
   flex-shrink: 0;
 }
-.wos-title {
+.dp-title {
   flex: 1;
   font-size: 12px;
   font-weight: 400;
@@ -1171,7 +1171,7 @@ const CFE_WIN11_CSS = `/* ======================================================
 }
 
 /* ── Control buttons (Win11: wide rectangles, no radius) ──── */
-.wos-btn {
+.dp-btn {
   width: 46px;
   height: 32px;
   border: none;
@@ -1186,43 +1186,43 @@ const CFE_WIN11_CSS = `/* ======================================================
   margin-left: 0;
   transition: background 0.1s;
 }
-.wos-btn:hover { background: rgba(0, 0, 0, 0.07); }
-.wos-btn.wos-btn-close:hover {
+.dp-btn:hover { background: rgba(0, 0, 0, 0.07); }
+.dp-btn.dp-btn-close:hover {
   background: #c42b1c;
   color: #ffffff;
 }
-.wos-btn:disabled {
+.dp-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
-.wos-btn:disabled:hover { background: transparent; }
+.dp-btn:disabled:hover { background: transparent; }
 
 /* ── Body ─────────────────────────────────────────────────── */
-.wos-body {
+.dp-body {
   flex: 1;
   overflow: auto;
   position: relative;
   background: #ffffff;
   color: #1a1a1a;
 }
-.wos-body.wos-has-layout {
+.dp-body.dp-has-layout {
   overflow: hidden;
 }
 
 /* ── Snap guide lines (Win11 accent blue) ─────────────────── */
-.wos-snap-guide {
+.dp-snap-guide {
   position: absolute;
   pointer-events: none;
   z-index: 2147483647;
   display: none;
   background: #0078d4;
 }
-.wos-snap-guide--v {
+.dp-snap-guide--v {
   width: 1px;
   top: 0;
   bottom: 0;
 }
-.wos-snap-guide--h {
+.dp-snap-guide--h {
   height: 1px;
   left: 0;
   right: 0;
@@ -1232,7 +1232,7 @@ const CFE_WIN11_CSS = `/* ======================================================
 let cfeCurrentKey = 'core';
 let cfeOriginals  = {};   /* cache fetched originals */
 /* Dual inject: one style tag per file so editing one doesn't clobber the other */
-const CFE_STYLE_IDS = { core: 'wos-cfe-inject-core', desktop: 'wos-cfe-inject-desktop' };
+const CFE_STYLE_IDS = { core: 'dp-cfe-inject-core', desktop: 'dp-cfe-inject-desktop' };
 const cfeStyles     = { core: '', desktop: '' };
 
 /* Switch active preset button */
@@ -1271,7 +1271,7 @@ function cfeLoadPreset(key) {
 
 /* Build a simple BorderLayout demo element */
 function makeCfeLayoutDemo() {
-  const { BorderLayout } = WebOS;
+  const { BorderLayout } = DeskPane;
   const root = document.createElement('div');
   root.style.cssText = 'width:100%;height:100%;font-family:system-ui;font-size:12px';
 
@@ -1304,7 +1304,7 @@ const CFE_APPS = {
       const ta = document.createElement('textarea');
       ta.style.cssText = 'width:100%;height:100%;padding:12px;font-size:13px;font-family:monospace;border:none;outline:none;resize:none;background:transparent;color:inherit';
       ta.placeholder = '開始輸入...';
-      ta.value = 'WebOS Theme Editor\n\n在左側編輯 CSS，右側即時預覽。\n\n試試載入 Windows 11 樣式！';
+      ta.value = 'DeskPane Theme Editor\n\n在左側編輯 CSS，右側即時預覽。\n\n試試載入 Windows 11 樣式！';
       return ta;
     },
   },
@@ -1360,7 +1360,7 @@ const CFE_APPS = {
     make: () => {
       const el = document.createElement('div');
       el.style.cssText = 'padding:20px;text-align:center;font-family:system-ui';
-      el.innerHTML = '<div style="font-size:52px;margin-bottom:10px">🎵</div><div style="font-size:16px;font-weight:600;margin-bottom:4px">Lofi Beat #1</div><div style="font-size:12px;color:#888;margin-bottom:16px">WebOS Music</div><div style="display:flex;justify-content:center;gap:14px"><button style="background:none;border:none;cursor:pointer;font-size:20px;color:inherit">⏮</button><button style="background:none;border:none;cursor:pointer;font-size:28px;color:inherit" onclick="this.textContent=this.textContent===\'▶\'?\'⏸\':\'▶\'">▶</button><button style="background:none;border:none;cursor:pointer;font-size:20px;color:inherit">⏭</button></div><div style="margin-top:14px"><input type="range" value="30" style="width:100%"/></div>';
+      el.innerHTML = '<div style="font-size:52px;margin-bottom:10px">🎵</div><div style="font-size:16px;font-weight:600;margin-bottom:4px">Lofi Beat #1</div><div style="font-size:12px;color:#888;margin-bottom:16px">DeskPane Music</div><div style="display:flex;justify-content:center;gap:14px"><button style="background:none;border:none;cursor:pointer;font-size:20px;color:inherit">⏮</button><button style="background:none;border:none;cursor:pointer;font-size:28px;color:inherit" onclick="this.textContent=this.textContent===\'▶\'?\'⏸\':\'▶\'">▶</button><button style="background:none;border:none;cursor:pointer;font-size:20px;color:inherit">⏭</button></div><div style="margin-top:14px"><input type="range" value="30" style="width:100%"/></div>';
       return el;
     },
   },
@@ -1373,7 +1373,7 @@ const CFE_APPS = {
     make: () => {
       const el = document.createElement('div');
       el.style.cssText = 'background:#1a1a1a;color:#33ff33;font-family:monospace;font-size:12px;padding:10px;height:100%;overflow-y:auto;display:flex;flex-direction:column;box-sizing:border-box';
-      el.innerHTML = '<div id="cfe-term-out"><div>WebOS Terminal v1.0.0</div><div>輸入 help 查看指令</div><br></div><div style="display:flex;align-items:center"><span style="margin-right:5px">$</span><input id="cfe-term-in" style="flex:1;background:transparent;border:none;outline:none;color:#33ff33;font-family:monospace;font-size:12px"/></div>';
+      el.innerHTML = '<div id="cfe-term-out"><div>DeskPane Terminal v1.0.0</div><div>輸入 help 查看指令</div><br></div><div style="display:flex;align-items:center"><span style="margin-right:5px">$</span><input id="cfe-term-in" style="flex:1;background:transparent;border:none;outline:none;color:#33ff33;font-family:monospace;font-size:12px"/></div>';
       setTimeout(() => {
         const inp = el.querySelector('#cfe-term-in');
         if (!inp) return;
@@ -1416,7 +1416,7 @@ const CFE_APPS = {
           <label style="display:block;margin-bottom:6px;font-weight:500">桌面背景</label>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             ${['linear-gradient(135deg,#1a2a4a,#0d1b2a)','linear-gradient(135deg,#2d1b4e,#1a0a2e)','linear-gradient(135deg,#0d3b2a,#051a14)','linear-gradient(135deg,#1e1e2e,#12121e)'].map(bg =>
-              `<div onclick="(function(bg){var d=document.querySelector('#desktop-preview-area .wos-desktop');if(d)d.style.background=bg})('${bg}')"
+              `<div onclick="(function(bg){var d=document.querySelector('#desktop-preview-area .dp-desktop');if(d)d.style.background=bg})('${bg}')"
                     style="width:44px;height:30px;border-radius:5px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:${bg}"></div>`
             ).join('')}
           </div>

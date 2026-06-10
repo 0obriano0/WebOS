@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WebOS · Layout Demo</title>
+  <title>DeskPane · Layout Demo</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; overflow: hidden; }
@@ -43,9 +43,9 @@
     <button onclick="openSimple()">🪟 一般視窗（對比）</button>
   </div>
 
-  <script src="../../dist/webos-core.umd.js"></script>
+  <script src="../../dist/deskpane.umd.js"></script>
   <script>
-    const { WindowManager, setTheme } = WebOS;
+    const { WindowManager, setTheme } = DeskPane;
     setTheme('dark', { basePath: '../../dist/themes' });
 
     const wm = new WindowManager({

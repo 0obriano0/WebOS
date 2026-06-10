@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — Vue 3 Adapter Public Entry
+﻿// ============================================================
+// DeskPane — Vue 3 Adapter Public Entry
 // ============================================================
 
 export { useWindowManager } from './useWindowManager.js';

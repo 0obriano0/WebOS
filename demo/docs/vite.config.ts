@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import os from 'node:os'
@@ -7,11 +7,11 @@ import { readFileSync } from 'node:fs'
 
 // Virtual module prefix — intentionally does NOT end in .css so Vite's CSS
 // pipeline is not triggered on the virtual module.
-const VIRTUAL_PREFIX = '\0webos-raw-css:'
+const VIRTUAL_PREFIX = '\0deskpane-raw-css:'
 
-// Vite plugin: treat CSS files imported from WebOS src TS files as raw string exports.
+// Vite plugin: treat CSS files imported from DeskPane src TS files as raw string exports.
 const srcCssRaw = {
-  name: 'webos-src-css-raw',
+  name: 'deskpane-src-css-raw',
   enforce: 'pre' as const,
   resolveId(id: string, importer?: string) {
     if (!id.endsWith('.css') || id.includes('?')) return
@@ -32,11 +32,11 @@ export default defineConfig({
   plugins: [srcCssRaw, vue()],
   resolve: {
     alias: {
-      '@webos': fileURLToPath(new URL('../../src', import.meta.url)),
+      '@deskpane': fileURLToPath(new URL('../../src', import.meta.url)),
     },
   },
   // Dropbox 同步安全：將 Vite 快取移至系統暫存目錄
-  cacheDir: path.join(os.tmpdir(), 'vite-webos-docs'),
+  cacheDir: path.join(os.tmpdir(), 'vite-deskpane-docs'),
   server: {
     port: 3002,
     open: true,

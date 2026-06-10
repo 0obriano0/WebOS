@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Core — Workspace Types
+﻿// ============================================================
+// DeskPane — Workspace Types
 // ============================================================
 
 /** 建立工作區時的設定 */
@@ -78,7 +78,7 @@ export interface TaskViewOptions {
    */
   buttonIcon?: string;
   /**
-   * Dock 按鈕的唯一 ID，預設「wos-tv-button」。
+   * Dock 按鈕的唯一 ID，預設「dp-tv-button」。
    */
   buttonId?: string;
 }

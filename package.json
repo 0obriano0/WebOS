@@ -1,22 +1,22 @@
-{
-  "name": "webos-core",
+﻿{
+  "name": "deskpane",
   "version": "0.1.0",
   "description": "Framework-agnostic web desktop window management engine",
-  "main": "dist/webos-core.umd.js",
-  "module": "dist/webos-core.es.js",
+  "main": "dist/deskpane.umd.js",
+  "module": "dist/deskpane.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "import": "./dist/webos-core.es.js",
-      "require": "./dist/webos-core.umd.js",
+      "import": "./dist/deskpane.es.js",
+      "require": "./dist/deskpane.umd.js",
       "types": "./dist/index.d.ts"
     },
     "./desktop": {
-      "import": "./dist/webos-desktop.es.js",
-      "require": "./dist/webos-desktop.umd.js",
+      "import": "./dist/deskpane-desktop.es.js",
+      "require": "./dist/deskpane-desktop.umd.js",
       "types": "./dist/desktop.d.ts"
     }
   },

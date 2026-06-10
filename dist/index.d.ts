@@ -115,7 +115,7 @@ interface WindowManagerOptions {
     /**
      * Isolated 模式：視窗改用 position:absolute，限制在容器範圍內。
      * 適合文件頁面的內嵌 demo 區塊，或頁面中的局部桌面。
-     * 啟用後容器會自動加上 wos-isolated CSS class。
+     * 啟用後容器會自動加上 dp-isolated CSS class。
      */
     isolated?: boolean;
     /**
@@ -294,12 +294,12 @@ interface SetThemeOptions {
     basePath?: string;
     /**
      * 用來識別主題 `<link>` 元素的 id。
-     * 預設為 `'wos-theme'`。
+     * 預設為 `'dp-theme'`。
      */
     linkId?: string;
 }
 /**
- * 動態切換 WebOS 主題。
+ * 動態切換 DeskPane 主題。
  *
  * 第一次呼叫時，若頁面中不存在指定 id 的 `<link>` 元素，
  * 會自動建立一個並插入 `<head>`。
@@ -309,11 +309,11 @@ interface SetThemeOptions {
  *
  * @example
  * // ESM
- * import { setTheme } from 'webos-core';
+ * import { setTheme } from 'deskpane';
  * setTheme('dark');
  *
  * // UMD
- * WebOS.setTheme('dark');
+ * DeskPane.setTheme('dark');
  *
  * // 自訂路徑（例如主題放在 /assets/themes/）
  * setTheme('dark', { basePath: '/assets/themes' });

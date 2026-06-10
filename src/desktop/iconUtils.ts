@@ -1,5 +1,5 @@
-// ============================================================
-// WebOS-Desktop — Icon utilities (shared between Dock & DesktopIcon)
+﻿// ============================================================
+// DeskPane-Desktop — Icon utilities (shared between Dock & DesktopIcon)
 // ============================================================
 
 /**
