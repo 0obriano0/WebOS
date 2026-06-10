@@ -23,7 +23,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # 從 tag (e.g. v0.2.0) 取出版本號 0.2.0
       - name: Extract version
