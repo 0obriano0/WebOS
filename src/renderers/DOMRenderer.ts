@@ -5,6 +5,7 @@
 
 import { WindowState } from '../core/types.js';
 import BASE_CSS from '../styles/deskpane.css';
+import { injectRuntimeCSS } from '../styles/inject.js';
 
 const STYLE_ID = 'dp-core-styles';
 
@@ -14,11 +15,12 @@ export function getCoreCSS(): string {
 }
 
 export function injectStyles(): void {
-  if (document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = BASE_CSS;
-  document.head.appendChild(style);
+  injectRuntimeCSS({
+    id: STYLE_ID,
+    css: BASE_CSS,
+    hrefPart: 'deskpane.css',
+    fingerprint: 'DeskPane — Default Styles',
+  });
 }
 
 export interface WindowElements {

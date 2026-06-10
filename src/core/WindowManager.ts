@@ -59,7 +59,8 @@ export interface WindowManagerOptions {
   snapGap?: number;
   /**
    * 是否自動注入 Core CSS 樣式，預設 true。
-   * 設為 false 時不注入任何樣式，由使用者完全自行控制 CSS。
+   * 若已用 <link> 或 bundler import 載入 deskpane.css，runtime 會自動略過重複注入。
+   * 設為 false 時完全不注入樣式，由使用者自行控制 CSS 載入順序。
    * 可搭配 `getCoreCSS()` 取得預設 CSS 作為修改基礎。
    */
   injectStyles?: boolean;

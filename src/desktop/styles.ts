@@ -3,6 +3,7 @@
 // ============================================================
 
 import DESKTOP_CSS from '../styles/deskpane-desktop.css';
+import { injectRuntimeCSS } from '../styles/inject.js';
 
 const STYLE_ID = 'dp-desktop-styles';
 
@@ -12,9 +13,10 @@ export function getDesktopCSS(): string {
 }
 
 export function injectDesktopStyles(): void {
-  if (document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = STYLE_ID;
-  style.textContent = DESKTOP_CSS;
-  document.head.appendChild(style);
+  injectRuntimeCSS({
+    id: STYLE_ID,
+    css: DESKTOP_CSS,
+    hrefPart: 'deskpane-desktop.css',
+    fingerprint: 'DeskPane-Desktop — Default Styles',
+  });
 }

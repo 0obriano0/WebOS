@@ -1,6 +1,6 @@
 # DeskPane — 專案狀態（AI 快查版）
 
-> 最後更新：2026-06-10 12:10 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
+> 最後更新：2026-06-10 13:55 ｜ 備份：`bak/PROJECT_STATUS.2026-05-26.md`
 > 此文件為 AI 輔助開發設計，優先說明「現在是什麼」，歷史細節見備份。
 
 ---
@@ -24,7 +24,8 @@
 | 拖曳 + 縮放 + Snap 吸附（拖曳 & 縮放）+ Snap 間距設定 | ✅ | `src/core/DragResizeHandler.ts`, `SnapHelper.ts` |
 | `resizable: false` — 禁用放大按鈕 + 邊框縮放（固定大小視窗） | ✅ | `src/core/types.ts`, `DOMRenderer.ts`, `DragResizeHandler.ts`, `WindowManager.ts` |
 | DOM 渲染 + CSS 變數主題系統 | ✅ | `src/renderers/DOMRenderer.ts` |
-| CSS 單一來源（Single Source of Truth） — deskpane.css / deskpane-desktop.css | ✅ | `src/styles/*.css` |
+| CSS 單一來源（Single Source of Truth）— core / desktop / layout / workspace / taskview | ✅ | `src/styles/*.css` |
+| **穩定 CSS 載入策略** — 可關閉 runtime inject、重複偵測、runtime style 前插，避免覆蓋 app override | ✅ | `src/styles/inject.ts`, `DOMRenderer.ts`, `desktop/styles.ts`, `workspace/*` |
 | Rollup rawCss() plugin — build time 將 `.css` 轉為 JS 字串內嵌 | ✅ | `rollup.lib.config.mjs` |
 | light.css / dark.css（Core + Desktop 變數） | ✅ | `src/themes/*.css` |
 | `setTheme()` 工具函式 | ✅ | `src/themes/setTheme.ts` |
@@ -55,11 +56,11 @@
 | **git tag v0.1.0** — 第一個 Release 標籤 | ✅ | |
 | **README 改版** — npm/downloads/license/bundle size 四個 badge；Why DeskPane；Features 依模組分組；CDN/unpkg 安裝說明；Roadmap；Contributing | ✅ | `README.md` |
 | **Demo 全部重建**（vanilla/jquery/vue/react）— 改成全螢幕虛擬桌面風格，對齊 demo/desktop；Vue 用 Teleport+KeepAlive；React 用 createPortal | ✅ | `demo/vanilla/`, `demo/jquery/`, `demo/vue/`, `demo/react/` |
+| **Vue/React Workspace demo 修正** — bundler manual CSS import + `injectStyles:false`；Portal/Teleport state 加入 `workspaceId` key，切換工作區時同步 active workspace 視窗 | ✅ | `demo/vue/`, `demo/react/` |
 | **docs-internal 文件** — `npm-publish-guide.md` + `release-workflow.md` | ✅ | `docs-internal/` |
 
 **尚未實作：**
 - [ ] CDN 發佈（jsDelivr / unpkg）
-- [ ] Vue/React demo 視窗拖曳問題待查（`pointer-events` 不是根因，workspace/desktop CSS 層已確認正確；疑似 Vite dev 模式下 rawCssPlugin CSS 未正確注入，導致 DragResizeHandler 所需 CSS class 不存在）
 
 ---
 
@@ -83,10 +84,11 @@ DeskPane/
 │   │   ├── deskpane-desktop.css       ← Desktop CSS 單一來源（桌面/Dock/Icon 樣式）
 │   │   ├── deskpane-layout.css        ← Layout CSS 單一來源（BorderLayout/Panel 樣式）
 │   │   ├── deskpane-workspace.css     ← Workspace CSS 單一來源（工作區容器/滑入動畫/指示點）
-│   │   └── deskpane-taskview.css      ← TaskView CSS 單一來源（覆蓋層/卡片/縮略圖/按鈕）
+│   │   ├── deskpane-taskview.css      ← TaskView CSS 單一來源（覆蓋層/卡片/縮略圖/按鈕）
+│   │   └── inject.ts                  ← runtime CSS 注入工具（重複偵測 + 前插策略）
 │   ├── themes/
-│   │   ├── light.css               ← 亮色（Core 15 vars + Desktop 7 vars）
-│   │   ├── dark.css                ← 暗色（Core 15 vars + Desktop 7 vars）
+│   │   ├── light.css               ← 亮色（Core 15 vars + Desktop 8 vars）
+│   │   ├── dark.css                ← 暗色（Core 15 vars + Desktop 8 vars）
 │   │   └── setTheme.ts             ← setTheme(preset, options?)
 │   ├── layout/
 │   │   ├── BorderLayout.ts         ← 東西南北中五區域、可拖曳分割線、巢狀遞迴
@@ -136,7 +138,7 @@ DeskPane/
 │   ├── desktop/index.html          ← 完整虛擬桌面體驗
 │   ├── theme-editor/index.html     ← 🎨 Theme Editor（Tab1 Core / Tab2 Desktop / Tab3 完整桌面預覽+CSS 即時注入）
 │   ├── layout/index.html
-│   ├── vue/                        ← 獨立 Vite 專案（port 3008）
+│   ├── vue/                        ← 獨立 Vite 專案（port 3001）
 │   ├── react/                      ← 獨立 Vite 專案（port 3002）
 │   └── docs/                       ← 開發手冊 Vite SPA（port 3002）
 │
@@ -153,9 +155,9 @@ DeskPane/
 
 ---
 
-## 4. CSS 自訂屬性（完整 29 個）
+## 4. CSS 自訂屬性（完整 30 個）
 
-### Core 視窗（14 個）— 來源：`src/styles/deskpane.css`
+### Core 視窗（15 個）— 來源：`src/styles/deskpane.css`
 
 | 變數 | 說明 | CSS 預設值 |
 |------|------|-----------|
@@ -163,6 +165,7 @@ DeskPane/
 | `--dp-window-border-active` | 作用中外框顏色 | `#b0b8c8` |
 | `--dp-window-shadow` | 視窗陰影 | `0 4px 24px rgba(0,0,0,0.18)` |
 | `--dp-window-shadow-active` | 作用中陰影 | `0 8px 36px rgba(0,0,0,0.28)` |
+| `--dp-window-bg` | 視窗本體背景（避免 body 未撐滿時透明） | `var(--dp-window-body-bg, #ffffff)` |
 | `--dp-window-header-bg` | 標題列背景 | `#f5f5f5` |
 | `--dp-window-header-border` | 標題列底線 | `#e0e0e0` |
 | `--dp-window-title-color` | 標題文字色 | `#333333` |
@@ -326,7 +329,7 @@ npm publish           # 發佈到 npmjs.com
 node scripts/build-themes.mjs   # src/themes/ → dist/themes/ + demo/*/public/themes/
 
 # ── Demo 子專案 ─────────────────────────────────────────────
-cd demo/vue   && npm install && npm run dev    # port 3008
+cd demo/vue   && npm install && npm run dev    # port 3001
 cd demo/react && npm install && npm run dev    # port 3002
 cd demo/docs  && npm install && npm run dev    # port 3002
 ```
@@ -385,6 +388,10 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 39 | Vite 開發 server 無法使用 rawCss plugin（CSS SyntaxError）| Vite 的 CSS pipeline 在 `load()` hook 前就攔截 `.css` 檔，導致 DeskPane 的 `import CSS from '*.css'` 在 Vite dev 時出現 `does not provide an export named 'default'` 錯誤。修法：在 `vite.config.ts` 加 `rawCssPlugin()`（`enforce:'pre'`），`resolveId()` 將 `WebOS/src/` 底下的 CSS 路徑加上 `?raw-dp` suffix，`load()` 讀檔並 `export default <string>`，完全繞過 Vite CSS pipeline | 
 | 40 | `deskpane-workspace.css` pointer-events 設計 | `.dp-workspace-root` 和 `.dp-workspace--active` 都必須保留 `pointer-events:none`。空白處事件穿透到下方 icon-area（icon 可點擊）；視窗元素靠自身的 `pointer-events:auto` 接收事件（由 `.dp-desktop-window-area > *` 及 `.dp-isolated .dp-window` 設定）。**切勿**改為 `pointer-events:auto`，否則 workspace root 會遮住 icon-area，圖示無法點擊 |
 | 41 | root `package.json` UTF-8 BOM 導致 PostCSS parse 失敗 | PostCSS config 搜尋器沿目錄向上找 `package.json`，遇到有 BOM（EF BB BF）的 JSON 時 `JSON.parse()` 丟 `SyntaxError: Unexpected token`。修法：用 `[System.Text.UTF8Encoding]::new($false)` 重寫 `package.json` 移除 BOM |
+| 42 | DeskPane runtime CSS 注入策略 | `Desktop` / `WorkspaceManager` / `WindowManager` / `TaskView` 都支援 `injectStyles:false`。runtime inject 會先偵測既有 `<link>` / bundler `<style>`，避免重複注入；若需要注入，插在 app-level stylesheet 前面，讓專案端 override 保持有效。`WorkspaceManager.injectStyles:false` 會傳遞給內部建立的 `WindowManager`，除非 `windowManagerOptions.injectStyles` 明確覆寫 |
+| 43 | `.dp-window` 透明與點擊穿透 | core CSS 不應依賴 `.dp-body` 撐滿整個視窗才有背景；`.dp-window` 改為 `background: var(--dp-window-bg, var(--dp-window-body-bg, #ffffff))`，並確保 `.dp-window` / `.dp-header` / `.dp-body` 保持 `pointer-events:auto` |
+| 44 | Vite demo rawCss plugin scope | raw CSS plugin 只攔截 DeskPane `src/` 內部 import `src/styles/*.css` 的情況，並加上 `?raw-dp` 轉成 JS string；demo app 自己在 `main.ts` / `main.tsx` import 的 DeskPane CSS 仍走 Vite 正常 CSS pipeline，避免樣式被當成 default export 或消失 |
+| 45 | React/Vue Workspace Portal/Teleport 黑畫面 | 這是 framework integration state 問題，不是 DeskPane core 畫面渲染問題。DeskPane 管 DOM 視窗，React/Vue 內容由 app 用 portal/teleport 掛進 `bodyEl`；使用多工作區時必須在 `workspace:switched` 同步 active workspace 視窗、訂閱 `workspace:added` 的 WindowManager 事件，且 portal/teleport key 要包含 `workspaceId:id`，避免不同桌面同 id 視窗重用錯誤 target |
 
 ---
 
@@ -403,8 +410,8 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | `index.d.ts` | TypeScript | Core 型別宣告 |
 | `desktop.d.ts` | TypeScript | Desktop 型別宣告 |
 | `workspace.d.ts` | TypeScript | Workspace + Session 型別宣告 |
-| `themes/light.css` | CSS | ~2 KB，Core + Desktop 22 vars |
-| `themes/dark.css` | CSS | ~2 KB，Core + Desktop 22 vars |
+| `themes/light.css` | CSS | ~2 KB，Core + Desktop 23 vars |
+| `themes/dark.css` | CSS | ~2 KB，Core + Desktop 23 vars |
 | `styles/deskpane.css` | CSS | Core 視窗結構樣式（可直接 `<link>`） |
 | `styles/deskpane-desktop.css` | CSS | Desktop / Dock / Icon 樣式（可直接 `<link>`） |
 | `styles/deskpane-layout.css` | CSS | BorderLayout / Panel 樣式（可直接 `<link>`） |
@@ -423,8 +430,8 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | Desktop | `demo/desktop/index.html` | 完整虛擬桌面（Dock + Icons + WindowManager + BorderLayout 範例視窗） |
 | Theme Editor | `demo/theme-editor/index.html` | Tab1 Core CSS 變數 / Tab2 Desktop CSS 變數 / Tab3 完整桌面預覽 + 雙 CSS 即時注入（core + desktop）+ Win11 預設樣式 |
 | Layout | `demo/layout/index.html` | BorderLayout 東西南北中 + 巢狀 + Panel |
-| Vue 3 | `demo/vue/` | 全螢幕虛擬桌面風格；Desktop+WorkspaceManager+TaskView；Teleport+KeepAlive 注入 Vue 元件；5 個 app（GuideApp/EditorApp/TodoApp/CounterApp/CalcApp），port 3008 |
-| React 18 | `demo/react/` | 全螢幕虛擬桌面風格；Desktop+WorkspaceManager+TaskView；createPortal 注入 React 元件；5 個 app，port 3002 |
+| Vue 3 | `demo/vue/` | 全螢幕虛擬桌面風格；Desktop+WorkspaceManager+TaskView；manual CSS import + `injectStyles:false`；workspace-aware Teleport key；5 個 app（GuideApp/EditorApp/TodoApp/CounterApp/CalcApp），port 3001 |
+| React 18 | `demo/react/` | 全螢幕虛擬桌面風格；Desktop+WorkspaceManager+TaskView；manual CSS import + `injectStyles:false`；workspace-aware createPortal key；5 個 app，port 3002 |
 | Docs | `demo/docs/` | 開發手冊 Vue SPA，i18n EN/zh-TW，port 3002 |
 
 ---

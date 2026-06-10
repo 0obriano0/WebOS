@@ -92,6 +92,8 @@ export interface WorkspaceManagerOptions {
   animationMs?: number;
   /**
    * 是否自動注入 Workspace CSS，預設 true。
+   * 設為 false 時也會套用到內部建立的 WindowManager，
+   * 除非 windowManagerOptions.injectStyles 明確指定其他值。
    */
   injectStyles?: boolean;
   /**

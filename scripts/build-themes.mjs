@@ -18,7 +18,7 @@ const targets = [
 
 for (const dest of targets) {
   mkdirSync(dest, { recursive: true });
-  cpSync(src, dest, { recursive: true, filter: (s) => !s.endsWith('.ts') });
+  cpSync(src, dest, { recursive: true, filter: (s) => s === src || s.endsWith('.css') });
   console.log(`✅ ${dest.replace(root + '\\', '')} — 主題 CSS 已複製`);
 }
 
@@ -26,5 +26,5 @@ for (const dest of targets) {
 const stylesSrc  = join(root, 'src', 'styles');
 const stylesDest = join(root, 'dist', 'styles');
 mkdirSync(stylesDest, { recursive: true });
-cpSync(stylesSrc, stylesDest, { recursive: true });
+cpSync(stylesSrc, stylesDest, { recursive: true, filter: (s) => s === stylesSrc || s.endsWith('.css') });
 console.log(`✅ dist/styles — 預設樣式 CSS 已複製`);

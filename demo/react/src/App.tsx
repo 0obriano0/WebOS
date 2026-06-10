@@ -10,6 +10,7 @@ import CounterApp from './windows/CounterApp'
 import CalcApp    from './windows/CalcApp'
 
 interface WinEntry {
+  workspaceId: string
   id: string
   bodyEl: HTMLElement
   component: React.ComponentType<any>
@@ -38,7 +39,9 @@ export default function App() {
 
   const syncWindows = useCallback(() => {
     try {
-      const wm = currentWm()
+      const cur = wsMgrRef.current?.current
+      if (!cur) return
+      const wm = wsMgrRef.current!.getWindowManager(cur.id) as any
       setWindows(
         (wm.getWindowIds() as string[]).map((id: string) => {
           const bodyEl = wm.getBodyElement(id) as HTMLElement | undefined
@@ -46,7 +49,7 @@ export default function App() {
           const appId = id.replace(/^app-/, '')
           const comp = COMP_MAP.get(appId)
           if (!comp) return null
-          return { id, bodyEl, component: comp } as WinEntry
+          return { workspaceId: cur.id, id, bodyEl, component: comp } as WinEntry
         }).filter((w): w is WinEntry => w !== null)
       )
     } catch { /* ignore during init */ }
@@ -59,6 +62,8 @@ export default function App() {
     wm.open({
       id: 'app-' + id,
       title: def.title,
+      icon: def.icon,
+      label: def.label,
       slotType: 'react',
       content: null,
       width: def.width,
@@ -66,6 +71,7 @@ export default function App() {
       x: def.x,
       y: def.y,
     })
+    syncWindows()
   }
 
   useEffect(() => {
@@ -73,6 +79,7 @@ export default function App() {
 
     const desktop = new Desktop({
       container: desktopRef.current,
+      injectStyles: false,
       dragThreshold: 10,
       dock: { position: 'bottom', showLabels: true, iconSize: 44, items: [] },
       icons: APP_DEFS.map(a => ({
@@ -84,32 +91,54 @@ export default function App() {
     })
 
     const wsMgr = new WorkspaceManager(desktop.getElement(), {
+      injectStyles: false,
       animationMs: 220,
-      windowManagerOptions: { isolated: true, snap: true },
+      windowManagerOptions: { isolated: true, snap: true, injectStyles: false },
     })
     wsMgrRef.current = wsMgr
 
+    const cleanup: Array<() => void> = []
+    const subscribedWorkspaces = new Set<string>()
+    const EVENTS = ['window:opened','window:closed','window:focused','window:minimized','window:maximized','window:restored']
+    const subscribeWorkspace = (workspaceId: string) => {
+      if (subscribedWorkspaces.has(workspaceId)) return
+      subscribedWorkspaces.add(workspaceId)
+      const wm = wsMgr.getWindowManager(workspaceId) as any
+      EVENTS.forEach(ev => cleanup.push(wm.events.on(ev, syncWindows)))
+    }
+
     wsMgr.addWorkspace({ id: 'ws-1', label: '桌面 1' })
+    subscribeWorkspace('ws-1')
     desktop.syncDockWithWindows(wsMgr.getWindowManager('ws-1') as any)
 
-    wsMgr.events.on('workspace:switched', ({ to }: { to: string }) => {
+    cleanup.push(wsMgr.events.on('workspace:added', ({ id }: { id: string }) => {
+      subscribeWorkspace(id)
+    }))
+
+    cleanup.push(wsMgr.events.on('workspace:switched', ({ to }: { to: string }) => {
       desktop.syncDockWithWindows(wsMgr.getWindowManager(to) as any)
-    })
+      syncWindows()
+    }))
 
-    new TaskView(wsMgr, { dock: desktop.getDock() as any })
-
-    const wm = wsMgr.getWindowManager('ws-1') as any
-    const EVENTS = ['window:opened','window:closed','window:focused','window:minimized','window:maximized','window:restored']
-    EVENTS.forEach(ev => wm.events.on(ev, syncWindows))
+    const taskView = new TaskView(wsMgr, { dock: desktop.getDock() as any, injectStyles: false })
 
     openApp('guide')
+
+    return () => {
+      cleanup.forEach(off => off())
+      taskView.destroy()
+      wsMgr.destroy()
+      desktop.destroy()
+      wsMgrRef.current = null
+      setWindows([])
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <div ref={desktopRef} style={{ width: '100%', height: '100%', position: 'relative' }} />
-      {windows.map(w => createPortal(<w.component />, w.bodyEl, w.id))}
+      {windows.map(w => createPortal(<w.component />, w.bodyEl, `${w.workspaceId}:${w.id}`))}
     </div>
   )
 }

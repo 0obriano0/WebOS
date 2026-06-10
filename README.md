@@ -18,7 +18,7 @@ DeskPane is:
 
 - 🪶 **Zero dependencies** — pure TypeScript, no third-party runtime libs
 - 🔌 **Framework-agnostic** — works with Vue 3, React 18, jQuery, or plain JS
-- 🎨 **Themeable** — 29 CSS custom properties, light/dark built-in, fully customizable
+- 🎨 **Themeable** — 30 CSS custom properties, light/dark built-in, fully customizable
 - 📦 **Modular** — use only what you need (core / desktop / workspace)
 - 🏗️ **Production-ready** — used in real ERP systems
 
@@ -50,7 +50,7 @@ DeskPane is:
 
 ### Layouts & Theming
 - ✅ **BorderLayout** — N/S/E/W/Center docking layout, collapsible panels, draggable splitters
-- ✅ **Theme system** — `setTheme('light' | 'dark')`, 29 CSS custom properties
+- ✅ **Theme system** — `setTheme('light' | 'dark')`, 30 CSS custom properties
 - ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
 
@@ -146,11 +146,12 @@ export default function App() {
       <button onClick={() => openReactWindow({ id: 'w1', title: 'My Window', component: MyComp })}>
         Open Window
       </button>
-      {windows.map(win =>
-        win.component
-          ? createPortal(<win.component {...(win.props ?? {})} />, win.bodyEl)
+      {windows.map(win => {
+        const Component = win.component
+        return Component
+          ? createPortal(<Component {...(win.props ?? {})} />, win.bodyEl, win.id)
           : null
-      )}
+      })}
     </div>
   )
 }
@@ -287,6 +288,29 @@ Structural styles are provided separately as `dist/styles/deskpane.css` (window 
 <link rel="stylesheet" href="dist/styles/deskpane-taskview.css">
 ```
 
+DeskPane supports two stable CSS loading modes:
+
+```typescript
+// Auto-inject mode: useful for CDN demos and quick starts.
+const desktop = new Desktop()
+const wm = new WindowManager()
+```
+
+```typescript
+// Manual import mode: recommended for bundlers and app-level overrides.
+import 'deskpane/styles/deskpane.css'
+import 'deskpane/styles/deskpane-desktop.css'
+import 'deskpane/styles/deskpane-workspace.css'
+
+const desktop = new Desktop({ injectStyles: false })
+const ws = new WorkspaceManager(desktop.getElement(), {
+  injectStyles: false,
+  windowManagerOptions: { isolated: true, snap: true },
+})
+```
+
+When runtime injection is enabled, DeskPane first checks for an existing matching `<link>` or bundler-created `<style>` and skips duplicate injection. Runtime styles are inserted before app-level stylesheets in `<head>`, so project overrides loaded later remain authoritative. `WorkspaceManager.injectStyles:false` is also propagated to the internally-created `WindowManager` unless `windowManagerOptions.injectStyles` is set explicitly.
+
 Alternatively, use `getCoreCSS()` / `getDesktopCSS()` / `getWorkspaceCSS()` / `getTaskViewCSS()` for programmatic injection:
 
 ```typescript
@@ -313,7 +337,7 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
 // UMD: DeskPane.setTheme('dark', { basePath: 'dist/themes' })
 ```
 
-### CSS Custom Properties — Core (14)
+### CSS Custom Properties — Core (15)
 
 ```css
 :root {
@@ -322,6 +346,7 @@ setTheme('dark',  { basePath: 'dist/themes' }) // relative path
   --dp-window-border-active:        #b0b8c8;
   --dp-window-shadow:               0 4px 24px rgba(0,0,0,0.18);
   --dp-window-shadow-active:        0 8px 36px rgba(0,0,0,0.28);
+  --dp-window-bg:                   var(--dp-window-body-bg, #ffffff);
   /* Header */
   --dp-window-header-bg:            #f5f5f5;
   --dp-window-header-border:        #e0e0e0;
@@ -518,6 +543,73 @@ wsMgr.enableIndicator()
 | `enableIndicator()` | Show dot indicator below workspaces |
 | `disableIndicator()` | Remove dot indicator |
 | `destroy()` | Destroy all workspaces and clean up |
+
+#### React / Vue Portal Content with Workspaces
+
+DeskPane owns the window DOM, but framework-rendered content inserted with React `createPortal` or Vue `<Teleport>` remains application state. When using `WorkspaceManager`, keep that state scoped to the active workspace and resync it whenever the active workspace changes.
+
+This matters when the same app/window id can exist in more than one workspace. A key based only on `window.id` can cause React or Vue to reuse the wrong portal target after switching desktops, which may appear as an empty or black window body until the window is recreated.
+
+Recommended integration pattern:
+
+```typescript
+type FrameworkWindowEntry = {
+  workspaceId: string
+  id: string
+  bodyEl: HTMLElement
+  component: any
+}
+
+let windows: FrameworkWindowEntry[] = []
+const disposers: Array<() => void> = []
+
+function syncWindows() {
+  const current = wsMgr.current
+  if (!current) return
+
+  const wm = wsMgr.getWindowManager(current.id)
+  windows = wm.getWindowIds().map(id => ({
+    workspaceId: current.id,
+    id,
+    bodyEl: wm.getBodyElement(id)!,
+    component: resolveComponent(id),
+  }))
+}
+
+function subscribeWorkspace(workspaceId: string) {
+  const wm = wsMgr.getWindowManager(workspaceId)
+  disposers.push(
+    wm.events.on('window:opened', syncWindows),
+    wm.events.on('window:closed', syncWindows),
+    wm.events.on('window:restored', syncWindows),
+  )
+}
+
+disposers.push(
+  wsMgr.events.on('workspace:added', state => subscribeWorkspace(state.id)),
+  wsMgr.events.on('workspace:switched', syncWindows),
+)
+
+// On app unmount:
+disposers.forEach(dispose => dispose())
+```
+
+Use a workspace-aware key for portal/teleport nodes:
+
+```tsx
+// React
+windows.map(win => {
+  const Component = win.component
+  return createPortal(<Component />, win.bodyEl, `${win.workspaceId}:${win.id}`)
+})
+```
+
+```vue
+<!-- Vue -->
+<Teleport v-for="win in windows" :key="`${win.workspaceId}:${win.id}`" :to="win.bodyEl">
+  <component :is="win.component" />
+</Teleport>
+```
 
 ---
 

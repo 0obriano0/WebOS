@@ -12,15 +12,17 @@ import { WindowManager, WindowManagerOptions } from '../core/WindowManager.js';
 import { EventBus } from '../core/EventBus.js';
 import { WorkspaceConfig, WorkspaceManagerOptions, WorkspaceState } from './types.js';
 import WORKSPACE_CSS from '../styles/deskpane-workspace.css';
+import { injectRuntimeCSS } from '../styles/inject.js';
 
 const WORKSPACE_STYLE_ID = 'dp-workspace-styles';
 
 function injectWorkspaceStyles(): void {
-  if (document.getElementById(WORKSPACE_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = WORKSPACE_STYLE_ID;
-  style.textContent = WORKSPACE_CSS;
-  document.head.appendChild(style);
+  injectRuntimeCSS({
+    id: WORKSPACE_STYLE_ID,
+    css: WORKSPACE_CSS,
+    hrefPart: 'deskpane-workspace.css',
+    fingerprint: 'DeskPane — Workspace CSS',
+  });
 }
 
 /** 取得 WorkspaceManager CSS（供 SSR 或自訂注入使用） */
@@ -55,7 +57,10 @@ export class WorkspaceManager {
       : container;
 
     this._animationMs = options.animationMs ?? 250;
-    this._wmOptions   = options.windowManagerOptions ?? {};
+    this._wmOptions   = {
+      ...(options.windowManagerOptions ?? {}),
+      injectStyles: options.windowManagerOptions?.injectStyles ?? options.injectStyles,
+    };
     this.events       = new EventBus();
 
     if (options.injectStyles !== false) injectWorkspaceStyles();

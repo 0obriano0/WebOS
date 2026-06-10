@@ -309,6 +309,60 @@ class DesktopIcon {
 var DESKTOP_CSS = "/* ============================================================\r\n * DeskPane-Desktop — Default Styles\r\n * Version: 0.1.0\r\n *\r\n * Copy this file to your project and link it with:\r\n *   <link rel=\"stylesheet\" href=\"deskpane-desktop.css\">\r\n *\r\n * When using injectStyles: false option in Desktop config,\r\n * these styles will NOT be injected automatically — this file\r\n * is your starting point for customization.\r\n *\r\n * All values use CSS custom properties (--dp-*) so you can\r\n * override them in :root without touching this file.\r\n * ============================================================ */\r\n\r\n/* ── Desktop container ───────────────────────────────── */\r\n.dp-desktop {\r\n  position: relative;\r\n  width: 100%;\r\n  height: 100%;\r\n  overflow: clip;\r\n  background: var(--dp-desktop-bg, linear-gradient(135deg, #1a2a4a 0%, #0d1b2a 100%));\r\n  user-select: none;\r\n  font-family: var(--dp-font, system-ui, -apple-system, sans-serif);\r\n}\r\n\r\n/* ── Icon area ───────────────────────────────────────── */\r\n.dp-desktop-icon-area {\r\n  position: absolute;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: auto;\r\n  scrollbar-width: thin;\r\n  scrollbar-color: rgba(255,255,255,0.2) transparent;\r\n}\r\n\r\n/* ── Window area ─────────────────────────────────────── */\r\n.dp-desktop-window-area {\r\n  position: absolute !important;\r\n  top: 0; left: 0; right: 0; bottom: 0;\r\n  overflow: clip;\r\n  pointer-events: none;\r\n}\r\n.dp-desktop-window-area > * {\r\n  pointer-events: auto;\r\n}\r\n\r\n/* ── Icon snap guides ────────────────────────────────── */\r\n.dp-icon-snap-guide {\r\n  position: absolute;\r\n  pointer-events: none;\r\n  z-index: 9999;\r\n  display: none;\r\n  background: var(--dp-snap-guide-color, rgba(0, 120, 255, 0.55));\r\n}\r\n.dp-icon-snap-guide.dp-snap-guide--v {\r\n  width: 1px;\r\n  top: 0;\r\n  bottom: 0;\r\n}\r\n.dp-icon-snap-guide.dp-snap-guide--h {\r\n  height: 1px;\r\n  left: 0;\r\n  right: 0;\r\n}\r\n\r\n/* ── Desktop icon ────────────────────────────────────── */\r\n.dp-desktop-icon {\r\n  position: absolute;\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  width: 80px;\r\n  padding: 8px 4px 6px;\r\n  cursor: pointer;\r\n  border-radius: 8px;\r\n  transition: background 0.12s;\r\n}\r\n.dp-desktop-icon:hover {\r\n  background: var(--dp-desktop-icon-hover-bg, rgba(255,255,255,0.15));\r\n}\r\n.dp-desktop-icon.dp-icon-selected {\r\n  background: rgba(74,158,255,0.35);\r\n  outline: 1px solid rgba(74,158,255,0.6);\r\n}\r\n.dp-desktop-icon.dp-icon-dragging {\r\n  opacity: 0.45;\r\n  z-index: 9999;\r\n}\r\n.dp-desktop-icon-img {\r\n  width: 48px;\r\n  height: 48px;\r\n  font-size: 38px;\r\n  line-height: 1;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 10px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.dp-desktop-icon-img img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.dp-desktop-icon-label {\r\n  margin-top: 4px;\r\n  font-size: 11px;\r\n  color: var(--dp-desktop-icon-text, #fff);\r\n  text-align: center;\r\n  line-height: 1.3;\r\n  max-width: 76px;\r\n  word-break: break-word;\r\n  text-shadow: 0 1px 3px rgba(0,0,0,0.7);\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock ────────────────────────────────────────────── */\r\n.dp-dock {\r\n  position: absolute;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  gap: 4px;\r\n  background: var(--dp-dock-bg, rgba(20,30,50,0.75));\r\n  backdrop-filter: var(--dp-dock-backdrop-filter, blur(14px));\r\n  -webkit-backdrop-filter: var(--dp-dock-backdrop-filter, blur(14px));\r\n  border: 1px solid var(--dp-dock-border, rgba(255,255,255,0.1));\r\n  padding: 6px 10px;\r\n  z-index: 9999;\r\n  box-sizing: border-box;\r\n  scrollbar-width: none;\r\n  -ms-overflow-style: none;\r\n}\r\n.dp-dock::-webkit-scrollbar { display: none; }\r\n.dp-dock.dp-dock-bottom {\r\n  bottom: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-top: 1px solid var(--dp-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.dp-dock.dp-dock-top {\r\n  top: 0; left: 0; right: 0;\r\n  flex-direction: row;\r\n  height: 68px;\r\n  border-bottom: 1px solid var(--dp-dock-border, rgba(255,255,255,0.1));\r\n  overflow-x: auto;\r\n  overflow-y: hidden;\r\n}\r\n.dp-dock.dp-dock-left {\r\n  top: 0; left: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-right: 1px solid var(--dp-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n.dp-dock.dp-dock-right {\r\n  top: 0; right: 0; bottom: 0;\r\n  flex-direction: column;\r\n  width: 68px;\r\n  align-items: center;\r\n  justify-content: flex-start;\r\n  padding: 10px 6px;\r\n  border-left: 1px solid var(--dp-dock-border, rgba(255,255,255,0.1));\r\n  overflow-y: auto;\r\n  overflow-x: hidden;\r\n}\r\n\r\n/* ── Dock item ───────────────────────────────────────── */\r\n.dp-dock-item {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  justify-content: center;\r\n  cursor: pointer;\r\n  border-radius: 10px;\r\n  padding: 4px 6px;\r\n  position: relative;\r\n  transition: transform 0.15s, background 0.12s;\r\n  flex-shrink: 0;\r\n}\r\n.dp-dock-item:hover {\r\n  background: var(--dp-dock-item-hover-bg, rgba(255,255,255,0.12));\r\n  transform: scale(1.15) translateY(-3px);\r\n}\r\n.dp-dock-item.dp-dock-dragging {\r\n  opacity: 0.4;\r\n}\r\n.dp-dock-item.dp-dock-dragover {\r\n  background: rgba(74,158,255,0.25);\r\n  outline: 2px dashed rgba(74,158,255,0.7);\r\n  transform: scale(1.1);\r\n}\r\n.dp-dock-item.dp-dock-active {\r\n  background: rgba(74,158,255,0.2);\r\n}\r\n.dp-dock-item.dp-dock-active::after {\r\n  content: '';\r\n  position: absolute;\r\n  bottom: -5px;\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  width: 5px;\r\n  height: 5px;\r\n  border-radius: 50%;\r\n  background: rgba(74,158,255,0.9);\r\n}\r\n.dp-dock.dp-dock-top .dp-dock-item.dp-dock-active::after {\r\n  bottom: unset;\r\n  top: -5px;\r\n}\r\n.dp-dock.dp-dock-left .dp-dock-item.dp-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n.dp-dock.dp-dock-right .dp-dock-item.dp-dock-active::after {\r\n  bottom: unset;\r\n  top: 50%;\r\n  left: unset;\r\n  right: -5px;\r\n  transform: translateY(-50%);\r\n}\r\n\r\n/* ── Dock icon & label ───────────────────────────────── */\r\n.dp-dock-icon {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  border-radius: 8px;\r\n  overflow: hidden;\r\n  pointer-events: none;\r\n}\r\n.dp-dock-icon img {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: contain;\r\n}\r\n.dp-dock-label {\r\n  font-size: 10px;\r\n  color: var(--dp-desktop-icon-text, rgba(255,255,255,0.85));\r\n  margin-top: 2px;\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n  max-width: 60px;\r\n  pointer-events: none;\r\n}\r\n\r\n/* ── Dock tooltip ────────────────────────────────────── */\r\n.dp-dock-tooltip {\r\n  position: absolute;\r\n  bottom: calc(100% + 6px);\r\n  left: 50%;\r\n  transform: translateX(-50%);\r\n  background: rgba(0,0,0,0.8);\r\n  color: #fff;\r\n  font-size: 11px;\r\n  padding: 3px 8px;\r\n  border-radius: 4px;\r\n  white-space: nowrap;\r\n  pointer-events: none;\r\n  opacity: 0;\r\n  transition: opacity 0.15s;\r\n}\r\n.dp-dock-item:hover .dp-dock-tooltip {\r\n  opacity: 1;\r\n}\r\n.dp-dock.dp-dock-left .dp-dock-tooltip,\r\n.dp-dock.dp-dock-right .dp-dock-tooltip {\r\n  bottom: unset;\r\n  top: 50%;\r\n  transform: translateY(-50%);\r\n}\r\n.dp-dock.dp-dock-left .dp-dock-tooltip {\r\n  left: calc(100% + 6px);\r\n}\r\n.dp-dock.dp-dock-right .dp-dock-tooltip {\r\n  left: unset;\r\n  right: calc(100% + 6px);\r\n}\r\n\r\n/* ── Dock group preview (Windows-style thumbnails) ───── */\r\n.dp-dock-group-preview {\r\n  position: fixed;\r\n  z-index: 99998;\r\n  display: flex;\r\n  flex-direction: row;\r\n  gap: 6px;\r\n  padding: 8px;\r\n  border-radius: 10px;\r\n  background: rgba(18, 20, 26, 0.92);\r\n  border: 1px solid rgba(255, 255, 255, 0.12);\r\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);\r\n  backdrop-filter: blur(14px);\r\n  pointer-events: auto;\r\n  opacity: 0;\r\n  transform: translateY(8px);\r\n  transition: opacity 0.15s ease, transform 0.15s ease;\r\n}\r\n.dp-dock-group-preview--visible {\r\n  opacity: 1;\r\n  transform: translateY(0);\r\n}\r\n.dp-dock-group-preview--top {\r\n  transform: translateY(-8px);\r\n}\r\n.dp-dock-group-preview--top.dp-dock-group-preview--visible {\r\n  transform: translateY(0);\r\n}\r\n.dp-dock-group-preview--left,\r\n.dp-dock-group-preview--right {\r\n  flex-direction: column;\r\n  transform: translateX(0);\r\n}\r\n\r\n/* ── Group card ──────────────────────────────────────── */\r\n.dp-dock-group-card {\r\n  display: flex;\r\n  flex-direction: column;\r\n  cursor: pointer;\r\n  border-radius: 6px;\r\n  border: 1px solid transparent;\r\n  overflow: hidden;\r\n  transition: border-color 0.12s, background 0.12s;\r\n}\r\n.dp-dock-group-card:hover {\r\n  border-color: rgba(255, 255, 255, 0.25);\r\n  background: rgba(255, 255, 255, 0.07);\r\n}\r\n\r\n/* ── Card header ─────────────────────────────────────── */\r\n.dp-dock-group-card-header {\r\n  display: flex;\r\n  align-items: center;\r\n  gap: 4px;\r\n  padding: 4px 4px 4px 7px;\r\n  height: 26px;\r\n  flex-shrink: 0;\r\n}\r\n.dp-dock-group-card-title {\r\n  flex: 1;\r\n  font-size: 11px;\r\n  color: rgba(255, 255, 255, 0.82);\r\n  white-space: nowrap;\r\n  overflow: hidden;\r\n  text-overflow: ellipsis;\r\n}\r\n.dp-dock-group-card-close {\r\n  flex-shrink: 0;\r\n  width: 18px;\r\n  height: 18px;\r\n  border: none;\r\n  border-radius: 50%;\r\n  background: transparent;\r\n  color: rgba(255, 255, 255, 0.45);\r\n  font-size: 9px;\r\n  cursor: pointer;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  opacity: 0;\r\n  transition: background 0.1s, opacity 0.1s, color 0.1s;\r\n  padding: 0;\r\n  line-height: 1;\r\n}\r\n.dp-dock-group-card:hover .dp-dock-group-card-close {\r\n  opacity: 1;\r\n}\r\n.dp-dock-group-card-close:hover {\r\n  background: rgba(210, 40, 40, 0.85);\r\n  color: #fff;\r\n}\r\n\r\n/* ── Card thumbnail ──────────────────────────────────── */\r\n.dp-dock-group-card-thumb {\r\n  position: relative;\r\n  overflow: hidden;\r\n  flex-shrink: 0;\r\n  background: rgba(0, 0, 0, 0.35);\r\n}\r\n\r\n/* ── Modal-blocked card shake ────────────────────────── */\r\n@keyframes dp-group-card-shake {\r\n  0%, 100% { transform: translateX(0); }\r\n  20%       { transform: translateX(-5px); }\r\n  40%       { transform: translateX(5px); }\r\n  60%       { transform: translateX(-4px); }\r\n  80%       { transform: translateX(3px); }\r\n}\r\n.dp-group-card--shake {\r\n  animation: dp-group-card-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;\r\n}\r\n\r\n";
 
 // ============================================================
+// DeskPane — Runtime CSS injection helpers
+// ============================================================
+function isDeskPaneStyleNode(node) {
+    if (node instanceof HTMLStyleElement) {
+        if (node.dataset.dpStyle === 'true')
+            return true;
+        if (node.id.startsWith('dp-') && node.id.endsWith('-styles'))
+            return true;
+    }
+    if (node instanceof HTMLLinkElement) {
+        const href = node.getAttribute('href') ?? '';
+        return href.includes('/deskpane') || href.includes('\\deskpane') || href.includes('deskpane');
+    }
+    return false;
+}
+function hasManualStyleLoaded(options) {
+    const hrefPart = options.hrefPart.toLowerCase();
+    for (const node of Array.from(document.querySelectorAll('style,link[rel~="stylesheet"]'))) {
+        if (node instanceof HTMLStyleElement) {
+            if (node.id === options.id)
+                return true;
+            if (node.textContent?.includes(options.fingerprint))
+                return true;
+            continue;
+        }
+        if (node instanceof HTMLLinkElement) {
+            const href = (node.getAttribute('href') ?? '').toLowerCase();
+            if (href.includes(hrefPart))
+                return true;
+        }
+    }
+    return false;
+}
+function findInsertionAnchor() {
+    const styleNodes = Array.from(document.head.querySelectorAll('style,link[rel~="stylesheet"]'));
+    return styleNodes.find(node => !isDeskPaneStyleNode(node)) ?? null;
+}
+/**
+ * Injects DeskPane runtime CSS only when the same stylesheet is not already
+ * present. Runtime CSS is inserted before app-level stylesheets so project
+ * overrides imported later remain authoritative.
+ */
+function injectRuntimeCSS(options) {
+    if (hasManualStyleLoaded(options))
+        return;
+    const style = document.createElement('style');
+    style.id = options.id;
+    style.dataset.dpStyle = 'true';
+    style.textContent = options.css;
+    const anchor = findInsertionAnchor();
+    document.head.insertBefore(style, anchor);
+}
+
+// ============================================================
 // DeskPane-Desktop — CSS 注入（僅注入一次）
 // ============================================================
 const STYLE_ID = 'dp-desktop-styles';
@@ -317,12 +371,12 @@ function getDesktopCSS() {
     return DESKTOP_CSS;
 }
 function injectDesktopStyles() {
-    if (document.getElementById(STYLE_ID))
-        return;
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = DESKTOP_CSS;
-    document.head.appendChild(style);
+    injectRuntimeCSS({
+        id: STYLE_ID,
+        css: DESKTOP_CSS,
+        hrefPart: 'deskpane-desktop.css',
+        fingerprint: 'DeskPane-Desktop — Default Styles',
+    });
 }
 
 // ============================================================

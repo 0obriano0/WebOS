@@ -13,15 +13,17 @@ import { EventBus } from '../core/EventBus.js';
 import { WorkspaceManager } from './WorkspaceManager.js';
 import { WorkspaceConfig, TaskViewOptions, DockLike } from './types.js';
 import TASKVIEW_CSS from '../styles/deskpane-taskview.css';
+import { injectRuntimeCSS } from '../styles/inject.js';
 
 const TASKVIEW_STYLE_ID = 'dp-taskview-styles';
 
 function injectTaskViewStyles(): void {
-  if (document.getElementById(TASKVIEW_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = TASKVIEW_STYLE_ID;
-  style.textContent = TASKVIEW_CSS;
-  document.head.appendChild(style);
+  injectRuntimeCSS({
+    id: TASKVIEW_STYLE_ID,
+    css: TASKVIEW_CSS,
+    hrefPart: 'deskpane-taskview.css',
+    fingerprint: 'DeskPane — TaskView CSS',
+  });
 }
 
 /** 取得 TaskView CSS（供 SSR 或自訂注入使用） */
