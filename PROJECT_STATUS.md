@@ -336,6 +336,7 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 > ⚠️ Node.js 18+（目前 18.15.0）。`rollup-plugin-dts` v6 在 Node 18 有 EBADENGINE 警告，**功能正常**。  
 > ⚠️ Vite 快取放 Dropbox 會 EBUSY → `vite.config.ts` 設 `cacheDir: path.join(os.tmpdir(), '...')`。  
 > ⚠️ `package.json` 必須無 BOM（UTF-8 without BOM），否則 PostCSS config 搜尋器會 parse 失敗。  
+> ⚠️ `.github/workflows/release.yml` 的 **`Update npm`** 步驟（`npm install -g npm@latest`）**絕對不能拿掉**。GitHub Actions 內建 npm 版本過舊，不支援 OIDC Trusted Publisher，Publish to npm 步驟會直接失敗。  
 > 📄 發佈詳細教學：`docs-internal/npm-publish-guide.md`  
 > 📄 Release 流程：`docs-internal/release-workflow.md`
 
@@ -390,6 +391,7 @@ cd demo/docs  && npm install && npm run dev    # port 3002
 | 43 | `.dp-window` 透明與點擊穿透 | core CSS 不應依賴 `.dp-body` 撐滿整個視窗才有背景；`.dp-window` 改為 `background: var(--dp-window-bg, var(--dp-window-body-bg, #ffffff))`，並確保 `.dp-window` / `.dp-header` / `.dp-body` 保持 `pointer-events:auto` |
 | 44 | Vite demo rawCss plugin scope | raw CSS plugin 只攔截 DeskPane `src/` 內部 import `src/styles/*.css` 的情況，並加上 `?raw-dp` 轉成 JS string；demo app 自己在 `main.ts` / `main.tsx` import 的 DeskPane CSS 仍走 Vite 正常 CSS pipeline，避免樣式被當成 default export 或消失 |
 | 45 | React/Vue Workspace Portal/Teleport 黑畫面 | 這是 framework integration state 問題，不是 DeskPane core 畫面渲染問題。DeskPane 管 DOM 視窗，React/Vue 內容由 app 用 portal/teleport 掛進 `bodyEl`；使用多工作區時必須在 `workspace:switched` 同步 active workspace 視窗、訂閱 `workspace:added` 的 WindowManager 事件，且 portal/teleport key 要包含 `workspaceId:id`，避免不同桌面同 id 視窗重用錯誤 target |
+| 46 | GitHub Actions `Update npm` 步驟不可移除 | GitHub Actions runner 內建 npm 版本過舊（不支援 OIDC Trusted Publisher），必須在 `Publish to npm` 前執行 `npm install -g npm@latest`（需 npm 11.5.1+）。少了這步驟 `npm publish --provenance` 會直接失敗 |
 
 ---
 
