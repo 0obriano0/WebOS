@@ -1,46 +1,75 @@
 ﻿# DeskPane
 
-A **framework-agnostic** web virtual desktop window management engine.
+**A framework-agnostic web desktop window management framework.**  
+Build floating windows, draggable panels, virtual desktops, and ERP-style layouts directly in the browser — no dependencies, works with Vue, React, or plain JS.
 
+[![npm version](https://img.shields.io/npm/v/deskpane.svg)](https://www.npmjs.com/package/deskpane)
+[![npm downloads](https://img.shields.io/npm/dm/deskpane.svg)](https://www.npmjs.com/package/deskpane)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/deskpane)](https://bundlephobia.com/package/deskpane)
+
+---
+
+## Why DeskPane?
+
+Modern web applications — especially ERPs, dashboards, and admin tools — often need a **desktop-like window management experience**. Most solutions are either tied to a specific framework, require a heavy dependency tree, or lack the polish needed for production use.
+
+DeskPane is:
+
+- 🪶 **Zero dependencies** — pure TypeScript, no third-party runtime libs
+- 🔌 **Framework-agnostic** — works with Vue 3, React 18, jQuery, or plain JS
+- 🎨 **Themeable** — 29 CSS custom properties, light/dark built-in, fully customizable
+- 📦 **Modular** — use only what you need (core / desktop / workspace)
+- 🏗️ **Production-ready** — used in real ERP systems
 
 ---
 
 ## Features
 
+### Core Window Manager
 - ✅ Open / close / minimize / maximize / restore windows
-- ✅ Drag & resize with throttling (60 fps default)
-- ✅ **`resizable: false`** — disable maximize button and border-drag resize per window (fixed-size dialog pattern)
-- ✅ **Child windows (`parentId` / `modal`)** — attach child windows to a parent; child z-index always above parent; `modal: true` adds a semi-transparent overlay on the parent — clicking it shakes the child to prompt focus; children minimize/restore with parent; cascade close; children excluded from Dock
-- ✅ **Snap alignment** — windows snap to edges and each other while **dragging and resizing**; configurable gap between windows
+- ✅ Drag & resize at 60 fps with configurable throttle
+- ✅ **Snap alignment** — windows snap to edges and each other while dragging and resizing
+- ✅ **Child windows** (`parentId` / `modal`) — z-order management, cascade close, modal overlay with shake feedback
+- ✅ **`resizable: false`** — fixed-size dialog pattern
 - ✅ Focus / z-order management
+- ✅ **RWD viewport clamping** — windows auto-clamp via `ResizeObserver`; never open off-screen
 - ✅ Event bus — subscribe to any window lifecycle event
 - ✅ Isolated mode — embed a desktop inside any container element
-- ✅ **RWD viewport clamping** — windows auto-clamp via `ResizeObserver`; never open off-screen
-- ✅ **Theme system** — light/dark CSS themes with 22 CSS custom properties; `setTheme()` runtime switching
-- ✅ **BorderLayout** — N/S/E/W/Center docking layout; `data-region` HTML-first declaration; collapsible mini strip; draggable splitters; nested layouts
-- ✅ **Desktop module** (`deskpane-desktop`) — virtual desktop with icons, Dock, active indicator, icon snap, RWD scrollable icon area, **frosted-glass backdrop-filter** on Dock
-- ✅ **Windows-style group thumbnail preview** — hover a Dock item to see a card strip of the parent window + all child windows; each card has a title + × close button; sticky hover; modal safety (blocks parent close when a modal child exists)
-- ✅ **WorkspaceManager** (`deskpane-workspace`) — multiple virtual desktops with slide animation and dot indicator
-- ✅ **TaskView** (`deskpane-workspace`) — workspace switcher overlay with real DOM-clone thumbnails, add/delete workspace, Escape key support
+
+### Desktop Module (`deskpane/desktop`)
+- ✅ Virtual desktop with draggable icons and localStorage snap positions
+- ✅ Dock with frosted-glass backdrop-filter, drag reorder
+- ✅ **Windows-style group thumbnail preview** — hover Dock item to see live window thumbnails
+- ✅ `syncDockWithWindows()` — zero-config Dock ↔ window sync
+
+### Workspace Module (`deskpane/workspace`)
+- ✅ **WorkspaceManager** — multiple virtual desktops with slide animation
+- ✅ **TaskView** — workspace switcher overlay with real DOM-clone thumbnails
+- ✅ **SessionManager** — serialize / restore window state
+
+### Layouts & Theming
+- ✅ **BorderLayout** — N/S/E/W/Center docking layout, collapsible panels, draggable splitters
+- ✅ **Theme system** — `setTheme('light' | 'dark')`, 29 CSS custom properties
 - ✅ Vue 3 adapter — `useWindowManager` composable + `<Teleport>` support
 - ✅ React 18 adapter — `useWindowManager` hook + `createPortal` support
-- ✅ **CSS pre-built files** — `dist/styles/deskpane.css` and `dist/styles/deskpane-desktop.css` for direct `<link>` use (single source of truth at `src/styles/*.css`)
 
 ---
 
 ## Installation
 
-### npm
-
 ```bash
 npm install deskpane
 ```
 
-### Script Tag (UMD, no build step)
+### CDN / Script Tag (no build step)
 
 ```html
-<script src="dist/deskpane.umd.js"></script>
+<!-- Styles -->
+<link rel="stylesheet" href="https://unpkg.com/deskpane/dist/styles/deskpane.css">
+<link rel="stylesheet" href="https://unpkg.com/deskpane/dist/themes/light.css">
+<!-- Runtime -->
+<script src="https://unpkg.com/deskpane/dist/deskpane.umd.min.js"></script>
 <!-- window.DeskPane is now available -->
 ```
 
@@ -665,6 +694,28 @@ npm run release      # clean + build:lib + package release/
 ## Browser Support
 
 Any modern browser supporting ES2020 (`optional chaining`, `nullish coalescing`, `Map`, `Set`).
+
+---
+
+## Roadmap
+
+- [ ] CDN publish (jsDelivr / unpkg auto-sync after npm publish)
+- [ ] Angular adapter
+- [ ] Window state persistence (localStorage / IndexedDB)
+- [ ] Accessibility (ARIA roles, keyboard navigation)
+- [ ] More built-in themes
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open an issue or PR.
+
+1. Fork the repo
+2. Create a feature branch: `git checkout -b feat/my-feature`
+3. Run the dev server: `npm run dev`
+4. Build: `npm run build:lib`
+5. Submit a PR 🎉
 
 ---
 
